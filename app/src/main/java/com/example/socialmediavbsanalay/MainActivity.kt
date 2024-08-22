@@ -10,5 +10,6 @@ class MainActivity : AppCompatActivity() {
         print("gjk")
         print("dsfd")
         print("3.d")
+        print("4.d")
     }
 }
