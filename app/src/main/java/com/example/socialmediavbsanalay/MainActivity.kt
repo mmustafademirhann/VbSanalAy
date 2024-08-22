@@ -12,5 +12,6 @@ class MainActivity : AppCompatActivity() {
         print("3.d")
         print("4.d")
         print("5.")
+        print("6.")
     }
 }
