@@ -119,4 +119,5 @@ class WelcomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    //ı am tring to fix what i did
 }
