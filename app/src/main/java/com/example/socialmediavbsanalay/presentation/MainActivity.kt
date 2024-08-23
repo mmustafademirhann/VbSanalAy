@@ -11,7 +11,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        //ı deleted
+        if (savedInstanceState == null) {
+            // Add the WelcomeFragment to the container
+            supportFragmentManager.beginTransaction()
+                .replace(binding.fragmentContainer.id, WelcomeFragment())
+                .commit()
+        }
 
     }
 }
