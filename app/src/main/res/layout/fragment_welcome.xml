@@ -16,7 +16,7 @@
         android:contentDescription="@string/app_name"
         android:keepScreenOn="true" />
 
-    <!-- Container for the WelcomeBarFragment -->
+    <!-- Container for the WelcomeBarFragment I Changed-->
     <FrameLayout
         android:id="@+id/welcome_bar_container"
         android:layout_width="match_parent"
