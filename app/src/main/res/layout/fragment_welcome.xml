@@ -1,26 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.SocialMediaVbSanalAy.FullscreenContainer"
     tools:context=".presentation.WelcomeFragment">
 
-    <ImageView
-        android:id="@+id/fullscreen_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/aysegulmustafa"
-        android:contentDescription="@string/app_name"
-        android:keepScreenOn="true" />
+     <!-- Background Image -->
+     <ImageView
+         android:id="@+id/background_image"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:contentDescription="@string/app_name"
+         android:scaleType="fitXY"
+         android:scaleX="@dimen/cardview_compat_inset_shadow"
+         android:scaleY="?attr/dialogPreferredPadding"
+         android:src="@drawable/singup" />
 
-    <!-- Container for the WelcomeBarFragment I Changed-->
-    <FrameLayout
-        android:id="@+id/welcome_bar_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom" />
+     <!-- Your content goes here -->
+     <!-- Add other views like buttons, text, etc., that you want to appear on top of the background -->
 
 </FrameLayout>

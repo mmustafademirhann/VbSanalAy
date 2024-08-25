@@ -32,13 +32,6 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val fullscreenImage = binding.fullscreenImage
-        val hiddenImage = binding.welcomeBarContainer
-
-        fullscreenImage.setOnClickListener {
-            toggleImages(hiddenImage, fullscreenImage)
-        }
-
         hideSystemUI()
 	//I am confused
     }
