@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/signup"
+    tools:context=".presentation.SignInFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_marginRight="9sp"
+
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="80dp"
+            android:src="@drawable/sanal_ay"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextMail"
+            android:layout_width="330sp"
+            android:layout_height="50sp"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="38dp"
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Email/telefon numarası"
+
+            android:textColorHint="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="75sp"
+            android:layout_height="25sp"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/giris"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <EditText
+            android:id="@+id/editTextNumberPassword"
+            android:layout_width="330sp"
+            android:layout_height="50sp"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:inputType="numberPassword"
+            android:hint="Şifre"
+            android:textColorHint="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextMail" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="329sp"
+            android:layout_height="51sp"
+            android:layout_marginStart="46dp"
+            android:layout_marginTop="63dp"
+            android:background="@drawable/drawble_fr_button"
+            android:text="Giriş yap"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextNumberPassword" />
+
+        <LinearLayout
+            android:layout_width="310sp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="65dp"
+
+            android:layout_marginTop="140dp"
+            android:layout_marginEnd="51dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button3">
+
+            <TextView
+                android:id="@+id/accountTextV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hesabın yok mu?"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="Oluştur"
+                android:textColor="#3B21B2"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

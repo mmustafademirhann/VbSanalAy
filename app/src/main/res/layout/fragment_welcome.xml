@@ -10,24 +10,23 @@
          android:id="@+id/fullscreenImage"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_gravity="top"
-         android:layout_marginTop="-50sp"
+
          android:contentDescription="@string/app_name"
          android:scaleType="centerCrop"
-         android:src="@drawable/aysegulmustafa" />
+         android:src="@drawable/bra" />
 
      <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="350sp"
          android:layout_gravity="bottom"
-         android:layout_marginBottom="-20sp"
-         android:background="@drawable/rectangler"
-         android:padding="16dp">
+         android:layout_marginBottom="-30sp"
+         android:background="@drawable/rectangler">
 
           <Button
-              android:id="@+id/button"
+              android:id="@+id/navigateButton"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:layout_marginBottom="70dp"
               android:background="@drawable/get_started"
               android:text="Hadi başlayalım :)"
               android:textSize="22sp"

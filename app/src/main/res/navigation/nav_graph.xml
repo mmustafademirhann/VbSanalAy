@@ -11,11 +11,21 @@
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome" >
         <action
-            android:id="@+id/action_welcomeFragment_to_welcomeBarFragment"
-            app:destination="@id/welcomeBarFragment" />
+            android:id="@+id/action_welcomeFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
     <fragment
-        android:id="@+id/welcomeBarFragment"
-        android:name="com.example.socialmediavbsanalay.presentation.WelcomeBarFragment"
-        android:label="WelcomeBarFragment" />
+        android:id="@+id/signInFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" />
 </navigation>

@@ -1,0 +1,11 @@
+<!-- res/drawable/rounded_edit_text.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#635A8F" />
+    <stroke android:width="3sp" android:color="#635A8F" /> <!-- White border color -->
+    <corners android:radius="30sp" /> <!-- Adjust radius for the roundness -->
+    <padding
+        android:left="20sp"
+        android:right="20sp"
+        android:top="8sp"
+        android:bottom="8sp" />
+</shape>
