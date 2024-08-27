@@ -10,7 +10,7 @@
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_marginRight="9sp"
+
 
         android:layout_height="match_parent">
 
@@ -19,61 +19,72 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="35dp"
+            android:layout_marginStart="15sp"
             android:layout_marginTop="80dp"
+            android:layout_marginEnd="15sp"
             android:src="@drawable/sanal_ay"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/editTextMail"
-            android:layout_width="330sp"
-            android:layout_height="50sp"
-            android:layout_marginStart="45dp"
-            android:layout_marginTop="38dp"
-            android:background="@drawable/rounded_edit_text"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="Email/telefon numarası"
-
-            android:textColorHint="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="75sp"
             android:layout_height="25sp"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginStart="2sp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="10sp"
             android:src="@drawable/giris"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.07"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <EditText
             android:id="@+id/editTextNumberPassword"
-            android:layout_width="330sp"
+            android:layout_width="300sp"
             android:layout_height="50sp"
-            android:layout_marginStart="45dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginStart="30sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="30sp"
             android:background="@drawable/rounded_edit_text"
             android:ems="10"
-            android:inputType="numberPassword"
             android:hint="Şifre"
+            android:inputType="numberPassword"
             android:textColorHint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextMail" />
 
+        <EditText
+            android:id="@+id/editTextMail"
+            android:layout_width="300sp"
+            android:layout_height="50sp"
+            android:layout_marginStart="30sp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="30sp"
+            android:background="@drawable/rounded_edit_text"
+            android:ems="10"
+            android:hint="Email/telefon numarası"
+
+            android:inputType="text"
+            android:textColorHint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
         <Button
             android:id="@+id/button3"
-            android:layout_width="329sp"
+            android:layout_width="297sp"
             android:layout_height="51sp"
-            android:layout_marginStart="46dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="63dp"
+            android:layout_marginEnd="30dp"
             android:background="@drawable/drawble_fr_button"
-            android:text="Giriş yap"
             android:fontFamily="sans-serif-medium"
+            android:text="Giriş yap"
             android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextNumberPassword" />
 
@@ -82,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="65dp"
 
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="120dp"
             android:layout_marginEnd="51dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"

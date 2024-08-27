@@ -40,30 +40,35 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
+                android:layout_marginTop="30sp"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/editTextText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50sp"
                     android:layout_marginRight="10sp"
+                    android:hint="Adınız"
+
+                    android:textColorHint="@color/white"
                     android:layout_weight="1"
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="text"
-                    android:text="Name" />
+                     />
 
                 <EditText
                     android:id="@+id/editTextText2"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50sp"
                     android:layout_marginLeft="10sp"
+                    android:hint="Soyadınız"
+                    android:textColorHint="@color/white"
                     android:layout_weight="1"
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="text"
-                    android:text="Name" />
+                     />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -74,21 +79,25 @@
                 <EditText
                     android:id="@+id/editTextText3"
                     android:layout_marginTop="20sp"
+                    android:hint="Email/telefon numarası"
+                    android:textColorHint="@color/white"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50sp"
 
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="text"
-                    android:text="Name" />
+                    />
 
                 <EditText
                     android:id="@+id/editTextNumberPassword2"
 
                     android:layout_marginTop="20sp"
+                    android:hint="Şifre"
+                    android:textColorHint="@color/white"
                     android:background="@drawable/rounded_edit_text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50sp"
                     android:ems="10"
                     android:inputType="numberPassword" />
 
@@ -96,11 +105,34 @@
                     android:id="@+id/editTextNumberPassword3"
                     android:layout_marginTop="20sp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50sp"
+                    android:hint="Şifre tekrar"
+                    android:textColorHint="@color/white"
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="numberPassword" />
+                <LinearLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/checkbox_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <include
+                        layout="@layout/custom_checkbox"
+                        android:id="@+id/checkbox1" />
+
+                    <include
+                        layout="@layout/custom_checkbox"
+                        android:id="@+id/checkbox2" />
+
+
+                </LinearLayout>
+
             </LinearLayout>
+
 
 
         </LinearLayout>

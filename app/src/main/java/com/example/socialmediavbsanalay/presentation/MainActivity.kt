@@ -2,7 +2,10 @@ package com.example.socialmediavbsanalay.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,10 +16,11 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         if (savedInstanceState == null) {
-            // Add the WelcomeFragment to the container
-           /* supportFragmentManager.beginTransaction()
-                .replace(binding.fragmentContainer.id, WelcomeFragment())
-                .commit()*/
+            // Show ProgressBar
+            binding.progressBar.visibility = View.VISIBLE
+
+            // Simulate loading (e.g., navigation setup)
+
         }
 
     }

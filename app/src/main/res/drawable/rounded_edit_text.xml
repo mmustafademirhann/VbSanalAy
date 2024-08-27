@@ -1,7 +1,7 @@
 <!-- res/drawable/rounded_edit_text.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@android:color/transparent" />
-    <stroke android:width="3sp" android:color="#FFFFFF" /> <!-- White border color -->
+    <stroke android:width="3.5sp" android:color="#FFFFFF" /> <!-- White border color -->
     <corners android:radius="30sp" /> <!-- Adjust radius for the roundness -->
     <padding
         android:left="20sp"
