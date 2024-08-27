@@ -77,7 +77,7 @@
                 android:layout_weight="3">
 
                 <EditText
-                    android:id="@+id/editTextText3"
+                    android:id="@+id/etMail"
                     android:layout_marginTop="20sp"
                     android:hint="Email/telefon numarası"
                     android:textColorHint="@color/white"
@@ -145,6 +145,12 @@
                          />
                 </RadioGroup>
 
+
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign Up"/>
             </LinearLayout>
 
 

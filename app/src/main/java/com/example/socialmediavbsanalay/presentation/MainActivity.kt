@@ -7,7 +7,9 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
