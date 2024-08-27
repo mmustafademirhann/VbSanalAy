@@ -11,11 +11,11 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="327dp"
-            android:layout_height="638dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginBottom="20dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -38,7 +38,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30sp"
                 android:orientation="horizontal">
@@ -111,25 +111,39 @@
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="numberPassword" />
-                <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/checkbox_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:layout_weight="3"
+                    >
 
-                    <include
-                        layout="@layout/custom_checkbox"
-                        android:id="@+id/checkbox1" />
+                    <RadioButton
+                        android:id="@+id/radio_male"
+                        style="@style/CustomRadioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Erkek"/>
+                         />
 
-                    <include
-                        layout="@layout/custom_checkbox"
-                        android:id="@+id/checkbox2" />
+                    <RadioButton
+                        android:id="@+id/radio_female"
+                        style="@style/CustomRadioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kadın"/>
+                        />
 
-
-                </LinearLayout>
+                    <RadioButton
+                        android:id="@+id/radio_others"
+                        style="@style/CustomRadioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Diğer.."/>
+                         />
+                </RadioGroup>
 
             </LinearLayout>
 

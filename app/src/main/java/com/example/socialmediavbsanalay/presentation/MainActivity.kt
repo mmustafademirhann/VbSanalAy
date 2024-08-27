@@ -22,6 +22,10 @@ class MainActivity : AppCompatActivity() {
             // Simulate loading (e.g., navigation setup)
 
         }
+        //what ı need to do ?
+        //firebase--->I connected
+        //after that writing codes for firebase ----> ı did not right now
+        //login things code for firebase --> ı did not
 
     }
 }
