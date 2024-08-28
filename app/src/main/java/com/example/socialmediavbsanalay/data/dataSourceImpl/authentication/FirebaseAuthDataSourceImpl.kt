@@ -2,6 +2,7 @@ package com.example.socialmediavbsanalay.data.dataSourceImpl.authentication
 
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -16,6 +17,9 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
         return try {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             Result.success(authResult.user)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            // This exception indicates the user does not exist
+            Result.failure(Exception("User not found"))
         } catch (e: Exception) {
             Result.failure(e)
         }

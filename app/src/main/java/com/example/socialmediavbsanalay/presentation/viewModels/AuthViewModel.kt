@@ -20,10 +20,11 @@ class AuthViewModel @Inject constructor(
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
-            //viewmodel içerisinde concurrent işlemleri yapmal için kullanılır.
             _authState.value = authInteractor.signIn(email, password)
         }
     }
+
+
 
     fun signUp(email: String, password: String) {
         viewModelScope.launch {
