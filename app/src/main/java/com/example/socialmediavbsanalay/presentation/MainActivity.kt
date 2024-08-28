@@ -16,10 +16,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
+        var xyz=true
         setContentView(view)
         if (savedInstanceState == null) {
             // Show ProgressBar
-            binding.progressBar.visibility = View.VISIBLE
+
 
             // Simulate loading (e.g., navigation setup)
 

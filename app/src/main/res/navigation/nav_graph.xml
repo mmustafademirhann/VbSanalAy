@@ -23,7 +23,7 @@
             android:id="@+id/action_signInFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
         <action
-            android:id="@+id/action_signInFragment_to_mainPageFragment2"
+            android:id="@+id/action_signInFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
     <fragment
@@ -35,5 +35,9 @@
         android:id="@+id/mainPageFragment"
         android:name="com.example.socialmediavbsanalay.presentation.MainPageFragment"
         android:label="fragment_main_page"
-        tools:layout="@layout/fragment_main_page" />
+        tools:layout="@layout/fragment_main_page" >
+        <action
+            android:id="@+id/action_mainPageFragment_to_signInFragment2"
+            app:destination="@id/signInFragment" />
+    </fragment>
 </navigation>

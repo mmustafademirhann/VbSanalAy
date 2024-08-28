@@ -40,14 +40,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30sp"
+                android:layout_marginTop="30dp"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/editTextText"
                     android:layout_width="wrap_content"
-                    android:layout_height="50sp"
-                    android:layout_marginRight="10sp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="10dp"
                     android:hint="Adınız"
 
                     android:textColorHint="@color/white"
@@ -60,8 +60,8 @@
                 <EditText
                     android:id="@+id/editTextText2"
                     android:layout_width="wrap_content"
-                    android:layout_height="50sp"
-                    android:layout_marginLeft="10sp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="10dp"
                     android:hint="Soyadınız"
                     android:textColorHint="@color/white"
                     android:layout_weight="1"
@@ -76,13 +76,14 @@
                 android:orientation="vertical"
                 android:layout_weight="3">
 
+
                 <EditText
                     android:id="@+id/etMail"
-                    android:layout_marginTop="20sp"
+                    android:layout_marginTop="20dp"
                     android:hint="Email/telefon numarası"
                     android:textColorHint="@color/white"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="50dp"
 
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
@@ -92,12 +93,12 @@
                 <EditText
                     android:id="@+id/editTextNumberPassword2"
 
-                    android:layout_marginTop="20sp"
+                    android:layout_marginTop="20dp"
                     android:hint="Şifre"
                     android:textColorHint="@color/white"
                     android:background="@drawable/rounded_edit_text"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="50dp"
                     android:ems="10"
                     android:inputType="numberPassword" />
 
@@ -111,45 +112,73 @@
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="numberPassword" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender"
+                    android:textStyle="bold"
+                    android:layout_marginTop="30dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp">
 
-
-                <RadioGroup
+                </TextView>
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_weight="3"
-                    >
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
 
-                    <RadioButton
-                        android:id="@+id/radio_male"
-                        style="@style/CustomRadioButton"
-                        android:layout_width="wrap_content"
+                    <RadioGroup
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Erkek"/>
-                         />
+                        android:orientation="horizontal"
 
-                    <RadioButton
-                        android:id="@+id/radio_female"
-                        style="@style/CustomRadioButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Kadın"/>
-                        />
+                        android:weightSum="3">
 
-                    <RadioButton
-                        android:id="@+id/radio_others"
-                        style="@style/CustomRadioButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Diğer.."/>
-                         />
-                </RadioGroup>
+                        <!-- Left aligned RadioButton -->
+                        <RadioButton
+                            android:layout_marginEnd="20dp"
+                            android:id="@+id/radio_male"
+
+                            style="@style/CustomRadioButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_gravity="start"
+                            android:text="Erkek"/>
+
+                        <!-- Center aligned RadioButton -->
+                        <RadioButton
+                            android:id="@+id/radio_others"
+                            android:layout_marginEnd="10dp"
+                            style="@style/CustomRadioButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_gravity="center"
+                            android:text="Diğer.."/>
+
+                        <!-- Right aligned RadioButton -->
+                        <RadioButton
+                            android:id="@+id/radio_female"
+                            android:layout_marginStart="10dp"
+                            style="@style/CustomRadioButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_gravity="end"
+                            android:text="Kadın"/>
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+
 
 
                 <Button
                     android:id="@+id/btnRegister"
-                    android:layout_width="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/drawble_fr_button"
                     android:text="Sign Up"/>
             </LinearLayout>
 

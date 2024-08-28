@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.presentation
 
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.os.Handler
@@ -22,7 +23,7 @@ class WelcomeFragment : Fragment() {
     private var _binding: FragmentWelcomeBinding? = null
     private val binding get() = _binding!!
 
-
+    private var isMoved=false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,14 +36,37 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val animatedLayout=binding.animatedConstraintLayout
+        val bacgImage=binding.fullscreenImage
+        animatedLayout.setOnClickListener{
+            animateLayout(animatedLayout)
+        }
+        bacgImage.setOnClickListener{
+            closeAnimateLayout(animatedLayout)
+        }
         binding.navigateButton.setOnClickListener {
             next(it)
         }
 
+
 	//I am confused
     }
+    private fun animateLayout(view: View) {
+        val translationY = if (isMoved) 0f else -100f
+        val animator = ObjectAnimator.ofFloat(view, "translationY", view.translationY, translationY)
+        animator.duration = 300 // Duration of the animation in milliseconds
+        animator.start()
 
+        // Update the state
+        isMoved = !isMoved
+    }
+    private fun closeAnimateLayout(view: View){
+        val animator = ObjectAnimator.ofFloat(view, "translationY", 0f, 100f)
+        animator.duration = 300 // Duration of the animation in milliseconds
+        animator.start()
+
+        isMoved = !isMoved
+    }
 
     override fun onResume() {
         super.onResume()

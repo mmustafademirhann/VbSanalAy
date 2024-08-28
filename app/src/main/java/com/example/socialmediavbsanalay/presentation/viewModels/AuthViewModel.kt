@@ -13,10 +13,15 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authInteractor: AuthInteractor
+
+
 ) : ViewModel() {
 
     private val _authState = MutableLiveData<Result<FirebaseUser?>>()
     val authState: LiveData<Result<FirebaseUser?>> get() = _authState
+    private val _signUpResult = MutableLiveData<Result<FirebaseUser?>>()
+    val signUpResult: LiveData<Result<FirebaseUser?>> get() = _signUpResult
+
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
@@ -28,7 +33,9 @@ class AuthViewModel @Inject constructor(
 
     fun signUp(email: String, password: String) {
         viewModelScope.launch {
-            _authState.value = authInteractor.signUp(email, password)
+            viewModelScope.launch {
+                _signUpResult.value = authInteractor.signUp(email, password)
+            }
         }
     }
 }

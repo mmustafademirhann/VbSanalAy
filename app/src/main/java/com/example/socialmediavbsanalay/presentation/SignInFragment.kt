@@ -36,6 +36,8 @@ class SignInFragment : Fragment() {
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
         val view=binding.root
         return view
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,6 +51,7 @@ class SignInFragment : Fragment() {
         authViewModel.authState.observe(viewLifecycleOwner){result->
             result.onSuccess { user ->
                 navigateToMainPage(view)
+
             }.onFailure { exception ->
                 if (exception.message == "User not found") {
                     Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
@@ -60,6 +63,7 @@ class SignInFragment : Fragment() {
         binding.createTextView.setOnClickListener{
             navigateToSignUp(it)
         }
+
     }
 
     override fun onResume() {
@@ -71,7 +75,7 @@ class SignInFragment : Fragment() {
         Navigation.findNavController(view).navigate(action)
     }
     fun navigateToMainPage(view:View){
-        val action =SignInFragmentDirections.actionSignInFragmentToMainPageFragment2()
+       val action =SignInFragmentDirections.actionSignInFragmentToMainPageFragment()
         Navigation.findNavController(view).navigate(action)
     }
     override fun onPause() {

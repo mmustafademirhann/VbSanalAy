@@ -8,7 +8,7 @@
     <style name="CustomRadioButton">
         <item name="android:button">@null</item>
         <item name="android:background">@drawable/custom_radio_button</item>
-        <item name="android:padding">10dp</item>
+        <item name="android:padding">18dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/radio_button_text_color</item> <!-- Use the ColorStateList here -->
         <item name="android:textSize">16sp</item>
