@@ -9,58 +9,67 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <!-- Search Bar -->
+    <LinearLayout
+        android:id="@+id/searchBarContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/drawble_fr_button"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Inside Search Bar -->
+        <!-- Add Search Bar content here -->
+        <EditText
+            android:id="@+id/editTextText3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Name" />
+    </LinearLayout>
+
+    <!-- Story RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/storyRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="150dp"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchBarContainer"
+        tools:listitem="@layout/story_template" />
 
-        <!-- Search Bar -->
-        <LinearLayout
-            android:id="@+id/searchBarContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+    <!-- Posts RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/postsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        tools:listitem="@layout/post_for_recycler"
+        app:layout_constraintBottom_toTopOf="@id/bottomBarContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/storyRecyclerView" />
 
-            <!-- Inside Search Bar -->
-            <!-- Add Search Bar content here -->
-        </LinearLayout>
+    <!-- Bottom Navigation with Center Button -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/bottomBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <!-- Story RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/storyRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/searchBarContainer" />
-
-        <!-- Posts RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/postsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomBarContainer"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/storyRecyclerView" />
-
-        <!-- Bottom Navigation with Center Button -->
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/bottomBarContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <!-- Bottom Navigation and FAB -->
-            <!-- Add Bottom Navigation and FAB content here -->
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
+        <!-- Bottom Navigation and FAB -->
+        <!-- Add Bottom Navigation and FAB content here -->
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

@@ -5,7 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
+import com.example.socialmediavbsanalay.databinding.FragmentMainPageBinding
+import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
+import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter
 
 /**
  * A simple [Fragment] subclass.
@@ -13,41 +17,51 @@ import com.example.socialmediavbsanalay.R
  * create an instance of this fragment.
  */
 class MainPageFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
-    }
+    private var _binding: FragmentMainPageBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var storyAdapter: StoryAdapter
+    private lateinit var postAdapter: PostAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_page, container, false)
+    ): View {
+        _binding = FragmentMainPageBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MainPageFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MainPageFragment().apply {
-                arguments = Bundle().apply {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-                }
-            }
+        storyAdapter = StoryAdapter()
+
+        binding.storyRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = storyAdapter
+        }
+        postAdapter=PostAdapter()
+
+        binding.postsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            adapter = postAdapter
+        }
+
+        // Load your stories into the adapter
+
+
+
+
+        val stories =storyAdapter.loadStories() // Implement this function to get your list of stories
+        storyAdapter.setStories(stories)
+
+        val posts =postAdapter.loadPosts() // Implement this function to get your list of stories
+        postAdapter.setPosts(posts)
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }
