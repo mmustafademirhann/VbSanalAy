@@ -1,14 +1,12 @@
-package com.example.socialmediavbsanalay.presentation
+package com.example.socialmediavbsanalay.presentation.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.socialmediavbsanalay.R
-import com.example.socialmediavbsanalay.databinding.FragmentSignInBinding
 import com.example.socialmediavbsanalay.databinding.FragmentSignUpBinding
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint

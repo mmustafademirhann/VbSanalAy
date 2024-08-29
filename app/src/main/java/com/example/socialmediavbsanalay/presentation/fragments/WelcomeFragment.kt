@@ -1,20 +1,13 @@
-package com.example.socialmediavbsanalay.presentation
+package com.example.socialmediavbsanalay.presentation.fragments
 
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.findNavController
-import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentWelcomeBinding
 
 class WelcomeFragment : Fragment() {
@@ -74,7 +67,7 @@ class WelcomeFragment : Fragment() {
     }
     fun next(view: View){
 
-        val action=WelcomeFragmentDirections.actionWelcomeFragmentToSignInFragment()
+        val action= WelcomeFragmentDirections.actionWelcomeFragmentToSignInFragment()
         Navigation.findNavController(view).navigate(action)
     }
     override fun onPause() {
