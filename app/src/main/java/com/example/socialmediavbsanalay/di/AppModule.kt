@@ -1,9 +1,14 @@
 package com.example.socialmediavbsanalay.di
 
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
+import com.example.socialmediavbsanalay.data.dataSource.post.StoryDataSource
 import com.example.socialmediavbsanalay.data.dataSourceImpl.authentication.FirebaseAuthDataSourceImpl
+import com.example.socialmediavbsanalay.data.dataSourceImpl.post.StoryDataSourceImpl
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
+import com.example.socialmediavbsanalay.data.repository.post.StoryRepository
+
 import com.example.socialmediavbsanalay.data.repositoryImpl.authentication.AuthRepositoryImpl
+import com.example.socialmediavbsanalay.data.repositoryImpl.post.StoryRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -35,5 +40,19 @@ object AppModule {
         firebaseAuthDataSource: FirebaseAuthDataSource
     ): AuthRepository {
         return AuthRepositoryImpl(firebaseAuthDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoryDataSource(): StoryDataSource {
+        return StoryDataSourceImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoryRepository(
+        storyDataSource: StoryDataSource
+    ): StoryRepository {
+        return StoryRepositoryImpl(storyDataSource)
     }
 }

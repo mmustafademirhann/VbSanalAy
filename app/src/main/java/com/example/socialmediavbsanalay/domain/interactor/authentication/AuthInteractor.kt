@@ -15,4 +15,5 @@ class AuthInteractor @Inject constructor(
     suspend fun signUp(email: String, password: String): Result<FirebaseUser?> {
         return authRepository.signUp(email, password)
     }
+
 }
