@@ -29,17 +29,17 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
         return listOf(
             //Story(imageResId = R.drawable.aysegulmustafa, username = "user1"),
 
+            Post(imageResId = R.drawable.kaydol, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
+            Post(imageResId = R.drawable.family, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
+            Post(imageResId = R.drawable.ic_launcher_background, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
+            Post(imageResId = R.drawable.rainy_minecraft, username = "user1" ),
             Post(imageResId = R.drawable.aysegulmustafa, username = "user1" ),
 
 

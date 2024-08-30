@@ -12,12 +12,13 @@
         android:layout_height="wrap_content"
         android:background="@drawable/elipseforstory"
         >
-        <ImageView
-            android:id="@+id/storyImageView"
+        <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="60dp"
+            android:id="@+id/storyImageView"
             android:layout_height="60dp"
             android:layout_margin="4dp"
-            android:background="@drawable/shin"
+            android:src="@drawable/shin"
+            app:shapeAppearanceOverlay="@style/CircularImageView"
             android:scaleType="centerCrop"/>
 
     </LinearLayout>

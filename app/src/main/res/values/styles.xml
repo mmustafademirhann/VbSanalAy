@@ -13,4 +13,12 @@
         <item name="android:textColor">@color/radio_button_text_color</item> <!-- Use the ColorStateList here -->
         <item name="android:textSize">16sp</item>
     </style>
+    <style name="CircularImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+    <style name="CircularImageViewTwo">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">70%</item>
+    </style>
 </resources>
