@@ -59,7 +59,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/storyRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="105dp"
+        android:layout_height="118dp"
         android:layout_marginTop="15dp"
         android:orientation="horizontal"
         android:paddingTop="8dp"
@@ -106,7 +106,11 @@
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginLeft="5dp"
+            android:text="+"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_header"
             android:background="@drawable/ekle"
+            android:backgroundTintMode="add"
             >
 
 
@@ -117,11 +121,52 @@
             android:layout_height="55dp"
             android:layout_gravity="bottom|center"
             android:background="@drawable/bottombartwo"
+            android:orientation="horizontal"
+            android:weightSum="5">  <!-- Set weightSum to 5 for equal distribution -->
 
+            <!-- First ImageView on the left -->
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="0dp"
+                android:layout_marginTop="18dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/homeicon" />
 
-            >
+            <!-- Second ImageView on the left -->
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="0dp"
+                android:layout_marginTop="18dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/messagetwoicon" />
 
+            <!-- Empty space in the middle -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <!-- First ImageView on the right -->
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="0dp"
+                android:layout_marginTop="18dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/usericon" />
+
+            <!-- Second ImageView on the right -->
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="0dp"
+                android:layout_marginTop="18dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/homeicon" />
         </LinearLayout>
+
     </FrameLayout>
 
 

@@ -19,6 +19,7 @@
     </style>
     <style name="CircularImageViewTwo">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">70%</item>
+        <item name="cornerSize">11%</item>
     </style>
+
 </resources>

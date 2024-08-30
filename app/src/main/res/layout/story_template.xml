@@ -13,9 +13,9 @@
         android:background="@drawable/elipseforstory"
         >
         <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="60dp"
+            android:layout_width="70dp"
             android:id="@+id/storyImageView"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:layout_margin="4dp"
             android:src="@drawable/shin"
             app:shapeAppearanceOverlay="@style/CircularImageView"
@@ -29,8 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Username"
-        android:textSize="12sp"
-        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_medium_small"
+        android:textColor="@android:color/white"
         android:gravity="center"/>
 
 </LinearLayout>
