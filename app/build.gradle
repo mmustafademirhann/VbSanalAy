@@ -74,8 +74,21 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
 
     implementation("com.google.firebase:firebase-auth")
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    kapt 'com.github.bumptech.glide:compiler:4.15.1'
+
+    //COUROTİNES
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2"
+
+    //ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1" 
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
 }
 kapt {
     correctErrorTypes true
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'
+

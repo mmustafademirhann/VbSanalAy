@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/signup"
-    tools:context=".presentation.fragments.MainPageFragment">
+    tools:context=".presentation.fragments.MessageFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
 
     <!-- Search Bar -->
     <LinearLayout
-        android:id="@+id/searchBarContainer"
+        android:id="@+id/searchBarContainerMs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
@@ -32,7 +32,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editTextText3"
+                android:id="@+id/editTextText3Ms"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginRight="10dp"
@@ -48,7 +48,7 @@
 
 
         <ImageView
-            android:id="@+id/imageView5"
+            android:id="@+id/imageView5Ms"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -57,7 +57,7 @@
 
     <!-- Story RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/storyRecyclerView"
+        android:id="@+id/storyRecyclerViewMs"
         android:layout_width="match_parent"
         android:layout_height="118dp"
         android:layout_marginTop="15dp"
@@ -65,7 +65,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchBarContainer"
+        app:layout_constraintTop_toBottomOf="@id/searchBarContainerMs"
         tools:listitem="@layout/story_template" />
 
     <!-- Posts RecyclerView -->
@@ -73,14 +73,14 @@
         android:id="@+id/postsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:listitem="@layout/post_for_recycler"
-        app:layout_constraintBottom_toTopOf="@id/bottomBarContainer"
+        tools:listitem="@layout/message_item"
+        app:layout_constraintBottom_toTopOf="@id/bottomBarContainerMs"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/storyRecyclerView" />
+        app:layout_constraintTop_toBottomOf="@id/storyRecyclerViewMs" />
 
     <!-- Bottom Navigation with Center Button -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/bottomBarContainer"
+        android:id="@+id/bottomBarContainerMs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -102,7 +102,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/addButton"
+            android:id="@+id/addButtonMs"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
@@ -127,7 +127,7 @@
 
             <!-- First ImageView on the left -->
             <ImageView
-                android:id="@+id/homeImageView"
+                android:id="@+id/homeImageViewM"
                 android:layout_width="0dp"
                 android:layout_marginTop="18dp"
                 android:layout_height="wrap_content"
@@ -136,13 +136,12 @@
 
             <!-- Second ImageView on the left -->
             <ImageView
-                android:id="@+id/messagetwoicon"
+                android:id="@+id/messageImageViewM"
                 android:layout_width="0dp"
-
                 android:layout_marginTop="18dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/messagevector" />
+                android:src="@drawable/messagetwoicon" />
 
             <!-- Empty space in the middle -->
             <View
@@ -152,7 +151,7 @@
 
             <!-- First ImageView on the right -->
             <ImageView
-                android:id="@+id/userImageView"
+                android:id="@+id/userImageViewM"
                 android:layout_width="0dp"
                 android:layout_marginTop="18dp"
                 android:layout_height="wrap_content"
@@ -161,7 +160,7 @@
 
             <!-- Second ImageView on the right -->
             <ImageView
-                android:id="@+id/notificationImageView"
+                android:id="@+id/notificationImageViewM"
                 android:layout_width="0dp"
                 android:layout_marginTop="18dp"
                 android:layout_height="wrap_content"
