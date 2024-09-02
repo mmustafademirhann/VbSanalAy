@@ -43,6 +43,7 @@
         <EditText
             android:id="@+id/editTextNumberPassword"
             android:layout_width="300sp"
+            android:textColor="@color/white"
             android:layout_height="50sp"
             android:layout_marginStart="30sp"
             android:layout_marginTop="16dp"
@@ -60,6 +61,7 @@
             android:id="@+id/editTextMail"
             android:layout_width="300sp"
             android:layout_height="50sp"
+            android:textColor="@color/white"
             android:layout_marginStart="30sp"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="30sp"

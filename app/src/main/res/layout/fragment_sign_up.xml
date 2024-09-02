@@ -46,6 +46,7 @@
                 <EditText
                     android:id="@+id/editTextText"
                     android:layout_width="wrap_content"
+                    android:textColor="@color/white"
                     android:layout_height="50dp"
                     android:layout_marginRight="10dp"
                     android:hint="Adınız"
@@ -59,6 +60,7 @@
 
                 <EditText
                     android:id="@+id/editTextText2"
+                    android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_marginLeft="10dp"
@@ -79,6 +81,7 @@
 
                 <EditText
                     android:id="@+id/etMail"
+                    android:textColor="@color/white"
                     android:layout_marginTop="20dp"
                     android:hint="Email/telefon numarası"
                     android:textColorHint="@color/white"
@@ -92,7 +95,7 @@
 
                 <EditText
                     android:id="@+id/editTextNumberPassword2"
-
+                    android:textColor="@color/white"
                     android:layout_marginTop="20dp"
                     android:hint="Şifre"
                     android:textColorHint="@color/white"
@@ -105,6 +108,7 @@
                 <EditText
                     android:id="@+id/editTextNumberPassword3"
                     android:layout_marginTop="20sp"
+                    android:textColor="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="50sp"
                     android:hint="Şifre tekrar"
