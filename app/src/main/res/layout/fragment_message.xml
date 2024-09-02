@@ -56,11 +56,16 @@
     </LinearLayout>
 
     <!-- Story RecyclerView -->
+
+    <!-- Posts RecyclerView -->
+
+    <!-- Bottom Navigation with Center Button -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/storyRecyclerViewMs"
         android:layout_width="match_parent"
         android:layout_height="118dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -68,17 +73,17 @@
         app:layout_constraintTop_toBottomOf="@id/searchBarContainerMs"
         tools:listitem="@layout/story_template" />
 
-    <!-- Posts RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/postsRecyclerView"
+        android:id="@+id/messageItemRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:listitem="@layout/message_item"
+        android:layout_marginStart="84dp"
         app:layout_constraintBottom_toTopOf="@id/bottomBarContainerMs"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/storyRecyclerViewMs" />
+        app:layout_constraintTop_toBottomOf="@id/storyRecyclerViewMs"
+        app:layout_constraintVertical_bias="0.0"
+        tools:listitem="@layout/message_item" />
 
-    <!-- Bottom Navigation with Center Button -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/bottomBarContainerMs"
         android:layout_width="match_parent"
