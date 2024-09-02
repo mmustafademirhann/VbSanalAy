@@ -13,24 +13,11 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : FirebaseAuthDataSource {
 
-    override suspend fun signIn(email: String, password: String): Result<FirebaseUser?> {
-        return try {
-            val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            Result.success(authResult.user)
-        } catch (e: FirebaseAuthInvalidUserException) {
-            // This exception indicates the user does not exist
-            Result.failure(Exception("User not found"))
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    override suspend fun signIn(email: String, password: String): FirebaseUser? {
+        return firebaseAuth.signInWithEmailAndPassword(email, password).await().user
     }
 
-    override suspend fun signUp(email: String, password: String): Result<FirebaseUser?> {
-        return try {
-            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            Result.success(authResult.user)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    override suspend fun signUp(email: String, password: String): FirebaseUser? {
+        return firebaseAuth.createUserWithEmailAndPassword(email, password).await().user
     }
 }
