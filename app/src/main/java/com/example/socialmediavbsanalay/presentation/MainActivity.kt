@@ -31,4 +31,28 @@ class MainActivity : AppCompatActivity() {
         //login things code for firebase --> ı did not
 
     }
+    override fun onBackPressed() {
+        val navController = findNavController(R.id.fragmentContainerView)
+        val currentFragment = navController.currentDestination?.id
+
+        when (currentFragment) {
+            R.id.mainPageFragment,
+            -> {
+                // Exit the app if we are on the MainPageFragment, SignInFragment, or SignUpFragment
+                finish()
+            }
+            R.id.messageFragment,
+            R.id.notificationBarFragment,
+            R.id.userProfileFragment,
+            R.id.galleryFragment,
+            R.id.welcomeFragment -> {
+                // Navigate back to the MainPageFragment from other fragments
+                navController.navigate(R.id.mainPageFragment)
+            }
+            else -> {
+                // If the fragment is not explicitly handled, call the default back press behavior
+                super.onBackPressed()
+            }
+        }
+    }
 }
