@@ -5,6 +5,15 @@
     android:layout_height="match_parent"
     android:background="@drawable/signup"
     tools:context=".presentation.fragments.UserProfileFragment">
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Profilindesiniz"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="50dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_header"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,13 +75,32 @@
                     android:layout_weight="1" />
 
                 <!-- First ImageView on the right -->
-                <ImageView
-                    android:id="@+id/userIconU"
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
                     android:layout_weight="1"
-                    android:src="@drawable/usericon" />
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/userIconU"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/usericon" />
+
+                    <!-- Line below the notification icon -->
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:elevation="60dp"
+                        android:shadowColor="#635A8F"
+                        android:shadowDx="1"
+                        android:shadowDy="3"
+                        android:layout_marginTop="4dp"
+                        android:background="#635A8F" />
+                </LinearLayout>
 
                 <!-- Second ImageView on the right -->
                 <ImageView
