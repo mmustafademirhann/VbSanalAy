@@ -41,9 +41,8 @@ class MainPageFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var postAdapter: PostAdapter
-    private val REQUEST_IMAGE_CAPTURE = 1
-    private val PICK_IMAGE = 2
-    private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 100
+
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -64,6 +63,9 @@ class MainPageFragment : Fragment() {
 
     companion object {
         private const val GALLERY_REQUEST_CODE = 123
+        //private val REQUEST_IMAGE_CAPTURE = 1
+        //private val PICK_IMAGE = 2
+        //private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 100
     }
 
     override fun onCreateView(
@@ -77,7 +79,15 @@ class MainPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).showBottomBar()
+        adapterFunctions()
 
+
+        // Load your stories into the adapter
+
+
+
+    }
+    private fun adapterFunctions() {
         storyAdapter = StoryAdapter()
 
         binding.storyRecyclerView.apply {
@@ -90,11 +100,6 @@ class MainPageFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = postAdapter
         }
-
-
-        // Load your stories into the adapter
-
-
         val stories =
             storyAdapter.loadStories() // Implement this function to get your list of stories
         storyAdapter.setStories(stories)
@@ -102,7 +107,6 @@ class MainPageFragment : Fragment() {
         val posts = postAdapter.loadPosts() // Implement this function to get your list of stories
         postAdapter.setPosts(posts)
     }
-
 
 
     // ContextCompat.checkSelfPermission(

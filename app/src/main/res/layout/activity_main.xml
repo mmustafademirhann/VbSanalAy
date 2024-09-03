@@ -67,9 +67,11 @@
 
                                 <!-- Line below the notification icon -->
                                 <ImageView
+                                    android:id="@+id/homeline"
                                     android:layout_width="match_parent"
                                     android:layout_height="2dp"
                                     android:elevation="60dp"
+                                    android:visibility="visible"
                                     android:shadowColor="#635A8F"
                                     android:shadowDx="1"
                                     android:shadowDy="3"
@@ -79,14 +81,33 @@
 
 
                         <!-- Second ImageView on the left -->
-                        <ImageView
-                            android:id="@+id/messagetwoicon"
+                        <LinearLayout
                             android:layout_width="0dp"
-
-                            android:layout_marginTop="18dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
                             android:layout_weight="1"
-                            android:src="@drawable/messagevector" />
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:id="@+id/messagetwoicon"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/messagevector" />
+
+                                <!-- Line below the notification icon -->
+                                <ImageView
+                                    android:id="@+id/messageline"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:elevation="60dp"
+                                    android:shadowColor="#635A8F"
+                                    android:shadowDx="1"
+                                    android:shadowDy="3"
+                                    android:visibility="invisible"
+                                    android:layout_marginTop="4dp"
+                                    android:background="#635A8F" />
+                        </LinearLayout>
 
                         <!-- Empty space in the middle -->
                         <View
@@ -95,22 +116,62 @@
                             android:layout_weight="1" />
 
                         <!-- First ImageView on the right -->
-                        <ImageView
-                            android:id="@+id/userImageView"
+                        <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_marginTop="18dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
                             android:layout_weight="1"
-                            android:src="@drawable/usericon" />
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:id="@+id/userImageView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/usericon" />
+
+                                <!-- Line below the notification icon -->
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:id="@+id/userline"
+                                    android:elevation="60dp"
+                                    android:shadowColor="#635A8F"
+                                    android:shadowDx="1"
+                                    android:shadowDy="3"
+                                    android:visibility="invisible"
+                                    android:layout_marginTop="4dp"
+                                    android:background="#635A8F" />
+                        </LinearLayout>
 
                         <!-- Second ImageView on the right -->
-                        <ImageView
-                            android:id="@+id/notificationImageView"
+                        <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_marginTop="18dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
                             android:layout_weight="1"
-                            android:src="@drawable/notificationbarview" />
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                                <ImageView
+                                    android:id="@+id/notificationImageView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/notificationbarview" />
+
+                                <!-- Line below the notification icon -->
+                                <ImageView
+                                    android:id="@+id/notificationline"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:elevation="60dp"
+                                    android:shadowColor="#635A8F"
+                                    android:visibility="invisible"
+                                    android:shadowDx="1"
+                                    android:shadowDy="3"
+                                    android:layout_marginTop="4dp"
+                                    android:background="#635A8F" />
+                        </LinearLayout>
                 </LinearLayout>
 
         </FrameLayout>
