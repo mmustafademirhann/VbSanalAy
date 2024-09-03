@@ -50,15 +50,7 @@ class MessageFragment : Fragment() {
         }
 
 
-        binding.homeImageViewM.setOnClickListener {
-            navigateToMain(it)
-        }
-        binding.notificationImageViewM.setOnClickListener {
-            navigateToNotification(it)
-        }
-        binding.userImageViewM.setOnClickListener {
-            navigateToUserProfile(it)
-        }
+
         binding.messageItemRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = messageItemAdaptor
@@ -73,18 +65,6 @@ class MessageFragment : Fragment() {
             messageItemAdaptor.loadMessages()
         messageItemAdaptor.setMessageItems(messages)
 
-    }
-    fun navigateToMain(view: View){
-        val action =MessageFragmentDirections.actionMessageFragmentToMainPageFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToUserProfile(view: View){
-        val action =MessageFragmentDirections.actionMessageFragmentToUserProfileFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToNotification(view: View){
-        val action =MessageFragmentDirections.actionMessageFragmentToNotificationBarFragment()
-        Navigation.findNavController(view).navigate(action)
     }
 
 }

@@ -34,27 +34,7 @@ class UserProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.homeIconU.setOnClickListener {
-            navigateToMain(it)
-        }
-        binding.notificationU.setOnClickListener {
-            navigateToNotification(it)
-        }
-        binding.messageIconU.setOnClickListener {
-            navigateToMessage(it)
-        }
     }
-    fun navigateToMain(view: View){
-        val action =UserProfileFragmentDirections.actionUserProfileFragmentToMainPageFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToMessage(view: View){
-        val action =UserProfileFragmentDirections.actionUserProfileFragmentToMessageFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToNotification(view: View){
-        val action =UserProfileFragmentDirections.actionUserProfileFragmentToNotificationBarFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
+
 
 }

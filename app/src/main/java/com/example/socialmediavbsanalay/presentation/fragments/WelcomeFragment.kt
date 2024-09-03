@@ -9,6 +9,7 @@ import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.socialmediavbsanalay.databinding.FragmentWelcomeBinding
+import com.example.socialmediavbsanalay.presentation.MainActivity
 
 class WelcomeFragment : Fragment() {
 
@@ -29,6 +30,7 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).hideBottomBar()
         val animatedLayout=binding.animatedConstraintLayout
         val bacgImage=binding.fullscreenImage
         animatedLayout.setOnClickListener{

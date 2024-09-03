@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.socialmediavbsanalay.databinding.FragmentSignUpBinding
+import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,6 +37,7 @@ class SignUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).hideBottomBar()
         authViewModel.signUpResult.observe(viewLifecycleOwner){result->
             result.fold(
                 onSuccess = { user ->

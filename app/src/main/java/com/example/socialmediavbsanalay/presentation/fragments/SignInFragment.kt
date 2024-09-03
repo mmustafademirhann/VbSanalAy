@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.example.socialmediavbsanalay.databinding.FragmentSignInBinding
+import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +39,7 @@ class SignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        (activity as MainActivity).hideBottomBar()
         binding.signInButton.setOnClickListener{
             val email=binding.editTextMail.text.toString()
             val password=binding.editTextNumberPassword.text.toString()

@@ -31,30 +31,7 @@ class NotificationBarFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        binding.homeImageViewN.setOnClickListener {
-            navigateToMain(it)
-        }
-        binding.messageImageViewN.setOnClickListener {
-            navigateToMessage(it)
-        }
-        binding.userImageViewN.setOnClickListener {
-            navigateToUserProfile(it)
-        }
-    }
-    fun navigateToMain(view: View){
-        val action =NotificationBarFragmentDirections.actionNotificationBarFragmentToMainPageFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToUserProfile(view: View){
-        val action =NotificationBarFragmentDirections.actionNotificationBarFragmentToUserProfileFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToMessage(view: View){
-        val action =NotificationBarFragmentDirections.actionNotificationBarFragmentToMessageFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
+
 
 }

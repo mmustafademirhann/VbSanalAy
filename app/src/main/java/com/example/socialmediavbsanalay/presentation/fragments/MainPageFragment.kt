@@ -26,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.Manifest
 import android.content.Context
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.socialmediavbsanalay.presentation.MainActivity
 
 
 /**
@@ -75,6 +76,7 @@ class MainPageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).showBottomBar()
 
         storyAdapter = StoryAdapter()
 
@@ -88,20 +90,7 @@ class MainPageFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = postAdapter
         }
-        binding.addButton.setOnClickListener {
 
-            checkPermission()
-
-        }
-        binding.messagetwoicon.setOnClickListener {
-            navigateToSomeMessage(it)
-        }
-        binding.userImageView.setOnClickListener {
-            navigateToUserProfile(it)
-        }
-        binding.notificationImageView.setOnClickListener {
-            navigateToNotificationBar(it)
-        }
 
         // Load your stories into the adapter
 
@@ -113,18 +102,7 @@ class MainPageFragment : Fragment() {
         val posts = postAdapter.loadPosts() // Implement this function to get your list of stories
         postAdapter.setPosts(posts)
     }
-    fun navigateToSomeMessage(view: View){
-        val action =MainPageFragmentDirections.actionMainPageFragmentToMessageFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToNotificationBar(view: View){
-        val action =MainPageFragmentDirections.actionMainPageFragmentToNotificationBarFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
-    fun navigateToUserProfile(view: View){
-        val action =MainPageFragmentDirections.actionMainPageFragmentToUserProfileFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
+
 
 
     // ContextCompat.checkSelfPermission(
