@@ -27,10 +27,7 @@ class WelcomeFragment : Fragment() {
         _binding = FragmentWelcomeBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).hideBottomBar()
+    private fun intiClickListeners(){
         val animatedLayout=binding.animatedConstraintLayout
         val bacgImage=binding.fullscreenImage
         animatedLayout.setOnClickListener{
@@ -42,7 +39,12 @@ class WelcomeFragment : Fragment() {
         binding.navigateButton.setOnClickListener {
             next(it)
         }
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).hideBottomBar()
 
+        intiClickListeners()
 
 	//I am confused
     }
