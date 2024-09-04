@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.WelcomeFragment">
+    tools:context=".presentation.fragments.WelcomeFragment">
 
      <ImageView
          android:id="@+id/fullscreenImage"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
 
          android:contentDescription="@string/app_name"
          android:scaleType="centerCrop"
@@ -17,6 +17,7 @@
 
      <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
+         android:id="@+id/animatedConstraintLayout"
          android:layout_height="350sp"
          android:layout_gravity="bottom"
          android:layout_marginBottom="-30sp"
@@ -26,13 +27,65 @@
               android:id="@+id/navigateButton"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_marginBottom="70dp"
-              android:background="@drawable/get_started"
+              android:layout_marginBottom="100dp"
+              android:background="@drawable/drawble_fr_button"
               android:text="Hadi başlayalım :)"
+              android:textStyle="bold"
               android:textSize="22sp"
               app:layout_constraintBottom_toBottomOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
               app:layout_constraintStart_toStartOf="parent" />
+
+          <TextView
+              android:id="@+id/textView"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="104dp"
+              android:layout_marginTop="79dp"
+              android:layout_marginEnd="104dp"
+              android:elevation="60dp"
+              android:shadowColor="#80000000"
+              android:shadowDx="3"
+              android:shadowDy="1"
+              android:shadowRadius="10"
+              android:text="Hoşgeldiniz!"
+              android:textAlignment="center"
+              android:textColor="@color/white"
+              android:textSize="35sp"
+              android:textStyle="bold"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent" />
+
+          <TextView
+              android:id="@+id/textView2"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="114dp"
+              android:layout_marginEnd="114dp"
+              android:elevation="60dp"
+              android:shadowColor="#80000000"
+              android:shadowDx="3"
+              android:shadowDy="1"
+              android:shadowRadius="10"
+              android:text="ile harika zamanlar geçirin"
+              android:textColor="@color/white"
+              android:textStyle="italic"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+
+          <ImageView
+              android:id="@+id/imageView4"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="135dp"
+              android:layout_marginTop="5dp"
+              android:layout_marginEnd="135dp"
+              android:src="@drawable/sanal_icon"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/textView" />
 
      </androidx.constraintlayout.widget.ConstraintLayout>
 

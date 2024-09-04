@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/welcomeFragment"
-        android:name="com.example.socialmediavbsanalay.presentation.WelcomeFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.fragments.WelcomeFragment"
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome" >
         <action
@@ -16,16 +16,24 @@
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
-        android:name="com.example.socialmediavbsanalay.presentation.SignInFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.fragments.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
         <action
             android:id="@+id/action_signInFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.socialmediavbsanalay.presentation.SignUpFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.fragments.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" />
+    <fragment
+        android:id="@+id/mainPageFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.fragments.MainPageFragment"
+        android:label="fragment_main_page"
+        tools:layout="@layout/fragment_main_page" />
 </navigation>

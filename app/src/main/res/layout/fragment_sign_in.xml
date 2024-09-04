@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/signup"
-    tools:context=".presentation.SignInFragment">
+    tools:context=".presentation.fragments.SignInFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,6 +43,7 @@
         <EditText
             android:id="@+id/editTextNumberPassword"
             android:layout_width="300sp"
+            android:textColor="@color/white"
             android:layout_height="50sp"
             android:layout_marginStart="30sp"
             android:layout_marginTop="16dp"
@@ -60,6 +61,7 @@
             android:id="@+id/editTextMail"
             android:layout_width="300sp"
             android:layout_height="50sp"
+            android:textColor="@color/white"
             android:layout_marginStart="30sp"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="30sp"
@@ -74,7 +76,7 @@
             app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/signInButton"
             android:layout_width="297sp"
             android:layout_height="51sp"
             android:layout_marginStart="30dp"
@@ -98,7 +100,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button3">
+            app:layout_constraintTop_toBottomOf="@+id/signInButton">
 
             <TextView
                 android:id="@+id/accountTextV"

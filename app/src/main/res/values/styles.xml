@@ -3,5 +3,23 @@
     <style name="Widget.Theme.SocialMediaVbSanalAy.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+
     </style>
+    <style name="CustomRadioButton">
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/custom_radio_button</item>
+        <item name="android:padding">18dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/radio_button_text_color</item> <!-- Use the ColorStateList here -->
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="CircularImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+    <style name="CircularImageViewTwo">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">11%</item>
+    </style>
+
 </resources>
