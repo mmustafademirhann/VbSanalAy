@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             accessGallery()
         } else {
             // İzin reddedildiğinde kullanıcıya bilgilendirme yap
-            Toast.makeText(requireContext(), "İzin gerekli!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "İzin gerekli!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         var xyz=true
         setContentView(view)
-
+       // FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         clickEvents()
 
     }
@@ -77,6 +77,11 @@ class MainActivity : AppCompatActivity() {
             setVisibilityForLine(binding.notificationline)
             switchFragment(NotificationBarFragment())
         }
+        binding.addButton.setOnClickListener{
+
+            checkPermission()
+            accessGallery()
+        }
 
     }
     private fun setVisibilityForLine(visibleLine: View) {
@@ -92,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             // Android 13 ve üstü için izin kontrolü
             when {
                 ContextCompat.checkSelfPermission(
-                    requireContext(),
+                    this,
                     Manifest.permission.READ_MEDIA_IMAGES
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     // İzin verilmişse galeriye eriş
@@ -113,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             // Android 12 ve öncesi için izin kontrolü
             when {
                 ContextCompat.checkSelfPermission(
-                    requireContext(),
+                    this,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     // İzin verilmişse galeriye eriş
@@ -136,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun explainPermission() {
         // Kullanıcıya iznin neden gerektiğini açıklayan bir dialog göster
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(this)
             .setTitle("İzin Gerekli")
             .setMessage("Bu uygulamanın fotoğraflara erişebilmesi için izne ihtiyacı var.")
             .setPositiveButton("Tamam") { _, _ ->
