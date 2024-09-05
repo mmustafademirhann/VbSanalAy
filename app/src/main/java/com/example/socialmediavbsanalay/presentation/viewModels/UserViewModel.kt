@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialmediavbsanalay.data.repositoryImpl.user.UserRepositoryImpl
+import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.DataSnapshot
