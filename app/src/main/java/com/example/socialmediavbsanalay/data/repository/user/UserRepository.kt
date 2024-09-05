@@ -4,6 +4,7 @@ import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.Query
 
 interface UserRepository {
-    fun getUsers(callback: (List<User>) -> Unit)
-    fun searchUsersByName(name: String): Query
+    suspend fun addUser(user: User)
+    suspend fun getUser(userId: String): User?
+    suspend fun getAllUsers(): List<User>
 }

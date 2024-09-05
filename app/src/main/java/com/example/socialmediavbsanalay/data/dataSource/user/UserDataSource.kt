@@ -1,7 +1,9 @@
 package com.example.socialmediavbsanalay.data.dataSource.user
 
-import com.google.firebase.database.Query
+import com.example.socialmediavbsanalay.domain.model.User
 
 interface UserDataSource {
-    fun searchUsersByName(name: String): Query
+    suspend fun addUser(user: User)
+    suspend fun getUser(userId: String): User?
+    suspend fun getAllUsers(): List<User>
 }

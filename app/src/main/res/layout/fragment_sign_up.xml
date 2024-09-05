@@ -44,7 +44,7 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/editTextText"
+                    android:id="@+id/etName"
                     android:layout_width="wrap_content"
                     android:textColor="@color/white"
                     android:layout_height="50dp"
@@ -59,7 +59,7 @@
                      />
 
                 <EditText
-                    android:id="@+id/editTextText2"
+                    android:id="@+id/etSurName"
                     android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
@@ -133,6 +133,7 @@
                     android:orientation="horizontal">
 
                     <RadioGroup
+                        android:id="@+id/radio_genders"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"

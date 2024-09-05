@@ -34,12 +34,12 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
         binding.searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Observe users LiveData
-        userViewModel.users.observe(viewLifecycleOwner, Observer { users ->
+        userViewModel.usersList.observe(viewLifecycleOwner, Observer { users ->
             userAdapter.updateUsers(users)
         })
 
         // Load users
-        userViewModel.loadUsers()
+        userViewModel.fetchAllUsers()
 
         // Set up search functionality
         binding.searchEditText.addTextChangedListener(object : TextWatcher {
@@ -47,7 +47,10 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let {
-                    userViewModel.searchUsersByName(it.toString())
+                    val filteredUsers = userViewModel.usersList.value?.filter { user ->
+                        user.name.contains(it, ignoreCase = true)
+                    }
+                    userAdapter.updateUsers(filteredUsers ?: emptyList())
                 }
             }
 
