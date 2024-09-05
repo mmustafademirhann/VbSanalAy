@@ -25,7 +25,7 @@ class SignUpFragment : Fragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
-    private val database = FirebaseDatabase.getInstance().reference
+    private val database = FirebaseDatabase.getInstance("https://edittext16-default-rtdb.europe-west1.firebasedatabase.app").reference
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
