@@ -13,4 +13,12 @@ class CreateUserRepositoryImpl(private val createUserDataSource: CreateUserDataS
             Result.failure(e)
         }
     }
+
+    override suspend fun checkIfUserExists(email: String): Boolean {
+        return try {
+            createUserDataSource.checkIfUserExists(email)
+        } catch (e: Exception) {
+            false // Return false if any exception occurs during the check
+        }
+    }
 }

@@ -28,9 +28,9 @@ class SignUpFragment : Fragment() {
     val myRef = database.getReference("message")
 
     val user = hashMapOf(
-        "first" to "Ada",
-        "last" to "Lovelace",
-        "born" to 1815,
+        "first" to "d",
+        "last" to "d",
+        "born" to 2,
     )
 
     private val authViewModel: AuthViewModel by viewModels()
@@ -72,9 +72,18 @@ class SignUpFragment : Fragment() {
                 binding.etMail.text.toString(),
                 binding.editTextNumberPassword2.text.toString()
             )
-            authViewModel.createUser()
+            val name=binding.etName.text.toString()
+            val surName=binding.etSurName.text.toString()
+            val email=binding.etMail.text.toString()
+            val genders = when (binding.radioGenders.checkedRadioButtonId) {
+                binding.radioMale.id -> "Male"
+                binding.radioFemale.id -> "Female"
+                binding.radioOthers.id -> "Other"
+                else -> "Not Selected" // In case no radio button is selected
+            }
+            authViewModel.createUser(name,surName,email,genders)
 
-            myRef.setValue("Hello, World!").addOnSuccessListener {
+            myRef.setValue("Hello!").addOnSuccessListener {
                 Toast.makeText(requireContext(), "Sucess", Toast.LENGTH_SHORT).show()
             }.addOnFailureListener { e->
                 Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()

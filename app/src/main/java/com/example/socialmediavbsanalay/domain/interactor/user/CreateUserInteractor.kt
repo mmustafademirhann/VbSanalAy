@@ -7,4 +7,7 @@ class CreateUserInteractor(private val repository: CreateUserRepository) {
     suspend fun createUser(userId: String, user: User): Result<Unit> {
         return repository.createUser(userId, user)
     }
+    suspend fun checkIfUserExists(email: String): Boolean {
+        return repository.checkIfUserExists(email)
+    }
 }

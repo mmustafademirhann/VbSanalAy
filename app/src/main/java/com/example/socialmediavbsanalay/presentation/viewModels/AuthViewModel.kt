@@ -11,6 +11,7 @@ import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,16 +44,24 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun createUser() {
+
+
+    fun createUser(name:String,surName:String,email:String,gender:String) {
         viewModelScope.launch {
-            _createUserLiveData.value = createUserInteractor.createUser(
-                "UserID",
-                User(
-                    "Id",
-                    "Name",
-                    "Email"
+            val userExist=createUserInteractor.checkIfUserExists(email)
+            if (!userExist) {
+                val createResult = createUserInteractor.createUser(
+                    email.substringBefore("@"), // Use email prefix as user ID
+                    User(email.substringBefore("@"), name,surName,email,gender)
                 )
-            )
+                _createUserLiveData.value = createResult
+            } else {
+                _createUserLiveData.value = Result.failure(Exception("User already exists"))
+            }
+
+
+
         }
     }
+
 }

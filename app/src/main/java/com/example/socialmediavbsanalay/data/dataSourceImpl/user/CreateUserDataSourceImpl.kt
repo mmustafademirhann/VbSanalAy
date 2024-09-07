@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.user
 
+import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,7 +14,7 @@ class CreateUserDataSourceImpl @Inject constructor(
 ) : CreateUserDataSource {
 
     override suspend fun createUser(userId: String, user: User) = suspendCoroutine { continuation ->
-        firestore.collection("users").document(userId)
+        firestore.collection("user").document(userId)
             .set(user)
             .addOnSuccessListener {
                 continuation.resume(Unit)
@@ -22,4 +23,23 @@ class CreateUserDataSourceImpl @Inject constructor(
                 continuation.resumeWithException(exception)
             }
     }
+
+    override suspend fun checkIfUserExists(email: String): Boolean = suspendCoroutine { continuation ->
+        firestore.collection("user")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    continuation.resume(true)
+                    //I am using this also here ?
+                } else {
+                    continuation.resume(false)
+                }
+            }
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+    }
+
+
 }
