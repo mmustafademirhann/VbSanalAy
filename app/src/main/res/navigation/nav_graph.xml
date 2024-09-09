@@ -35,5 +35,14 @@
         android:id="@+id/mainPageFragment"
         android:name="com.example.socialmediavbsanalay.presentation.fragments.MainPageFragment"
         android:label="fragment_main_page"
-        tools:layout="@layout/fragment_main_page" />
+        tools:layout="@layout/fragment_main_page" >
+        <action
+            android:id="@+id/action_mainPageFragment_to_searchUserPostFragment"
+            app:destination="@id/searchUserPostFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchUserPostFragment"
+        android:name="com.example.socialmediavbsanalay.presentation.fragments.SearchUserPostFragment"
+        android:label="fragment_search_user_post"
+        tools:layout="@layout/fragment_search_user_post" />
 </navigation>

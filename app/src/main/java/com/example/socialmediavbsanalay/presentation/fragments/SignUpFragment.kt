@@ -23,7 +23,7 @@ class SignUpFragment : Fragment() {
 
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
-
+    var isİtAuth=false
     val database = Firebase.database("https://sanalay-b69cd-default-rtdb.europe-west1.firebasedatabase.app/")
     val myRef = database.getReference("message")
 
@@ -58,6 +58,7 @@ class SignUpFragment : Fragment() {
                 onSuccess = { user ->
                     if (user != null) {
                         Toast.makeText(context, "User created successfully", Toast.LENGTH_SHORT).show()
+                        isİtAuth=true
                     } else {
                         Toast.makeText(context, "User creation failed", Toast.LENGTH_SHORT).show()
                     }
@@ -81,13 +82,16 @@ class SignUpFragment : Fragment() {
                 binding.radioOthers.id -> "Other"
                 else -> "Not Selected" // In case no radio button is selected
             }
-            authViewModel.createUser(name,surName,email,genders)
+            if (isİtAuth){
+                authViewModel.createUser(name,surName,email,genders)
+            }
 
-            myRef.setValue("Hello!").addOnSuccessListener {
+
+            /*myRef.setValue("Hello!").addOnSuccessListener {
                 Toast.makeText(requireContext(), "Sucess", Toast.LENGTH_SHORT).show()
             }.addOnFailureListener { e->
                 Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-            }
+            }*/
         }
     }
 

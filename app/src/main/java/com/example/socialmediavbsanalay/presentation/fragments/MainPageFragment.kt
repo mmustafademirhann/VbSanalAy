@@ -42,7 +42,27 @@ class MainPageFragment : Fragment() {
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var postAdapter: PostAdapter
 
+    private fun navigateToSearchResultsFragment() {
+        val searchFragment = SearchUserPostFragment() // Your target fragment
+        val transaction = parentFragmentManager.beginTransaction()
 
+        // Set custom animations for the transaction
+        transaction.setCustomAnimations(
+            R.anim.fade_in,    // Enter animation for the new fragment
+            R.anim.fade_out,   // Exit animation for the current fragment
+            R.anim.fade_in,    // Pop enter animation (when coming back)
+            R.anim.fade_out    // Pop exit animation (when going back)
+        )
+
+        // Replace current fragment with the new fragment
+        transaction.replace(R.id.fragmentContainerView3, searchFragment)
+
+        // Add the transaction to back stack so user can go back
+        transaction.addToBackStack(null)
+
+        // Commit the transaction
+        transaction.commit()
+    }
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -73,6 +93,10 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
+        binding.editTextText3.setOnClickListener {
+            navigateToSearchResultsFragment()
+
+        }
         return binding.root
     }
 
