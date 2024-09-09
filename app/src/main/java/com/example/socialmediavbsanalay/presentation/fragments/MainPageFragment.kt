@@ -25,7 +25,10 @@ import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import android.Manifest
 import android.content.Context
+import android.util.Log
+import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.NavOptions
 import com.example.socialmediavbsanalay.presentation.MainActivity
 
 
@@ -43,26 +46,26 @@ class MainPageFragment : Fragment() {
     private lateinit var postAdapter: PostAdapter
 
     private fun navigateToSearchResultsFragment() {
-        val searchFragment = SearchUserPostFragment() // Your target fragment
-        val transaction = parentFragmentManager.beginTransaction()
+        try {
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.mainPageFragment) {
+                val navOptions = NavOptions.Builder()
+                    .setEnterAnim(R.anim.fade_in)
+                    .setExitAnim(R.anim.fade_out)
+                    .setPopEnterAnim(R.anim.fade_in)
+                    .setPopExitAnim(R.anim.fade_out)
+                    .build()
 
-        // Set custom animations for the transaction
-        transaction.setCustomAnimations(
-            R.anim.fade_in,    // Enter animation for the new fragment
-            R.anim.fade_out,   // Exit animation for the current fragment
-            R.anim.fade_in,    // Pop enter animation (when coming back)
-            R.anim.fade_out    // Pop exit animation (when going back)
-        )
-
-        // Replace current fragment with the new fragment
-        transaction.replace(R.id.fragmentContainerView3, searchFragment)
-
-        // Add the transaction to back stack so user can go back
-        transaction.addToBackStack(null)
-
-        // Commit the transaction
-        transaction.commit()
+                navController.navigate(R.id.action_mainPageFragment_to_searchUserPostFragment, null, navOptions)
+            } else {
+                Log.e("NavigationError", "NavController current destination is not mainPageFragment")
+            }
+        } catch (e: Exception) {
+            Log.e("NavigationError", "Navigation error: ${e.message}")
+        }
     }
+
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -93,10 +96,6 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
-        binding.editTextText3.setOnClickListener {
-            navigateToSearchResultsFragment()
-
-        }
         return binding.root
     }
 
@@ -104,8 +103,9 @@ class MainPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).showBottomBar()
         adapterFunctions()
-
-
+        binding.editTextText3.setOnClickListener {
+            navigateToSearchResultsFragment()
+        }
         // Load your stories into the adapter
 
 

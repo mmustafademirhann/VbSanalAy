@@ -27,6 +27,8 @@ import com.example.socialmediavbsanalay.presentation.fragments.MainPageFragment
 
 import com.example.socialmediavbsanalay.presentation.fragments.MessageFragment
 import com.example.socialmediavbsanalay.presentation.fragments.NotificationBarFragment
+import com.example.socialmediavbsanalay.presentation.fragments.SignInFragment
+import com.example.socialmediavbsanalay.presentation.fragments.SignUpFragment
 import com.example.socialmediavbsanalay.presentation.fragments.UserProfileFragment
 import com.example.socialmediavbsanalay.presentation.fragments.WelcomeFragment
 import com.google.firebase.Firebase
@@ -199,15 +201,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is MessageFragment ||
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is NotificationBarFragment ||
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is UserProfileFragment) {
-            switchFragment(MainPageFragment())
-        } else {
-            super.onBackPressed()
-        }
 
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, MainPageFragment(), MainPageFragment::class.java.simpleName)
+            .addToBackStack(null)
+            .commit()
+        when (currentFragment) {
+            is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
+                // If currently on one of these fragments, go back to MainPageFragment
+                switchFragment(MainPageFragment())
+            }
+            is MainPageFragment -> {
+                // If already on MainPageFragment, exit the app
+                finish()
+            }
+            is WelcomeFragment, is SignInFragment, is SignUpFragment -> {
+                // Let the default back behavior occur (close the app, or go back to previous activity)
+
+                    super.onBackPressed()
+
+            }
+            else -> {
+                // Default behavior for other fragments, or if no specific action is required
+                super.onBackPressed()
+            }
+        }
     }
+
 
 
     private fun accessGallery() {

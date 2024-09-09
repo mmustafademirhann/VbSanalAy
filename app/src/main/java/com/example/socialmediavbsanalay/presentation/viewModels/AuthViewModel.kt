@@ -18,8 +18,9 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val authInteractor: AuthInteractor,
     private val createUserInteractor: CreateUserInteractor
-) : ViewModel() {
 
+) : ViewModel() {
+    val isItAuth=false
     private val _authState = MutableLiveData<Result<FirebaseUser?>>()
     val authState: LiveData<Result<FirebaseUser?>> get() = _authState
     private val _signUpResult = MutableLiveData<Result<FirebaseUser?>>()
@@ -37,13 +38,34 @@ class AuthViewModel @Inject constructor(
 
 
     fun signUp(email: String, password: String) {
-        viewModelScope.launch {
+
             viewModelScope.launch {
                 _signUpResult.value = authInteractor.signUp(email, password)
             }
-        }
     }
 
+    fun signUpAndCreateUser(email: String, password: String, name: String, surName: String, gender: String) {
+        viewModelScope.launch {
+            val signUpResult = authInteractor.signUp(email, password)
+            _signUpResult.value = signUpResult
+
+            // If signUp was successful, create the user profile in the database
+            if (signUpResult.isSuccess) {
+                val userExist = createUserInteractor.checkIfUserExists(email)
+                if (!userExist) {
+                    val createResult = createUserInteractor.createUser(
+                        email.substringBefore("@"), // Use email prefix as user ID
+                        User(email.substringBefore("@"), name, surName, email, gender) // Assuming gender is an Int
+                    )
+                    _createUserLiveData.value = createResult
+                } else {
+                    _createUserLiveData.value = Result.failure(Exception("User already exists"))
+                }
+            } else {
+                _createUserLiveData.value = Result.failure(Exception("Sign-up failed"))
+            }
+        }
+    }
 
 
     fun createUser(name:String,surName:String,email:String,gender:String) {

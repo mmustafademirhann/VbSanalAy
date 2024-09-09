@@ -38,6 +38,10 @@
         tools:layout="@layout/fragment_main_page" >
         <action
             android:id="@+id/action_mainPageFragment_to_searchUserPostFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
             app:destination="@id/searchUserPostFragment" />
     </fragment>
     <fragment

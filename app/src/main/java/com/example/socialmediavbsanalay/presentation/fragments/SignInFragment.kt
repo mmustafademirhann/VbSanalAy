@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentSignInBinding
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
@@ -78,6 +79,7 @@ class SignInFragment : Fragment() {
     fun navigateToMainPage(view: View){
        val action = SignInFragmentDirections.actionSignInFragmentToMainPageFragment()
         Navigation.findNavController(view).navigate(action)
+
     }
     override fun onPause() {
         super.onPause()
@@ -89,4 +91,5 @@ class SignInFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

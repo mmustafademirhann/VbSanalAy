@@ -23,7 +23,7 @@ class SignUpFragment : Fragment() {
 
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
-    var isİtAuth=false
+
     val database = Firebase.database("https://sanalay-b69cd-default-rtdb.europe-west1.firebasedatabase.app/")
     val myRef = database.getReference("message")
 
@@ -58,7 +58,7 @@ class SignUpFragment : Fragment() {
                 onSuccess = { user ->
                     if (user != null) {
                         Toast.makeText(context, "User created successfully", Toast.LENGTH_SHORT).show()
-                        isİtAuth=true
+
                     } else {
                         Toast.makeText(context, "User creation failed", Toast.LENGTH_SHORT).show()
                     }
@@ -69,30 +69,42 @@ class SignUpFragment : Fragment() {
             )
         }
         binding.btnRegister.setOnClickListener {
-            authViewModel.signUp(
-                binding.etMail.text.toString(),
-                binding.editTextNumberPassword2.text.toString()
-            )
-            val name=binding.etName.text.toString()
-            val surName=binding.etSurName.text.toString()
-            val email=binding.etMail.text.toString()
+            val email = binding.etMail.text.toString()
+            val password = binding.editTextNumberPassword2.text.toString()
+            val name = binding.etName.text.toString()
+            val surName = binding.etSurName.text.toString()
             val genders = when (binding.radioGenders.checkedRadioButtonId) {
                 binding.radioMale.id -> "Male"
                 binding.radioFemale.id -> "Female"
                 binding.radioOthers.id -> "Other"
                 else -> "Not Selected" // In case no radio button is selected
             }
-            if (isİtAuth){
-                authViewModel.createUser(name,surName,email,genders)
+
+            // Sign up the user first
+            authViewModel.signUp(email, password)
+
+            // Observe the result of the sign-up process before creating the user
+            authViewModel.signUpResult.observe(viewLifecycleOwner) { signUpResult ->
+                if (signUpResult.isSuccess) {
+                    // Sign-up successful, create the user
+                    authViewModel.createUser(name, surName, email, genders)
+                    Toast.makeText(requireContext(), "Sign-up successful, creating user...", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    // Sign-up failed, show error message
+                    Toast.makeText(requireContext(), "Sign-up failed: ${signUpResult.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                }
             }
-
-
-            /*myRef.setValue("Hello!").addOnSuccessListener {
-                Toast.makeText(requireContext(), "Sucess", Toast.LENGTH_SHORT).show()
-            }.addOnFailureListener { e->
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-            }*/
         }
+
+
+
+        /*myRef.setValue("Hello!").addOnSuccessListener {
+            Toast.makeText(requireContext(), "Sucess", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e->
+            Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
+        }*/
+
     }
 
 }

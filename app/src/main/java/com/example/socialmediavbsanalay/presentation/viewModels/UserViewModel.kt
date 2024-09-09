@@ -13,6 +13,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+
+
+
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +31,18 @@ class UserViewModel @Inject constructor(
 
     private val _usersList = MutableLiveData<List<User>>()
     val usersList: LiveData<List<User>> get() = _usersList
+
+    private val _users = MutableStateFlow<List<User>>(emptyList())
+    val users: StateFlow<List<User>> get() = _users
+
+    fun searchUsers(query: String) {
+        viewModelScope.launch {
+            userInteractor.searchUsers(query).collect { userList ->
+                _users.value = userList
+            }
+        }
+    }
+
 
     fun addUser(user: User) {
         viewModelScope.launch {
