@@ -46,23 +46,8 @@ class MainPageFragment : Fragment() {
     private lateinit var postAdapter: PostAdapter
 
     private fun navigateToSearchResultsFragment() {
-        try {
-            val navController = findNavController()
-            if (navController.currentDestination?.id == R.id.mainPageFragment) {
-                val navOptions = NavOptions.Builder()
-                    .setEnterAnim(R.anim.fade_in)
-                    .setExitAnim(R.anim.fade_out)
-                    .setPopEnterAnim(R.anim.fade_in)
-                    .setPopExitAnim(R.anim.fade_out)
-                    .build()
-
-                navController.navigate(R.id.action_mainPageFragment_to_searchUserPostFragment, null, navOptions)
-            } else {
-                Log.e("NavigationError", "NavController current destination is not mainPageFragment")
-            }
-        } catch (e: Exception) {
-            Log.e("NavigationError", "Navigation error: ${e.message}")
-        }
+        val action = MainPageFragmentDirections.actionMainPageFragmentToSearchUserPostFragment()
+        findNavController().navigate(action)
     }
 
 

@@ -58,7 +58,7 @@ class UserDataSourceImpl @Inject constructor(
                 .whereLessThanOrEqualTo("id", query + "\uf8ff")
                 .get()
                 .await()
-
+            //neden return değilde flow kullandım ?
             for (document in querySnapshot.documents) {
                 val user = document.toObject(User::class.java)
                 if (user != null) {

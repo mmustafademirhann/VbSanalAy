@@ -80,9 +80,9 @@ class SignInFragment : Fragment() {
         Navigation.findNavController(view).navigate(action)
     }
     fun navigateToMainPage(view: View){
-
-       val action = SignInFragmentDirections.actionSignInFragmentToMainPageFragment()
-        Navigation.findNavController(view).navigate(action)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, MainPageFragment())
+            .commit()
 
     }
     override fun onPause() {

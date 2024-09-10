@@ -13,7 +13,7 @@
     <!-- Search Bar -->
     <LinearLayout
         android:id="@+id/searchBarContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         android:layout_marginStart="90dp"
@@ -26,10 +26,7 @@
 
         <!-- Inside Search Bar -->
         <!-- Add Search Bar content here -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+
 
             <EditText
                 android:id="@+id/editTextText3"
@@ -44,15 +41,8 @@
                 android:inputType="text"
                 />
 
-        </LinearLayout>
 
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/notification" />
     </LinearLayout>
 
     <!-- Story RecyclerView -->
