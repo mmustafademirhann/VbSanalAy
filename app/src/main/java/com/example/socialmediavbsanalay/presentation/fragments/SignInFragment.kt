@@ -48,7 +48,7 @@ class SignInFragment : Fragment() {
         }
         authViewModel.authState.observe(viewLifecycleOwner){result->
             result.onSuccess { user ->
-                navigateToMainPage(view)
+               navigateToMainPage(view)
 
             }.onFailure { exception ->
                 if (exception.message == "User not found") {
@@ -71,6 +71,9 @@ class SignInFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+    }
+    private fun switchFragment(fragment: Fragment) {
+
     }
     fun navigateToSignUp(view: View){
         val action =SignInFragmentDirections.actionSignInFragmentToSignUpFragment()

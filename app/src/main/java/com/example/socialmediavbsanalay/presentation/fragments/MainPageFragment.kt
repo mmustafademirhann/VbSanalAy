@@ -102,7 +102,6 @@ class MainPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).showBottomBar()
-
         adapterFunctions()
         binding.editTextText3.setOnClickListener {
             navigateToSearchResultsFragment()
@@ -111,6 +110,11 @@ class MainPageFragment : Fragment() {
 
 
 
+    }
+    private fun navigateToSame(fragment: Fragment){
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, fragment)
+            .commit()
     }
     private fun adapterFunctions() {
         storyAdapter = StoryAdapter()
