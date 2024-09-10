@@ -10,3 +10,4 @@ interface UserRepository {
     suspend fun getAllUsers(): List<User>
     fun searchUsers(query: String): Flow<List<User>>
 }
+

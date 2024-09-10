@@ -51,14 +51,21 @@ class UserDataSourceImpl @Inject constructor(
     }
 
     override fun searchUsers(query: String): Flow<List<User>> = flow {
-        val snapshot = firestore.collection("users")
-            .orderBy("username") // Assuming you index by "username"
-            .startAt(query)
-            .endAt(query + '\uf8ff')
+        val userList = mutableListOf<User>()
+        val querySnapshot = firestore.collection("user")
+            .whereGreaterThanOrEqualTo("id", query)
+            .whereLessThanOrEqualTo("id", query + "\uf8ff") // "\uf8ff" allows searching for all values starting with the query
             .get()
             .await()
 
-        val users = snapshot.documents.mapNotNull { it.toObject(User::class.java) }
-        emit(users)
+        for (document in querySnapshot.documents) {
+            val user = document.toObject(User::class.java)
+            if (user != null) {
+                userList.add(user)
+            }
+        }
+
+        emit(userList)
     }
+
 }

@@ -102,6 +102,7 @@ class MainPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).showBottomBar()
+
         adapterFunctions()
         binding.editTextText3.setOnClickListener {
             navigateToSearchResultsFragment()

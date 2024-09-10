@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+
 @AndroidEntryPoint
 class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
 
@@ -29,20 +30,24 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentUserProfileBinding.inflate(inflater, container, false)
 
-        // Initialize Adapter
+        // Initialize RecyclerView and Adapter
         userAdapter = UserAdapter()
-        binding.searchRecyclerView.adapter = userAdapter
-        binding.searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.searchRecyclerView.apply {
+            adapter = userAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
 
-        // Observe users LiveData
-        userViewModel.usersList.observe(viewLifecycleOwner, Observer { users ->
-            userAdapter.updateUsers(users)
-        })
+        // Observe users StateFlow
+        lifecycleScope.launchWhenStarted {
+            userViewModel.users.collect { userList ->
+                userAdapter.updateUsers(userList)
+            }
+        }
 
-        // Load users
+        // Load all users initially
         userViewModel.fetchAllUsers()
 
         // Set up search functionality
@@ -50,7 +55,6 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Trigger search when text changes
                 s?.let {
                     userViewModel.searchUsers(it.toString())
                 }
@@ -59,14 +63,6 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Observe users StateFlow in onCreateView
-        lifecycleScope.launchWhenStarted {
-            userViewModel.users.collect { userList ->
-                // Update your adapter with the new list
-                userAdapter.updateUsers(userList)
-            }
-        }
-
-        return binding.root // Return the root view
+        return binding.root
     }
 }

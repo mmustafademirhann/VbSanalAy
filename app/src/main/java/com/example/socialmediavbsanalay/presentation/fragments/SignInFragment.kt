@@ -77,6 +77,7 @@ class SignInFragment : Fragment() {
         Navigation.findNavController(view).navigate(action)
     }
     fun navigateToMainPage(view: View){
+
        val action = SignInFragmentDirections.actionSignInFragmentToMainPageFragment()
         Navigation.findNavController(view).navigate(action)
 

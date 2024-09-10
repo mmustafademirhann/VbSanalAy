@@ -91,19 +91,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clickEvents(){
-        binding.userImageView.setOnClickListener {
+        binding.userImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.userline)
             switchFragment(UserProfileFragment())
         }
-        binding.homeImageView.setOnClickListener {
+        binding.homeImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.homeline)
             switchFragment(MainPageFragment())
         }
-        binding.messagetwoicon.setOnClickListener {
+        binding.messagetwoiconLayout.setOnClickListener {
             setVisibilityForLine(binding.messageline)
             switchFragment(MessageFragment())
         }
-        binding.notificationImageView.setOnClickListener {
+        binding.notificationImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.notificationline)
             switchFragment(NotificationBarFragment())
         }
@@ -200,13 +200,16 @@ class MainActivity : AppCompatActivity() {
         binding.bottomMain.visibility = View.GONE
     }
 
+
     override fun onBackPressed() {
 
+        setVisibilityForLine(binding.homeline)
+
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
-        supportFragmentManager.beginTransaction()
+        /*supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, MainPageFragment(), MainPageFragment::class.java.simpleName)
             .addToBackStack(null)
-            .commit()
+            .commit()*/
         when (currentFragment) {
             is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
                 // If currently on one of these fragments, go back to MainPageFragment
@@ -217,10 +220,8 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
             is WelcomeFragment, is SignInFragment, is SignUpFragment -> {
-                // Let the default back behavior occur (close the app, or go back to previous activity)
-
-                    super.onBackPressed()
-
+                // Let NavController handle back navigation for the sign-in flow
+                super.onBackPressed()
             }
             else -> {
                 // Default behavior for other fragments, or if no specific action is required
