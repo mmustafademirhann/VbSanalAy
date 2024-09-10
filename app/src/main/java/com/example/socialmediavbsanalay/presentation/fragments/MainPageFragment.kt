@@ -45,9 +45,9 @@ class MainPageFragment : Fragment() {
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var postAdapter: PostAdapter
 
-    private fun navigateToSearchResultsFragment() {
-        val action = MainPageFragmentDirections.actionMainPageFragmentToSearchUserPostFragment()
-        findNavController().navigate(action)
+    private fun navigateToSearchResultsFragment(view: View) {
+        val action =MainPageFragmentDirections.actionMainPageFragmentToSearchUserPostFragment()
+        Navigation.findNavController(view).navigate(action)
     }
 
 
@@ -89,7 +89,7 @@ class MainPageFragment : Fragment() {
         (activity as MainActivity).showBottomBar()
         adapterFunctions()
         binding.editTextText3.setOnClickListener {
-            navigateToSearchResultsFragment()
+            navigateToSearchResultsFragment(it)
         }
         // Load your stories into the adapter
 
