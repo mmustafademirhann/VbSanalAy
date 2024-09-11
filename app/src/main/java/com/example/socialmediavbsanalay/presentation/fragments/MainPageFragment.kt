@@ -25,11 +25,14 @@ import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import android.Manifest
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import com.example.socialmediavbsanalay.presentation.MainActivity
+import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 
 
 /**
@@ -44,30 +47,30 @@ class MainPageFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var postAdapter: PostAdapter
+    private val galleryViewModel: GalleryViewModel by viewModels()
 
-    private fun navigateToSearchResultsFragment(view: View) {
-        val action =MainPageFragmentDirections.actionMainPageFragmentToSearchUserPostFragment()
+    private fun navigateToSearchResultsFragment() {
+        val searchUserPostFragment = SearchUserPostFragment()
+        replaceFragment(searchUserPostFragment)
+    }
+
+    fun handleImageUri(uri: Uri) {
+        galleryViewModel.uploadPhoto(uri)
+    }
+
+
+    fun navigateToSignUp(view: View){
+        val action =SignInFragmentDirections.actionSignInFragmentToSignUpFragment()
         Navigation.findNavController(view).navigate(action)
     }
-
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            accessGallery()
-        } else {
-            // İzin reddedildiğinde kullanıcıya bilgilendirme yap
-            Toast.makeText(requireContext(), "İzin gerekli!", Toast.LENGTH_SHORT).show()
-        }
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, fragment) // Use your actual container ID
+            .addToBackStack(null) // Optional, if you want back navigation
+            .commit()
     }
 
-    private fun accessGallery() {
-        // Galeriden fotoğraf çekme işlemleri burada yapılacak
-        // MediaStore veya Intent kullanarak galeriye erişebilirsiniz
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE)
-    }
+
 
     companion object {
         private const val GALLERY_REQUEST_CODE = 123
@@ -84,15 +87,24 @@ class MainPageFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).showBottomBar()
-        adapterFunctions()
-        binding.editTextText3.setOnClickListener {
-            navigateToSearchResultsFragment(it)
-        }
-        // Load your stories into the adapter
+        galleryViewModel.uploadStatus.observe(viewLifecycleOwner) { status ->
 
+            // Update UI with upload status or refresh the fragment view
+            Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show()
+        }
+        galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
+            postAdapter.setPosts(posts)
+        }
+
+        adapterFunctions()
+        // Load your stories into the adapter
+        binding.editTextText3.setOnClickListener {
+            navigateToSearchResultsFragment()
+        }
 
 
     }
@@ -118,71 +130,14 @@ class MainPageFragment : Fragment() {
             storyAdapter.loadStories() // Implement this function to get your list of stories
         storyAdapter.setStories(stories)
 
-        val posts = postAdapter.loadPosts() // Implement this function to get your list of stories
-        postAdapter.setPosts(posts)
     }
 
 
     // ContextCompat.checkSelfPermission(
     // requireContext(),
-    private fun checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13 ve üstü için izin kontrolü
-            when {
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_IMAGES
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // İzin verilmişse galeriye eriş
-                    accessGallery()
-                }
 
-                shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES) -> {
-                    // Kullanıcı daha önce izni reddettiyse, neden gerekli olduğunu açıkla
-                    explainPermission()
-                }
 
-                else -> {
-                    // İzin isteme
-                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-                }
-            }
-        } else {
-            // Android 12 ve öncesi için izin kontrolü
-            when {
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // İzin verilmişse galeriye eriş
-                    accessGallery()
-                }
 
-                shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-                    // Kullanıcı daha önce izni reddettiyse, neden gerekli olduğunu açıkla
-                    explainPermission()
-                }
-
-                else -> {
-                    // İzin isteme
-                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
-        }
-    }
-
-    private fun explainPermission() {
-        // Kullanıcıya iznin neden gerektiğini açıklayan bir dialog göster
-        AlertDialog.Builder(requireContext())
-            .setTitle("İzin Gerekli")
-            .setMessage("Bu uygulamanın fotoğraflara erişebilmesi için izne ihtiyacı var.")
-            .setPositiveButton("Tamam") { _, _ ->
-                // İzni tekrar iste
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-            .setNegativeButton("İptal", null)
-            .show()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

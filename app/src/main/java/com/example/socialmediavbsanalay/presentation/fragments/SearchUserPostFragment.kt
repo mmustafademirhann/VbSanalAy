@@ -1,35 +1,96 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.socialmediavbsanalay.R
+import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.socialmediavbsanalay.databinding.FragmentSearchUserPostBinding
+import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchUserPostFragment : Fragment() {
-    // TODO: Rename and change types of parameters
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private lateinit var binding: FragmentSearchUserPostBinding
+    private val userViewModel: UserViewModel by viewModels()
+    private lateinit var userAdapter: UserAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search_user_post, container, false)
+    ): View {
+        binding = FragmentSearchUserPostBinding.inflate(inflater, container, false)
+
+        // Initialize RecyclerView and Adapter
+        userAdapter = UserAdapter()
+        binding.searchRecyclerViewView.apply {
+            adapter = userAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+
+        // Observe users StateFlow
+        lifecycleScope.launchWhenStarted {
+            userViewModel.users.collect { userList ->
+                userAdapter.updateUsers(userList)
+            }
+        }
+
+        // Load all users initially
+        userViewModel.fetchAllUsers()
+
+        // Set up search functionality
+        binding.editTextTextSearc.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.let {
+                    userViewModel.searchUsers(it.toString())
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        showEditTextWithKeyboard()
+        // Use binding to access views
+        // Example: binding.someTextView.text = "Hello"
+    }
+
+    private fun showEditTextWithKeyboard() {
+        // Request focus for the EditText
+        binding.editTextTextSearc.requestFocus()
+
+        // Show the keyboard
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(binding.editTextTextSearc, InputMethodManager.SHOW_IMPLICIT)
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             SearchUserPostFragment().apply {
-
+                // Set arguments if needed
+                arguments = Bundle().apply {
+                    putString("param1", param1)
+                    putString("param2", param2)
+                }
             }
     }
 }

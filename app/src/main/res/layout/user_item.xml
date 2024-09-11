@@ -9,9 +9,10 @@
     <TextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
+
         android:text="@android:string/paste_as_plain_text"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="?attr/colorOnBackground" />
+        android:textColor="@color/white" />
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.socialmediavbsanalay.presentation
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -12,14 +13,18 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.ActivityMainBinding
 
@@ -31,6 +36,7 @@ import com.example.socialmediavbsanalay.presentation.fragments.SignInFragment
 import com.example.socialmediavbsanalay.presentation.fragments.SignUpFragment
 import com.example.socialmediavbsanalay.presentation.fragments.UserProfileFragment
 import com.example.socialmediavbsanalay.presentation.fragments.WelcomeFragment
+import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
@@ -45,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
     val database = Firebase.database
     val myRef = database.getReference("message")
+    private val postViewModel: GalleryViewModel by viewModels()
+
 
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -62,6 +70,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         private const val GALLERY_REQUEST_CODE = 123
+        private const val PICK_IMAGE_REQUEST = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +78,25 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
+
+        setContentView(R.layout.activity_main)
+        val addButton: Button = findViewById(R.id.addButton)
+        addButton.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                accessGallery()
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), PICK_IMAGE_REQUEST)
+            }
+        }
+
+        postViewModel.uploadStatus.observe(this) { status ->
+            // You might want to notify the fragment about the upload status
+            // For example, use a LiveData or any other communication method
+        }
+        // Ensure that the navigation component is working with the correct NavController
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
+
         myRef.setValue("Hello, World!")
         myRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -110,9 +138,20 @@ class MainActivity : AppCompatActivity() {
         binding.addButton.setOnClickListener{
 
             checkPermission()
-            accessGallery()
+
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { uri ->
+                // Notify the fragment with the selected image URI
+                (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as? MainPageFragment)
+                    ?.handleImageUri(uri)
+            }
+        }
     }
     private fun setVisibilityForLine(visibleLine: View) {
         binding.userline.visibility = View.INVISIBLE
@@ -238,4 +277,6 @@ class MainActivity : AppCompatActivity() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE)
     }
+
+
 }
