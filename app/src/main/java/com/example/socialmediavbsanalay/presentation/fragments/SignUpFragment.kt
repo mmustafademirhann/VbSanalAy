@@ -69,6 +69,7 @@ class SignUpFragment : Fragment() {
             )
         }
         binding.btnRegister.setOnClickListener {
+            val id=binding.userName.text.toString()
             val email = binding.etMail.text.toString()
             val password = binding.editTextNumberPassword2.text.toString()
             val name = binding.etName.text.toString()
@@ -87,7 +88,7 @@ class SignUpFragment : Fragment() {
             authViewModel.signUpResult.observe(viewLifecycleOwner) { signUpResult ->
                 if (signUpResult.isSuccess) {
                     // Sign-up successful, create the user
-                    authViewModel.createUser(name, surName, email, genders)
+                    authViewModel.createUser(id,name, surName, email, genders)
                     Toast.makeText(requireContext(), "Sign-up successful, creating user...", Toast.LENGTH_SHORT).show()
 
                 } else {

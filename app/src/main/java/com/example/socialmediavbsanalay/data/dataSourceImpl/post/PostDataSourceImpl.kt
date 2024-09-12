@@ -1,49 +1,72 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.post
-
 import android.net.Uri
 import com.example.socialmediavbsanalay.data.dataSource.post.PostDataSource
 import com.example.socialmediavbsanalay.domain.model.Post
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
 
 class PostDataSourceImpl @Inject constructor(
-    private val firebaseStorage: FirebaseStorage
-):PostDataSource {
-    override suspend fun fetchPosts(): Result<List<Post>> {
-        // Implement the actual fetching logic here
-        // For example, you could fetch from a network or database
-        return Result.success(emptyList()) // Replace with actual fetching logic
-    }
-    override suspend fun uploadPhoto(imageUri: Uri): Unit {
-        val storageRef = firebaseStorage.reference
-        val photoRef = storageRef.child("photos/${imageUri.lastPathSegment}")
+    private val firebaseStorage: FirebaseStorage,
+    private val firestore: FirebaseFirestore // Add Firestore dependency
+): PostDataSource {
 
-        photoRef.putFile(imageUri)
-            .addOnSuccessListener {
-                // Handle success
+    // Collection where you will store the post metadata in Firestore
+    private val postsCollection = firestore.collection("posts")
+
+    override suspend fun fetchPosts(): Result<List<Post>> {
+        // Fetch posts from Firestore
+        return try {
+            val snapshot = postsCollection.get().await()
+            val posts = snapshot.documents.map { document ->
+                val imageUrl = document.getString("imageUrl") ?: ""
+                val username = document.getString("username") ?: "Unknown"
+                Post(imageResId = imageUrl, username = username)
             }
-            .addOnFailureListener {
-                // Handle failure
-            }
-    }
-    override fun getPosts(): Flow<List<Post>> = flow {
-        try {
-            val storageRef = firebaseStorage.reference.child("photos")
-            val listResult = storageRef.listAll().await()
-            val posts = listResult.items.map { item ->
-                val imageUrl = item.downloadUrl.await().toString()
-                // Create a Post object with the image URL
-                Post(imageResId = imageUrl, username = "Unknown") // Replace "Unknown" with real username if available
-            }
-            emit(posts)
+            Result.success(posts)
         } catch (e: Exception) {
-            // Handle error
-            emit(emptyList())
+            Result.failure(e)
         }
     }
 
+    override suspend fun uploadPhoto(imageUri: Uri) {
+        val storageRef = firebaseStorage.reference
+        val photoRef = storageRef.child("photos/${UUID.randomUUID()}.jpg")
+
+        // Upload the image to Firebase Storage
+        val uploadTask = photoRef.putFile(imageUri).await()
+        val downloadUrl = photoRef.downloadUrl.await().toString()
+
+        // Now store the metadata (image URL, username, etc.) in Firestore
+        val post = hashMapOf(
+            "imageUrl" to downloadUrl,
+            "username" to "SampleUser" // Replace this with the actual username
+        )
+        postsCollection.add(post).await() // Save post metadata to Firestore
+    }
+
+    override fun getPosts(): Flow<List<Post>> = callbackFlow {
+        val listenerRegistration = postsCollection.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                // Handle the error (if any)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val posts = snapshot.documents.map { document ->
+                    val imageUrl = document.getString("imageUrl") ?: ""
+                    val username = document.getString("username") ?: "Unknown"
+                    Post(imageResId = imageUrl, username = username)
+                }
+                trySend(posts) // Use trySend to send the list of posts
+            }
+        }
+
+        awaitClose { listenerRegistration.remove() } // Cleanup when the flow is closed
+    }
 }

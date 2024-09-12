@@ -41,7 +41,7 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch {
             val photos = galleryInteractor.fetchRecentPhotos()
             _recentPhotos.value = photos
-            galleryAdapter.submitList(photos)
+            galleryAdapter.submitList(photos)//-->submitlist
         }
     }
     fun uploadPhoto(imageUri: Uri) {

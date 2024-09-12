@@ -24,9 +24,9 @@ class CreateUserDataSourceImpl @Inject constructor(
             }
     }
 
-    override suspend fun checkIfUserExists(email: String): Boolean = suspendCoroutine { continuation ->
+    override suspend fun checkIfUserExists(id: String): Boolean = suspendCoroutine { continuation ->
         firestore.collection("user")
-            .whereEqualTo("email", email)
+            .whereEqualTo("id", id)
             .get()
             .addOnSuccessListener { documents ->
                 if (!documents.isEmpty) {

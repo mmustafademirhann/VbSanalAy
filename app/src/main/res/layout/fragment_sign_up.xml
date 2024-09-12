@@ -116,6 +116,19 @@
                     android:background="@drawable/rounded_edit_text"
                     android:ems="10"
                     android:inputType="numberPassword" />
+
+                <EditText
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:layout_marginTop="20sp"
+                    android:background="@drawable/rounded_edit_text"
+                    android:ems="10"
+                    android:hint="Kullanıcı adı"
+                    android:inputType="text"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

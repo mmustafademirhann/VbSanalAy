@@ -5,6 +5,7 @@ import com.example.socialmediavbsanalay.data.dataSourceImpl.post.PostDataSourceI
 import com.example.socialmediavbsanalay.data.repository.post.PostRepository
 import com.example.socialmediavbsanalay.data.repositoryImpl.post.PostRepositoryImpl
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -19,9 +20,10 @@ object PostModule {
     @Provides
     @Singleton
     fun providePostDataSource(
-        firebaseStorage: FirebaseStorage
+        firebaseStorage: FirebaseStorage,
+        firebaseFirestore: FirebaseFirestore
     ): PostDataSource {
-        return PostDataSourceImpl(firebaseStorage)
+        return PostDataSourceImpl(firebaseStorage,firebaseFirestore)
     }
 
     @Provides

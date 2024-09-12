@@ -21,7 +21,7 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
         fun bind(post: Post) {
             // Bind views using the View Binding
             binding.postUsername.text = post.username
-            binding.postContent.text = post.imageResId
+            binding.postContent.text = "Nasıl ?"
 
             // Load image using Glide
             Glide.with(binding.root)

@@ -68,13 +68,13 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    fun createUser(name:String,surName:String,email:String,gender:String) {
+    fun createUser(userName:String,name:String,surName:String,email:String,gender:String) {
         viewModelScope.launch {
-            val userExist=createUserInteractor.checkIfUserExists(email)
+            val userExist=createUserInteractor.checkIfUserExists(userName)
             if (!userExist) {
                 val createResult = createUserInteractor.createUser(
-                    email.substringBefore("@"), // Use email prefix as user ID
-                    User(email.substringBefore("@"), name,surName,email,gender)
+                    userName,
+                    User(userName,name,surName,email,gender)
                 )
                 _createUserLiveData.value = createResult
             } else {
