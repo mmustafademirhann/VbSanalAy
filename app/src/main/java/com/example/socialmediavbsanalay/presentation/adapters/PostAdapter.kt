@@ -7,6 +7,7 @@ import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.PostForRecyclerBinding
 import com.example.socialmediavbsanalay.domain.model.Post
+import com.example.socialmediavbsanalay.domain.model.User
 
 import javax.inject.Inject
 
@@ -14,7 +15,7 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
 
 
     private var posts: List<Post> = emptyList()
-
+    private var user=User()
 
     class PostViewHolder(private val binding:PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {

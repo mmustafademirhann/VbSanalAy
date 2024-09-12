@@ -1,5 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -37,6 +39,12 @@ class SignInFragment : Fragment() {
 
 
     }
+    private fun onSignInSuccess() {
+        // Kullanıcı başarılı giriş yaptıktan sonra, giriş durumunu kaydet
+        val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("is_signed_in", true).apply()
+
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,6 +56,7 @@ class SignInFragment : Fragment() {
         }
         authViewModel.authState.observe(viewLifecycleOwner){result->
             result.onSuccess { user ->
+                onSignInSuccess()
                navigateToMainPage(view)
 
             }.onFailure { exception ->
