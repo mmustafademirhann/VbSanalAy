@@ -1,60 +1,66 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
+import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
 
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
+    private lateinit var binding: FragmentUserProfileBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding = FragmentUserProfileBinding.inflate(inflater, container, false)
+    ): View {
+        binding = FragmentUserProfileBinding.inflate(inflater, container, false)
 
-        // Initialize Adapter
+        // Initialize RecyclerView and Adapter
         userAdapter = UserAdapter()
-        binding.searchRecyclerView.adapter = userAdapter
-        binding.searchRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Observe users LiveData
-        userViewModel.users.observe(viewLifecycleOwner, Observer { users ->
-            userAdapter.updateUsers(users)
-        })
+        // Set up RecyclerView
 
-        // Load users
-        userViewModel.loadUsers()
 
-        // Set up search functionality
-        binding.searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                s?.let {
-                    userViewModel.searchUsersByName(it.toString())
-                }
+        // Observe users StateFlow
+        lifecycleScope.launch {
+            userViewModel.users.collect { userList ->
+                userAdapter.updateUsers(userList)
             }
+        }
 
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        // Load all users initially
+        userViewModel.fetchAllUsers()
 
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val appBarLayout = binding.appBarLayout
+        val mainBackgroundImage = binding.mainBackgroundImage
+
+        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            val maxScroll = appBarLayout.totalScrollRange
+            val scrollPercentage = Math.abs(verticalOffset) / maxScroll.toFloat()
+
+            // Arka planın görünürlüğünü ayarlama
+            mainBackgroundImage.alpha = 2 - scrollPercentage
+        })
+    }
 }

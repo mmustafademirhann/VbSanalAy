@@ -13,7 +13,7 @@
     <!-- Search Bar -->
     <LinearLayout
         android:id="@+id/searchBarContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         android:layout_marginStart="90dp"
@@ -26,15 +26,14 @@
 
         <!-- Inside Search Bar -->
         <!-- Add Search Bar content here -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+
 
             <EditText
                 android:id="@+id/editTextText3"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:focusable="false"
+                android:clickable="true"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/drawble_fr_button"
@@ -44,15 +43,8 @@
                 android:inputType="text"
                 />
 
-        </LinearLayout>
 
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/notification" />
     </LinearLayout>
 
     <!-- Story RecyclerView -->
@@ -67,7 +59,9 @@
         android:paddingBottom="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchBarContainer"
-        tools:listitem="@layout/story_template" />
+        tools:listitem="@layout/story_template" >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <!-- Posts RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -85,11 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <!-- Bottom Navigation and FAB -->
-        <!-- Add Bottom Navigation and FAB content here -->
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        app:layout_constraintStart_toStartOf="parent"/>
 
 
 

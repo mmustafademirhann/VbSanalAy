@@ -3,230 +3,44 @@ package com.example.socialmediavbsanalay.presentation.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.PostForRecyclerBinding
 import com.example.socialmediavbsanalay.domain.model.Post
+import com.example.socialmediavbsanalay.domain.model.User
 
 import javax.inject.Inject
 
 class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
 
-    private var post: List<Post> = emptyList()
+    private var posts: List<Post> = emptyList()
+    private var user=User()
 
-
-    class PostViewHolder(private val binding: PostForRecyclerBinding) :
+    class PostViewHolder(private val binding:PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(post: Post) {
-            binding.postImage.setImageResource(post.imageResId) // Example
+            // Bind views using the View Binding
             binding.postUsername.text = post.username
+            binding.postContent.text = "Nasıl ?"
+
+            // Load image using Glide
+            Glide.with(binding.root)
+                .load(post.imageResId) // Assuming `post.imageUrl` holds the URL of the image
+                .into(binding.postImage)
         }
     }
 
     fun setPosts(newPosts: List<Post>) {
-        post = newPosts
+        posts = newPosts
         notifyDataSetChanged()
     }
-
-    fun loadPosts(): List<Post> {
-        return listOf(
-            //Story(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.kaydol, username = "user1"),
-            Post(imageResId = R.drawable.heart, username = "user1"),
-            Post(imageResId = R.drawable.bra, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.family, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-            Post(imageResId = R.drawable.ic_launcher_background, username = "user1"),
-            Post(imageResId = R.drawable.email, username = "user1"),
-            Post(imageResId = R.drawable.ekle, username = "user1"),
-            Post(imageResId = R.drawable.rainy_minecraft, username = "user1"),
-            Post(imageResId = R.drawable.aysegulmustafa, username = "user1"),
-
-
-            )
+    companion object {
+        fun from(parent: ViewGroup): PostViewHolder {
+            val layoutInflater = LayoutInflater.from(parent.context)
+            val binding = PostForRecyclerBinding.inflate(layoutInflater, parent, false)
+            return PostViewHolder(binding)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -235,9 +49,10 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
         return PostViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = post.size
+    override fun getItemCount(): Int = posts.size
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(post[position])
+        val post = posts[position]
+        holder.bind(post)
     }
 }

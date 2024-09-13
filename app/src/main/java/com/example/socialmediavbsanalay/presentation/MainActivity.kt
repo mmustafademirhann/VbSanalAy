@@ -1,23 +1,32 @@
 package com.example.socialmediavbsanalay.presentation
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.ActivityMainBinding
 
@@ -25,13 +34,30 @@ import com.example.socialmediavbsanalay.presentation.fragments.MainPageFragment
 
 import com.example.socialmediavbsanalay.presentation.fragments.MessageFragment
 import com.example.socialmediavbsanalay.presentation.fragments.NotificationBarFragment
+import com.example.socialmediavbsanalay.presentation.fragments.SignInFragment
+import com.example.socialmediavbsanalay.presentation.fragments.SignUpFragment
 import com.example.socialmediavbsanalay.presentation.fragments.UserProfileFragment
 import com.example.socialmediavbsanalay.presentation.fragments.WelcomeFragment
+import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
+import com.google.firebase.database.getValue
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
+    private lateinit var navController: NavController
+    val database = Firebase.database
+    val myRef = database.getReference("message")
+    private val postViewModel: GalleryViewModel by viewModels()
+
+
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -47,12 +73,62 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         private const val GALLERY_REQUEST_CODE = 123
+        private const val PICK_IMAGE_REQUEST = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
+
+        setContentView(R.layout.activity_main)
+        val navHostFragmenta = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        navController = navHostFragmenta.navController
+
+        // SharedPreferences ile kullanıcı daha önce giriş yapmış mı kontrol et
+        val sharedPreferences: SharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isSignedIn = sharedPreferences.getBoolean("is_signed_in", false)
+
+        if (isSignedIn) {
+            // Eğer kullanıcı giriş yapmışsa, WelcomeFragment yerine MainPageFragment'i göster
+            navController.setGraph(R.navigation.nav_graph)  // Önce nav_graph'ı setle
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, MainPageFragment())
+                .commit()
+        }
+
+        val addButton: Button = findViewById(R.id.addButton)
+        addButton.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                accessGallery()
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), PICK_IMAGE_REQUEST)
+            }
+        }
+
+        postViewModel.uploadStatus.observe(this) { status ->
+            // You might want to notify the fragment about the upload status
+            // For example, use a LiveData or any other communication method
+        }
+        // Ensure that the navigation component is working with the correct NavController
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        myRef.setValue("Hello, World!")
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = dataSnapshot.getValue<String>()
+                Log.d(TAG, "Value is: $value")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
         var xyz=true
         setContentView(view)
        // FirebaseDatabase.getInstance().setPersistenceEnabled(true)
@@ -61,28 +137,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clickEvents(){
-        binding.userImageView.setOnClickListener {
+        binding.userImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.userline)
             switchFragment(UserProfileFragment())
         }
-        binding.homeImageView.setOnClickListener {
+        binding.homeImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.homeline)
             switchFragment(MainPageFragment())
         }
-        binding.messagetwoicon.setOnClickListener {
+        binding.messagetwoiconLayout.setOnClickListener {
             setVisibilityForLine(binding.messageline)
             switchFragment(MessageFragment())
         }
-        binding.notificationImageView.setOnClickListener {
+        binding.notificationImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.notificationline)
             switchFragment(NotificationBarFragment())
         }
         binding.addButton.setOnClickListener{
 
             checkPermission()
-            accessGallery()
+
         }
 
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { uri ->
+                // Notify the fragment with the selected image URI
+                (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as? MainPageFragment)
+                    ?.handleImageUri(uri)
+            }
+        }
     }
     private fun setVisibilityForLine(visibleLine: View) {
         binding.userline.visibility = View.INVISIBLE
@@ -170,16 +258,36 @@ class MainActivity : AppCompatActivity() {
         binding.bottomMain.visibility = View.GONE
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is MessageFragment ||
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is NotificationBarFragment ||
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is UserProfileFragment) {
-            switchFragment(MainPageFragment())
-        } else {
-            super.onBackPressed()
-        }
 
+    override fun onBackPressed() {
+
+        setVisibilityForLine(binding.homeline)
+
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+        /*supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, MainPageFragment(), MainPageFragment::class.java.simpleName)
+            .addToBackStack(null)
+            .commit()*/
+        when (currentFragment) {
+            is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
+                // If currently on one of these fragments, go back to MainPageFragment
+                switchFragment(MainPageFragment())
+            }
+            is MainPageFragment -> {
+                // If already on MainPageFragment, exit the app
+                finish()
+            }
+            is WelcomeFragment, is SignInFragment, is SignUpFragment -> {
+                // Let NavController handle back navigation for the sign-in flow
+                super.onBackPressed()
+            }
+            else -> {
+                // Default behavior for other fragments, or if no specific action is required
+                super.onBackPressed()
+            }
+        }
     }
+
 
 
     private fun accessGallery() {
@@ -188,4 +296,6 @@ class MainActivity : AppCompatActivity() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE)
     }
+
+
 }

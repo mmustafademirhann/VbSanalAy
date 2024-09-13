@@ -52,6 +52,7 @@
 
                         <!-- First ImageView on the left -->
                         <LinearLayout
+                            android:id="@+id/homeImageViewLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="18dp"
@@ -82,6 +83,7 @@
 
                         <!-- Second ImageView on the left -->
                         <LinearLayout
+                            android:id="@+id/messagetwoiconLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="18dp"
@@ -116,13 +118,16 @@
                             android:layout_weight="1" />
 
                         <!-- First ImageView on the right -->
+
+                        <!-- Second ImageView on the right -->
                         <LinearLayout
+                            android:id="@+id/userImageViewLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="18dp"
                             android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:orientation="vertical">
 
                                 <ImageView
                                     android:id="@+id/userImageView"
@@ -132,20 +137,20 @@
 
                                 <!-- Line below the notification icon -->
                                 <ImageView
+                                    android:id="@+id/userline"
                                     android:layout_width="match_parent"
                                     android:layout_height="2dp"
-                                    android:id="@+id/userline"
+                                    android:layout_marginTop="4dp"
+                                    android:background="#635A8F"
                                     android:elevation="60dp"
                                     android:shadowColor="#635A8F"
                                     android:shadowDx="1"
                                     android:shadowDy="3"
-                                    android:visibility="invisible"
-                                    android:layout_marginTop="4dp"
-                                    android:background="#635A8F" />
+                                    android:visibility="invisible" />
                         </LinearLayout>
 
-                        <!-- Second ImageView on the right -->
                         <LinearLayout
+                            android:id="@+id/notificationImageViewLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="18dp"

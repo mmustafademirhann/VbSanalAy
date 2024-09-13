@@ -1,42 +1,31 @@
 package com.example.socialmediavbsanalay.data.repositoryImpl.user
 
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
-import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.domain.model.User
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.example.socialmediavbsanalay.data.repository.user.UserRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val firebaseDatabase: FirebaseDatabase
+    private val userDataSource: UserDataSource
 ) : UserRepository {
 
-    override fun getUsers(callback: (List<User>) -> Unit) {
-        val usersRef = firebaseDatabase.getReference("users")
-
-        usersRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val users = mutableListOf<User>()
-                for (userSnapshot in snapshot.children) {
-                    val user = userSnapshot.getValue(User::class.java)
-                    user?.let { users.add(it) }
-                }
-                callback(users)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error if necessary
-            }
-        })
+    override suspend fun addUser(user: User) {
+        userDataSource.addUser(user)
     }
 
-    override fun searchUsersByName(name: String): Query {
-        return firebaseDatabase.getReference("users")
-            .orderByChild("email")
-            .startAt(name)
-            .endAt(name + "\uf8ff")
+    override suspend fun getUser(userId: String): User? {
+        return userDataSource.getUser(userId)
+    }
+
+    override suspend fun getAllUsers(): List<User> {
+        return userDataSource.getAllUsers()
+    }
+    override fun searchUsers(query: String): Flow<List<User>> {
+        return userDataSource.searchUsers(query)
     }
 }

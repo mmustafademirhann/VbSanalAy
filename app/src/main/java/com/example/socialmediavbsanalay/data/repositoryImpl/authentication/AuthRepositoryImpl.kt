@@ -27,8 +27,11 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun signUp(email: String, password: String): Result<FirebaseUser?> {
         return try {
             val authResult = firebaseAuthDataSource.signUp(email, password)
+
             Result.success(authResult)
+
         } catch (e: Exception) {
+
             Result.failure(e)
         }
     }

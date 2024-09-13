@@ -2,8 +2,12 @@ package com.example.socialmediavbsanalay.data.repository.user
 
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.Query
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    fun getUsers(callback: (List<User>) -> Unit)
-    fun searchUsersByName(name: String): Query
+    suspend fun addUser(user: User)
+    suspend fun getUser(userId: String): User?
+    suspend fun getAllUsers(): List<User>
+    fun searchUsers(query: String): Flow<List<User>>
 }
+

@@ -3,26 +3,45 @@ package com.example.socialmediavbsanalay.di
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.data.repositoryImpl.user.UserRepositoryImpl
-import com.example.yourapp.data.dataSourceImpl.user.UserDataSourceImpl
+import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
+import com.example.socialmediavbsanalay.data.dataSourceImpl.user.UserDataSourceImpl
+
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class UserModule {
-
-    @Binds
-    abstract fun bindUserDataSource(
-        userDataSourceImpl: UserDataSourceImpl
-    ): UserDataSource
-
-    @Binds
-    abstract fun bindUserRepository(
-        userRepositoryImpl: UserRepositoryImpl
-    ): UserRepository
+object UserModule {
 
 
+    @Provides
+    @Singleton
+    fun provideUserDataSource(
+        firebaseDatabase: FirebaseDatabase,
+        firestore: FirebaseFirestore // No need to provide here if already provided in FirebaseModule
+    ): UserDataSource {
+        return UserDataSourceImpl(firebaseDatabase, firestore)
+    }
 
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        firebaseUserDataSource: UserDataSource
+    ): UserRepository {
+        return UserRepositoryImpl(firebaseUserDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserInteractor(
+        userRepository: UserRepository
+    ): UserInteractor {
+        return UserInteractor(userRepository)
+    }
 }

@@ -1,5 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentSignInBinding
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
@@ -36,6 +39,12 @@ class SignInFragment : Fragment() {
 
 
     }
+    private fun onSignInSuccess() {
+        // Kullanıcı başarılı giriş yaptıktan sonra, giriş durumunu kaydet
+        val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("is_signed_in", true).apply()
+
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,7 +56,8 @@ class SignInFragment : Fragment() {
         }
         authViewModel.authState.observe(viewLifecycleOwner){result->
             result.onSuccess { user ->
-                navigateToMainPage(view)
+                onSignInSuccess()
+               navigateToMainPage(view)
 
             }.onFailure { exception ->
                 if (exception.message == "User not found") {
@@ -71,13 +81,18 @@ class SignInFragment : Fragment() {
         super.onResume()
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
+    private fun switchFragment(fragment: Fragment) {
+
+    }
     fun navigateToSignUp(view: View){
         val action =SignInFragmentDirections.actionSignInFragmentToSignUpFragment()
         Navigation.findNavController(view).navigate(action)
     }
     fun navigateToMainPage(view: View){
-       val action = SignInFragmentDirections.actionSignInFragmentToMainPageFragment()
-        Navigation.findNavController(view).navigate(action)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, MainPageFragment())
+            .commit()
+
     }
     override fun onPause() {
         super.onPause()
@@ -89,4 +104,5 @@ class SignInFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
