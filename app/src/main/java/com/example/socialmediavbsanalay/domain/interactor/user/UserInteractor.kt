@@ -24,4 +24,7 @@ class UserInteractor  @Inject constructor(
     fun searchUsers(query: String): Flow<List<User>> {
         return userRepository.searchUsers(query)
     }
+    suspend fun getUsersByIds(userIds: List<String>): Map<String, User> {
+        return userRepository.getUsersByIds(userIds)
+    }
 }

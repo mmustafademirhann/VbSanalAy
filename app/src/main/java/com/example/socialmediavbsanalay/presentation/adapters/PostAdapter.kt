@@ -15,7 +15,6 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
 
 
     private var posts: List<Post> = emptyList()
-    private var user=User()
 
     class PostViewHolder(private val binding:PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -30,6 +29,8 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
                 .into(binding.postImage)
         }
     }
+
+
 
     fun setPosts(newPosts: List<Post>) {
         posts = newPosts

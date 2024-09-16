@@ -4,6 +4,7 @@ import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -69,6 +70,18 @@ class UserDataSourceImpl @Inject constructor(
             emit(userList)
         } else {
             emit(emptyList())
+        }
+    }
+    override suspend fun getUsersByIds(userIds: List<String>): Map<String, User> {
+        // Firestore sorgusunu oluşturun
+        val query = firestore.collection("users")
+            .whereIn(FieldPath.documentId(), userIds)
+            .get()
+
+        // Kullanıcı bilgilerini döndürün
+        return query.await().associate { document ->
+            val user = document.toObject(User::class.java)
+            user.id to user
         }
     }
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background Image -->
+    <item>
+        <bitmap
+            android:src="@drawable/signup"
+            android:gravity="center"/>
+    </item>
+
+    <!-- Overlay the rounded corners and border -->
+    <item>
+        <shape>
+            <corners android:radius="16dp"/>
+            <stroke android:width="2dp" android:color="#DDDDDD"/> <!-- Optional border -->
+        </shape>
+    </item>
+
+</layer-list>

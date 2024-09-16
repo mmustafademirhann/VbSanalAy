@@ -3,6 +3,7 @@ package com.example.socialmediavbsanalay.domain.interactor.authentication
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
 import com.example.socialmediavbsanalay.data.repositoryImpl.authentication.AuthRepositoryImpl
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthInteractor @Inject constructor(
@@ -15,5 +16,13 @@ class AuthInteractor @Inject constructor(
     suspend fun signUp(email: String, password: String): Result<FirebaseUser?> {
         return authRepository.signUp(email, password)
     }
+    suspend fun getUserIdByEmail(email: String):String{
+        return authRepository.getUserIdByEmail(email)
+
+    }
+    fun getCurrentUserEmail():String{
+        return authRepository.getCurrentUserEmail()
+    }
+
 
 }

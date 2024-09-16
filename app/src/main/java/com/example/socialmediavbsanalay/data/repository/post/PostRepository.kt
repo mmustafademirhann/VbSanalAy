@@ -6,7 +6,8 @@ import com.example.socialmediavbsanalay.domain.model.Post
 import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
-    fun getPosts(): Flow<List<Post>>
-    suspend fun uploadPhoto(imageUri: Uri): Unit
+    suspend fun getPosts(): List<Post>
+    suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit
+
 
 }

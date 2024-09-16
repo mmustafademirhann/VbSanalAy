@@ -5,25 +5,20 @@
     android:layout_height="match_parent"
     android:background="@drawable/signup">
 
-    <!-- AppBarLayout for collapsing toolbar and background image -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        >
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <!-- CollapsingToolbarLayout for profile image and background -->
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
-
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
-            <!-- Background image (main picture) -->
             <ImageView
                 android:id="@+id/mainBackgroundImage"
                 android:layout_width="match_parent"
@@ -35,7 +30,6 @@
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="0.5" />
 
-            <!-- Profile picture with shapeable image view -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profileImageP"
                 android:layout_width="100dp"
@@ -51,7 +45,6 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- User details and stats section -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -63,7 +56,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- User name and handle -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_marginTop="20dp"
@@ -88,7 +80,6 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- Follow and message buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +100,6 @@
                     android:text="Message" />
             </LinearLayout>
 
-            <!-- Stats (Posts, Followers, Following) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -117,7 +107,6 @@
                 android:gravity="center"
                 android:paddingTop="16dp">
 
-                <!-- Posts -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -138,7 +127,6 @@
                         android:textColor="@android:color/white" />
                 </LinearLayout>
 
-                <!-- Followers -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -147,9 +135,9 @@
                     android:layout_marginStart="32dp">
                     <TextView
                         android:layout_width="wrap_content"
-                        android:textColor="@color/white"
                         android:layout_height="wrap_content"
                         android:text="12k"
+                        android:textColor="@color/white"
                         android:textSize="22sp"
                         android:textStyle="bold" />
                     <TextView
@@ -160,7 +148,6 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-                <!-- Following -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -179,19 +166,19 @@
                         android:layout_height="wrap_content"
                         android:text="Following"
                         android:textColor="@color/white"
-                        android:textSize="12sp"
-                         />
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- RecyclerView for posts or gallery items -->
             <androidx.recyclerview.widget.RecyclerView
+                android:background="@drawable/rounded_recyclerview"
                 android:id="@+id/recyclerViewPosts"
                 android:layout_width="match_parent"
-                android:layout_height="405dp"
-                android:paddingTop="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="16dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="2" />
+                app:spanCount="3" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

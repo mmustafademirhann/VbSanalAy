@@ -1,58 +1,102 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
 import com.example.socialmediavbsanalay.domain.model.Gallery
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
+
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     private val galleryInteractor: GalleryInteractor,
-    val galleryAdapter: GalleryAdapter, // Injected here
-    private val postInteractor: PostInteractor
+    private val galleryAdapter: GalleryAdapter,
+    private val postInteractor: PostInteractor,
+    private val authInteractor: AuthInteractor
 ) : ViewModel() {
 
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
     val recentPhotos: LiveData<List<Gallery>> = _recentPhotos
+
     private val _uploadStatus = MutableLiveData<String>()
     val uploadStatus: LiveData<String> get() = _uploadStatus
-    val posts: LiveData<List<Post>> = postInteractor.getPosts()
-        .asLiveData()
+
+    private val _posts = MutableLiveData<List<Post>>()
+    val posts: LiveData<List<Post>> = _posts
 
 
+    var x=""
 
-    fun loadGalleryImages(context: Context) {
-        viewModelScope.launch {
-            val photos = galleryInteractor.fetchRecentPhotos()
-            _recentPhotos.value = photos
-            galleryAdapter.submitList(photos)//-->submitlist
-        }
+    init {
+        loadPosts() // Initialize posts LiveData when ViewModel is created
     }
-    fun uploadPhoto(imageUri: Uri) {
+
+    private fun loadPosts() {
         viewModelScope.launch {
             try {
-                val photoUrl = postInteractor.uploadPhoto(imageUri)
-                _uploadStatus.value = "Upload successful: $photoUrl"
+                x=getUserIdByEmail().toString()
+                val posts = postInteractor.getPosts() // Use the suspend function
+                _posts.value = posts
             } catch (e: Exception) {
-                _uploadStatus.value = "Upload failed: ${e.message}"
+                _posts.value = emptyList() // Handle error case
             }
         }
     }
-    //izin
+
+    suspend fun refreshGallery() {
+        try {
+            val photos = postInteractor.getPosts()
+            _posts.value = photos
+        } catch (e: Exception) {
+            _posts.value = emptyList()
+        }
+    }
+
+    fun loadGalleryImages() {
+        viewModelScope.launch {
+            try {
+                val photos = galleryInteractor.fetchRecentPhotos()
+                _recentPhotos.value = photos
+                galleryAdapter.submitList(photos) // Update GalleryAdapter with new photos
+            } catch (e: Exception) {
+                _recentPhotos.value = emptyList() // Handle error by setting empty list
+            }
+        }
+    }
+
+
+    private suspend fun getUserIdByEmail(): String? {
+        val email = authInteractor.getCurrentUserEmail()
+        return email?.let { authInteractor.getUserIdByEmail(it) }
+    }
+
+    fun getUserId(): String? {
+        return authInteractor.getCurrentUserEmail() // Return current user email directly or use getUserId
+    }
+
+    fun uploadPhoto(imageUri: Uri) {
+        viewModelScope.launch {
+            try {
+                val userId = getUserIdByEmail()
+                if (userId != null) {
+                    postInteractor.uploadPhoto(imageUri, userId)
+                    _uploadStatus.value = "Upload Successful"
+                } else {
+                    _uploadStatus.value = "User ID not found"
+                }
+            } catch (e: Exception) {
+                _uploadStatus.value = "Upload Failed: ${e.message}"
+            }
+        }
+    }
+
 }

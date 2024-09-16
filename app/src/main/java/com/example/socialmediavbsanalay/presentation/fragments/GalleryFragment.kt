@@ -56,7 +56,7 @@ class GalleryFragment : Fragment() {
     }
     private fun loadGalleryImages() {
         // This will trigger the loading of images from the gallery
-        galleryViewModel.loadGalleryImages(requireContext())
+        galleryViewModel.loadGalleryImages()
     }
 
 

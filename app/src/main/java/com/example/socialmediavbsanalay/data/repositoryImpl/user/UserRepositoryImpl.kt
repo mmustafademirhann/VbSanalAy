@@ -28,4 +28,7 @@ class UserRepositoryImpl @Inject constructor(
     override fun searchUsers(query: String): Flow<List<User>> {
         return userDataSource.searchUsers(query)
     }
+    override suspend fun getUsersByIds(userIds: List<String>): Map<String, User> {
+        return userDataSource.getUsersByIds(userIds)
+    }
 }

@@ -8,4 +8,5 @@ interface UserDataSource {
     suspend fun getUser(userId: String): User?
     suspend fun getAllUsers(): List<User>
     fun searchUsers(query:String):Flow<List<User>>
+    suspend fun getUsersByIds(userIds: List<String>): Map<String, User>
 }

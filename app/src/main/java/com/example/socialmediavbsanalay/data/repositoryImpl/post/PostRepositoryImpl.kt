@@ -10,10 +10,11 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val postDataSource: PostDataSource
 ): PostRepository {
-    override fun getPosts(): Flow<List<Post>> {
-        return postDataSource.getPosts() // Fetch the list of photo URLs
+    override suspend fun getPosts(): List<Post> {
+        return postDataSource.getPosts()
     }
-    override suspend fun uploadPhoto(imageUri: Uri): Unit {
-        return postDataSource.uploadPhoto(imageUri)
+    override suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit {
+        return postDataSource.uploadPhoto(imageUri,userId)
     }
+
 }

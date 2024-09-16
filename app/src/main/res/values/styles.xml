@@ -21,5 +21,9 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">11%</item>
     </style>
+    <style name="CircularImageViewThree">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">21%</item>
+    </style>
 
 </resources>

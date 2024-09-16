@@ -1,15 +1,20 @@
 package com.example.socialmediavbsanalay.data.repositoryImpl.authentication
 
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
+import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
+import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuthDataSource: FirebaseAuthDataSource
+    private val firebaseAuthDataSource: FirebaseAuthDataSource,
+    private val createUserDataSource: CreateUserDataSource
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<FirebaseUser?> {
@@ -35,4 +40,19 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getUserIdByEmail(email: String): String {
+        return try {
+            firebaseAuthDataSource.getUserIdByEmail(email) // Flow'dan ilk değeri al
+        } catch (e: FirebaseAuthInvalidUserException) {
+            throw Exception("User not found with email: $email", e)
+        } catch (e: Exception) {
+            throw Exception("Failed to retrieve userId: ${e.message}", e)
+        }
+    }
+
+    override fun getCurrentUserEmail(): String {
+        return firebaseAuthDataSource.getCurrentUserEmail()
+    }
+
 }

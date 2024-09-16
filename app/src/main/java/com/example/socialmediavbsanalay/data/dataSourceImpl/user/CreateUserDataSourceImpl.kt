@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -39,6 +40,18 @@ class CreateUserDataSourceImpl @Inject constructor(
             .addOnFailureListener { exception ->
                 continuation.resumeWithException(exception)
             }
+    }
+    override suspend fun getUserById(userId: String): Result<User?> {
+        return try {
+            val documentSnapshot = firestore.collection("user").document(userId).get().await()
+            if (documentSnapshot.exists()) {
+                Result.success(documentSnapshot.toObject(User::class.java))
+            } else {
+                Result.success(null)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 

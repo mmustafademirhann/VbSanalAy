@@ -30,9 +30,11 @@ import android.util.Log
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import kotlinx.coroutines.launch
 
 
 /**
@@ -49,13 +51,19 @@ class MainPageFragment : Fragment() {
     private lateinit var postAdapter: PostAdapter
     private val galleryViewModel: GalleryViewModel by viewModels()
 
+
     private fun navigateToSearchResultsFragment() {
         val searchUserPostFragment = SearchUserPostFragment()
         replaceFragment(searchUserPostFragment)
     }
 
     fun handleImageUri(uri: Uri) {
-        galleryViewModel.uploadPhoto(uri)
+        val userId = galleryViewModel.getUserId() // Get userId from ViewModel/Interactor
+        if (userId != null) {
+            galleryViewModel.uploadPhoto(uri) // Pass image URI and userId to upload function
+        } else {
+            Toast.makeText(requireContext(), "User not logged in!", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -84,6 +92,7 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
+        postAdapter = PostAdapter()
         return binding.root
     }
 
@@ -98,6 +107,16 @@ class MainPageFragment : Fragment() {
         }
         galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
             postAdapter.setPosts(posts)
+        }
+
+        val recyclerView = binding.postsRecyclerView
+        recyclerView.layoutManager=LinearLayoutManager(context)
+        recyclerView.adapter=postAdapter
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                galleryViewModel.refreshGallery()
+                binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdurun
+            }
         }
 
         adapterFunctions()
