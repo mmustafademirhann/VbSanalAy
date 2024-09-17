@@ -66,6 +66,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     }
 
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         userPostAdapter = UserPostAdapter()

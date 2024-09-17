@@ -93,12 +93,14 @@ class MainPageFragment : Fragment() {
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
         postAdapter = PostAdapter()
+
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         (activity as MainActivity).showBottomBar()
         galleryViewModel.uploadStatus.observe(viewLifecycleOwner) { status ->
 
@@ -132,6 +134,7 @@ class MainPageFragment : Fragment() {
             .replace(R.id.fragmentContainerView, fragment)
             .commit()
     }
+
     private fun adapterFunctions() {
         storyAdapter = StoryAdapter()
 
@@ -157,10 +160,5 @@ class MainPageFragment : Fragment() {
 
 
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
 }

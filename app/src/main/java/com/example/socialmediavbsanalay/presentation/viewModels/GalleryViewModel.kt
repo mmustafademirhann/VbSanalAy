@@ -12,6 +12,7 @@ import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
 import com.example.socialmediavbsanalay.domain.model.Gallery
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
+import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.launch
@@ -27,12 +28,12 @@ class GalleryViewModel @Inject constructor(
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
     val recentPhotos: LiveData<List<Gallery>> = _recentPhotos
 
-    private val _uploadStatus = MutableLiveData<String>()
+    private val _uploadStatus = SingleLiveData<String>()
     val uploadStatus: LiveData<String> get() = _uploadStatus
 
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> = _posts
-
+    private var hasFetchedPosts = false
 
     var x=""
 
@@ -40,16 +41,20 @@ class GalleryViewModel @Inject constructor(
         loadPosts() // Initialize posts LiveData when ViewModel is created
     }
 
-    private fun loadPosts() {
-        viewModelScope.launch {
-            try {
-                x=getUserIdByEmail().toString()
-                val posts = postInteractor.getPosts() // Use the suspend function
-                _posts.value = posts
-            } catch (e: Exception) {
-                _posts.value = emptyList() // Handle error case
+    fun loadPosts() {
+        if (!hasFetchedPosts){
+            viewModelScope.launch {
+                try {
+                    x=getUserIdByEmail().toString()
+                    val posts = postInteractor.getPosts() // Use the suspend function
+                    _posts.value = posts
+                    hasFetchedPosts = true
+                } catch (e: Exception) {
+                    _posts.value = emptyList() // Handle error case
+                }
             }
         }
+
     }
 
     suspend fun refreshGallery() {

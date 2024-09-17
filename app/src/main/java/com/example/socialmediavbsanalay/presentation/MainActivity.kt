@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     val database = Firebase.database
     val myRef = database.getReference("message")
     private val postViewModel: GalleryViewModel by viewModels()
+    private val fragmentCache = mutableMapOf<String, Fragment>()
 
 
 
@@ -82,76 +83,45 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
 
-        setContentView(R.layout.activity_main)
-        val navHostFragmenta = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        navController = navHostFragmenta.navController
+        setContentView(view)
 
-        // SharedPreferences ile kullanıcı daha önce giriş yapmış mı kontrol et
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        navController = navHostFragment.navController
+
         val sharedPreferences: SharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val isSignedIn = sharedPreferences.getBoolean("is_signed_in", false)
-
-        if (isSignedIn) {
-            // Eğer kullanıcı giriş yapmışsa, WelcomeFragment yerine MainPageFragment'i göster
-            navController.setGraph(R.navigation.nav_graph)  // Önce nav_graph'ı setle
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, MainPageFragment())
-                .commit()
-        }
-
-        val addButton: Button = findViewById(R.id.addButton)
-        addButton.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                accessGallery()
-            } else {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), PICK_IMAGE_REQUEST)
-            }
-        }
-
-        postViewModel.uploadStatus.observe(this) { status ->
-            // You might want to notify the fragment about the upload status
-            // For example, use a LiveData or any other communication method
-        }
-        // Ensure that the navigation component is working with the correct NavController
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        val navController = navHostFragment.navController
-
-        myRef.setValue("Hello, World!")
-        myRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                val value = dataSnapshot.getValue<String>()
-                Log.d(TAG, "Value is: $value")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException())
-            }
-        })
-        var xyz=true
-        setContentView(view)
-       // FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         clickEvents()
+        if (savedInstanceState == null) {
+            if (isSignedIn) {
+                // If user is signed in, navigate to MainPageFragment
+                switchFragment(MainPageFragment::class.java)
+            } else {
+                // If user is not signed in, navigate to WelcomeFragment
+                switchFragment(WelcomeFragment::class.java)
+            }
+        }
 
+        // Rest of the onCreate code...
     }
+
+
 
     private fun clickEvents(){
         binding.userImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.userline)
-            switchFragment(UserProfileFragment())
+            switchFragment(UserProfileFragment::class.java)
         }
         binding.homeImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.homeline)
-            switchFragment(MainPageFragment())
+            switchFragment(MainPageFragment::class.java)
         }
         binding.messagetwoiconLayout.setOnClickListener {
             setVisibilityForLine(binding.messageline)
-            switchFragment(MessageFragment())
+            switchFragment(MessageFragment::class.java)
         }
         binding.notificationImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.notificationline)
-            switchFragment(NotificationBarFragment())
+            switchFragment(NotificationBarFragment::class.java)
         }
         binding.addButton.setOnClickListener{
 
@@ -239,7 +209,8 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("İptal", null)
             .show()
     }
-    private fun switchFragment(fragment: Fragment) {
+    fun switchFragment(fragmentClass: Class<out Fragment>) {
+        val fragment = getFragment(fragmentClass)
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, fragment)
             .commit()
@@ -250,7 +221,23 @@ class MainActivity : AppCompatActivity() {
             showBottomBar()
         }
     }
-     fun showBottomBar() {
+    private fun getFragment(fragmentClass: Class<out Fragment>): Fragment {
+        val fragmentTag = fragmentClass.simpleName
+        return fragmentCache.getOrPut(fragmentTag) {
+            fragmentClass.newInstance()
+        }
+    }
+
+
+
+
+
+
+
+    // Method to navigate to the first instance of a fragment
+
+
+    fun showBottomBar() {
         binding.bottomMain.visibility = View.VISIBLE
     }
 
@@ -258,6 +245,21 @@ class MainActivity : AppCompatActivity() {
         binding.bottomMain.visibility = View.GONE
     }
 
+    private fun goToFirstInstanceOfFragment(fragmentClass: Class<out Fragment>) {
+        val fragmentManager = supportFragmentManager
+
+        // Back stack'te olan fragmentleri temizle
+        while (fragmentManager.backStackEntryCount > 0) {
+            val backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)
+            if (backStackEntry.name == fragmentClass.simpleName) {
+                // İstenilen fragment bulunduğunda bu fragment'e geri dön
+                fragmentManager.popBackStack(backStackEntry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                return
+            } else {
+                fragmentManager.popBackStack()
+            }
+        }
+    }
 
     override fun onBackPressed() {
 
@@ -271,11 +273,11 @@ class MainActivity : AppCompatActivity() {
         when (currentFragment) {
             is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
                 // If currently on one of these fragments, go back to MainPageFragment
-                switchFragment(MainPageFragment())
+                switchFragment(MainPageFragment::class.java)
             }
             is MainPageFragment -> {
                 // If already on MainPageFragment, exit the app
-                finish()
+                finishAffinity()
             }
             is WelcomeFragment, is SignInFragment, is SignUpFragment -> {
                 // Let NavController handle back navigation for the sign-in flow

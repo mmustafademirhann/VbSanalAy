@@ -7,17 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.fragment.app.FragmentManager
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentWelcomeBinding
 import com.example.socialmediavbsanalay.presentation.MainActivity
 
 class WelcomeFragment : Fragment() {
 
-
     private var _binding: FragmentWelcomeBinding? = null
     private val binding get() = _binding!!
 
-    private var isMoved=false
+    private var isMoved = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,27 +27,33 @@ class WelcomeFragment : Fragment() {
         _binding = FragmentWelcomeBinding.inflate(inflater, container, false)
         return binding.root
     }
-    private fun intiClickListeners(){
-        val animatedLayout=binding.animatedConstraintLayout
-        val bacgImage=binding.fullscreenImage
-        animatedLayout.setOnClickListener{
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        (activity as MainActivity).hideBottomBar()
+        initClickListeners()
+    }
+
+    private fun initClickListeners() {
+        val animatedLayout = binding.animatedConstraintLayout
+        val bacgImage = binding.fullscreenImage
+        animatedLayout.setOnClickListener {
             animateLayout(animatedLayout)
         }
-        bacgImage.setOnClickListener{
+        bacgImage.setOnClickListener {
             closeAnimateLayout(animatedLayout)
         }
         binding.navigateButton.setOnClickListener {
-            next(it)
+            // Use FragmentManager to replace the fragment
+            val signInFragment = SignInFragment()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, signInFragment) // Adjust the container ID if needed
+                .addToBackStack(null) // Optionally add to back stack
+                .commit()
         }
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).hideBottomBar()
 
-        intiClickListeners()
-
-	//I am confused
-    }
     private fun animateLayout(view: View) {
         val translationY = if (isMoved) 0f else -100f
         val animator = ObjectAnimator.ofFloat(view, "translationY", view.translationY, translationY)
@@ -57,7 +63,8 @@ class WelcomeFragment : Fragment() {
         // Update the state
         isMoved = !isMoved
     }
-    private fun closeAnimateLayout(view: View){
+
+    private fun closeAnimateLayout(view: View) {
         val animator = ObjectAnimator.ofFloat(view, "translationY", 0f, 100f)
         animator.duration = 300 // Duration of the animation in milliseconds
         animator.start()
@@ -69,11 +76,7 @@ class WelcomeFragment : Fragment() {
         super.onResume()
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     }
-    fun next(view: View){
 
-        val action= WelcomeFragmentDirections.actionWelcomeFragmentToSignInFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
     override fun onPause() {
         super.onPause()
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
@@ -84,5 +87,4 @@ class WelcomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    //ı am tring to fix what i did
 }

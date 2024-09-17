@@ -4,8 +4,8 @@
 
     <!-- Gradient Background -->
     <gradient
-        android:startColor="#3152A1"
-        android:endColor="#FB00FF"
+        android:startColor="#DDC2EF"
+        android:endColor="#AB06AE"
         android:angle="45"/> <!-- 45 degrees gradient from top-left to bottom-right -->
 
     <!-- Optional Border -->
