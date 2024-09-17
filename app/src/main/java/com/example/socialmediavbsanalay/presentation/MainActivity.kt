@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     val database = Firebase.database
     val myRef = database.getReference("message")
-    private val postViewModel: GalleryViewModel by viewModels()
+    private val galleryViewModel: GalleryViewModel by viewModels()
     private val fragmentCache = mutableMapOf<String, Fragment>()
 
 
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPreferences: SharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val isSignedIn = sharedPreferences.getBoolean("is_signed_in", false)
-        clickEvents()
+
         if (savedInstanceState == null) {
             if (isSignedIn) {
                 // If user is signed in, navigate to MainPageFragment
@@ -100,6 +101,12 @@ class MainActivity : AppCompatActivity() {
                 switchFragment(WelcomeFragment::class.java)
             }
         }
+        galleryViewModel.uploadStatus.observe(this) { status ->
+
+            // Update UI with upload status or refresh the fragment view
+            Toast.makeText(this, status, Toast.LENGTH_SHORT).show()
+        }
+        clickEvents()
 
         // Rest of the onCreate code...
     }
@@ -137,11 +144,21 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.data?.let { uri ->
                 // Notify the fragment with the selected image URI
-                (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as? MainPageFragment)
-                    ?.handleImageUri(uri)
+                handleImageUri(uri)
+
             }
         }
+
     }
+    fun handleImageUri(uri: Uri) {
+        val userId = galleryViewModel.getUserId() // Get userId from ViewModel/Interactor
+        if (userId != null) {
+            galleryViewModel.uploadPhoto(uri) // Pass image URI and userId to upload function
+        } else {
+            Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setVisibilityForLine(visibleLine: View) {
         binding.userline.visibility = View.INVISIBLE
         binding.homeline.visibility = View.INVISIBLE

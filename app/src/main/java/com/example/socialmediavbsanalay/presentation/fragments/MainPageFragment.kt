@@ -57,14 +57,7 @@ class MainPageFragment : Fragment() {
         replaceFragment(searchUserPostFragment)
     }
 
-    fun handleImageUri(uri: Uri) {
-        val userId = galleryViewModel.getUserId() // Get userId from ViewModel/Interactor
-        if (userId != null) {
-            galleryViewModel.uploadPhoto(uri) // Pass image URI and userId to upload function
-        } else {
-            Toast.makeText(requireContext(), "User not logged in!", Toast.LENGTH_SHORT).show()
-        }
-    }
+
 
 
     fun navigateToSignUp(view: View){
@@ -102,11 +95,7 @@ class MainPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as MainActivity).showBottomBar()
-        galleryViewModel.uploadStatus.observe(viewLifecycleOwner) { status ->
 
-            // Update UI with upload status or refresh the fragment view
-            Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show()
-        }
         galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
             postAdapter.setPosts(posts)
         }
