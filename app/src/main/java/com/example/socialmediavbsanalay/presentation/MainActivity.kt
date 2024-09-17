@@ -211,22 +211,34 @@ class MainActivity : AppCompatActivity() {
     }
     fun switchFragment(fragmentClass: Class<out Fragment>) {
         val fragment = getFragment(fragmentClass)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainerView, fragment)
-            .commit()
+        val transaction = supportFragmentManager.beginTransaction()
 
+        // Optional: Add animations for smoother transitions (customize as needed)
+
+        transaction.replace(R.id.fragmentContainerView, fragment)
+
+        // Add to back stack unless it's WelcomeFragment or MainPageFragment
+        if (fragment !is WelcomeFragment && fragment !is MainPageFragment) {
+            transaction.addToBackStack(null)
+        }
+
+        transaction.commit()
+
+        // Manage bottom bar visibility
         if (fragment is WelcomeFragment) {
             hideBottomBar()
         } else {
             showBottomBar()
         }
     }
+
     private fun getFragment(fragmentClass: Class<out Fragment>): Fragment {
         val fragmentTag = fragmentClass.simpleName
         return fragmentCache.getOrPut(fragmentTag) {
             fragmentClass.newInstance()
         }
     }
+
 
 
 
@@ -262,7 +274,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-
+        //val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        //val navController = navHostFragment.navController
         setVisibilityForLine(binding.homeline)
 
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
