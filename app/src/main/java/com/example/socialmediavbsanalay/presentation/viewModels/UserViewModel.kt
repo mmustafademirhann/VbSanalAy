@@ -8,6 +8,7 @@ import com.example.socialmediavbsanalay.data.repositoryImpl.user.UserRepositoryI
 import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.domain.model.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -24,6 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val userInteractor: UserInteractor
+
+
 ) : ViewModel() {
 
     private val _userData = MutableLiveData<User?>()
@@ -34,6 +37,7 @@ class UserViewModel @Inject constructor(
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> get() = _users
+
 
     fun searchUsers(query: String) {
         viewModelScope.launch {

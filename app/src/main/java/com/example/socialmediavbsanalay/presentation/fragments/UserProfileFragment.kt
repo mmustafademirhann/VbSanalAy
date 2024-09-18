@@ -23,6 +23,7 @@ import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -33,12 +34,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     private lateinit var userPostAdapter: UserPostAdapter
     private lateinit var binding: FragmentUserProfileBinding
     private val galleryViewModel: GalleryViewModel by viewModels()
-    val itemDecoration = object : RecyclerView.ItemDecoration() {
-        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-            val spacing = 0 // spacing değerini dp cinsinden ayarlayın
-            outRect.set(spacing, spacing, spacing, spacing)
-        }
-    }
+
+    private var isOwner: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,44 +43,84 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     ): View {
         binding = FragmentUserProfileBinding.inflate(inflater, container, false)
 
+        // Initialize UserAdapter with onItemClick lambda
+        userAdapter = UserAdapter { userId ->
+            // Handle item click, e.g., show a Toast or navigate to user profile
+            Toast.makeText(context, "Clicked user: $userId", Toast.LENGTH_SHORT).show()
+            // Alternatively, navigate to user profile
+            // navigateToUserProfile(userId)
+        }
+
         // Initialize RecyclerView and Adapter
-        userAdapter = UserAdapter()
+        binding.recyclerViewPosts.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = userAdapter
+        }
 
-        // Set up RecyclerView
-
-
-        // Observe users StateFlow
+        // Observe user list and update the adapter
         lifecycleScope.launch {
             userViewModel.users.collect { userList ->
                 userAdapter.updateUsers(userList)
             }
         }
 
-        // Load all users initially
+        // Load all users
         userViewModel.fetchAllUsers()
 
         return binding.root
     }
 
+    companion object {
+        private const val ARG_USER_ID = "user_id"
+        private const val ARG_IS_FROM_SEARCH = "is_from_search"
 
+        fun newInstance(userId: String, isFromSearch: Boolean): UserProfileFragment {
+            val fragment = UserProfileFragment()
+            val args = Bundle()
+            args.putString(ARG_USER_ID, userId)
+            args.putBoolean(ARG_IS_FROM_SEARCH, isFromSearch)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize user post adapter
         userPostAdapter = UserPostAdapter()
-        galleryViewModel.posts.observe(viewLifecycleOwner) { posts_for_users ->
-            val filteredPosts = posts_for_users.filter { post -> post.username ==galleryViewModel.x}
+
+        // Observe posts and filter by username
+        galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
+            val filteredPosts = postsForUsers.filter { post -> post.username == galleryViewModel.IDGET }
             userPostAdapter.setPosts(filteredPosts)
         }
 
-        binding.recyclerViewPosts.apply {
-            layoutManager = GridLayoutManager(context, 3) // 3 sütunlu grid
-            adapter = userPostAdapter
+        val isFromSearch = arguments?.getBoolean(ARG_IS_FROM_SEARCH) ?: false
+        isOwner = !isFromSearch // searchFragment'den gelmediyse true, geldiyse false
 
-
-
-
-            //addItemDecoration(GridSpacingItemDecoration(3, 10, true)) // 10dp boşluk, kenarları dahil
+        // Observe posts and update UI
+        lifecycleScope.launch {
+            galleryViewModel.currentUserId.collect { currentUserId ->
+                updateUIBasedOnOwnership()
+            }
         }
 
+        binding.recyclerViewPosts.apply {
+            layoutManager = GridLayoutManager(context, 3) // 3-column grid
+            adapter = userPostAdapter
+        }
+    }
+
+    private fun updateUIBasedOnOwnership() {
+        if (isOwner) {
+            binding.settingsIcon.visibility = View.VISIBLE
+            binding.followButton.visibility = View.GONE
+            binding.messageButton.visibility = View.GONE
+        } else {
+            binding.settingsIcon.visibility = View.GONE
+            binding.followButton.visibility = View.VISIBLE
+            binding.messageButton.visibility = View.VISIBLE
+        }
     }
 }

@@ -64,10 +64,13 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <!-- Posts RecyclerView -->
+
+
+    <!-- Bottom Navigation with Center Button -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/bottomBarContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/storyRecyclerView"
@@ -76,14 +79,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postsRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/post_for_recycler" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-
-    <!-- Bottom Navigation with Center Button -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/bottomBarContainer"
         android:layout_width="match_parent"

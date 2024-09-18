@@ -1,10 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -15,9 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentSearchUserPostBinding
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,7 +24,6 @@ class SearchUserPostFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchUserPostBinding
     private val userViewModel: UserViewModel by viewModels()
-    private lateinit var userAdapter: UserAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,8 +31,10 @@ class SearchUserPostFragment : Fragment() {
     ): View {
         binding = FragmentSearchUserPostBinding.inflate(inflater, container, false)
 
-        // Initialize RecyclerView and Adapter
-        userAdapter = UserAdapter()
+        // Initialize RecyclerView and Adapter with click listener
+        val userAdapter = UserAdapter { userId ->
+            navigateToUserProfile(userId) // Handle item click
+        }
         binding.searchRecyclerViewView.apply {
             adapter = userAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -71,6 +71,17 @@ class SearchUserPostFragment : Fragment() {
         showEditTextWithKeyboard()
         // Use binding to access views
         // Example: binding.someTextView.text = "Hello"
+    }
+
+    private fun navigateToUserProfile(userId: String) {
+        val isFromSearch = true // Set this to true to indicate navigation from search
+        val userProfileFragment = UserProfileFragment.newInstance(userId, isFromSearch)
+
+        // Perform navigation
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, userProfileFragment)
+            .addToBackStack(null) // Optional: add to back stack if you want to navigate back
+            .commit()
     }
 
     private fun showEditTextWithKeyboard() {

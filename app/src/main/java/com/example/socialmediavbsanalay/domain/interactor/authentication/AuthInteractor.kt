@@ -2,6 +2,7 @@ package com.example.socialmediavbsanalay.domain.interactor.authentication
 
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
 import com.example.socialmediavbsanalay.data.repositoryImpl.authentication.AuthRepositoryImpl
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -22,6 +23,9 @@ class AuthInteractor @Inject constructor(
     }
     fun getCurrentUserEmail():String{
         return authRepository.getCurrentUserEmail()
+    }
+    fun getCurrentUserId():String?{
+        return authRepository.getCurrentUserId()
     }
 
 

@@ -5,5 +5,7 @@ data class User(
     val name: String = "",
     val surName: String = "",
     val email: String = "",
-    val gender:String=""
+    val gender:String="",
+    val profileImageUrl:String="",
+    val profileBacgroundImageUrl:String=""
 )

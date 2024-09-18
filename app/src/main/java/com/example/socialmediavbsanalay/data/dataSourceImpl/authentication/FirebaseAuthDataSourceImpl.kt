@@ -49,4 +49,8 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
     override fun getCurrentUserEmail(): String {
         return firebaseAuth.currentUser?.email.toString()
     }
+    override fun getCurrentUserId():String?{
+        val user=FirebaseAuth.getInstance().currentUser
+        return user?.uid
+    }
 }

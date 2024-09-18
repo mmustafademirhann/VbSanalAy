@@ -23,7 +23,7 @@ class PostDataSourceImpl @Inject constructor(
 
     // Collection where you will store the post metadata in Firestore
     private val postsCollection = firestore.collection("posts")
-    private val postsForUsersCollection = firestore.collection("posts_for_users")
+
 
     override suspend fun fetchPosts(): Result<List<Post>> {
         return try {

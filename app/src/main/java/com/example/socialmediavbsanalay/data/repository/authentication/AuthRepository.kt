@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.data.repository.authentication
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
@@ -8,5 +9,6 @@ interface AuthRepository {
     suspend fun signUp(email: String, password: String): Result<FirebaseUser?>
     suspend fun getUserIdByEmail(email: String):String
     fun getCurrentUserEmail(): String
+    fun getCurrentUserId():String?
 
 }

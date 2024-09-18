@@ -87,7 +87,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        navController = navHostFragment.navController
+        if (navHostFragment == null) {
+            Log.e(TAG, "NavHostFragment is null!")
+        } else {
+            navController = navHostFragment.navController
+        }
+        //navController = navHostFragment.navController
 
         val sharedPreferences: SharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val isSignedIn = sharedPreferences.getBoolean("is_signed_in", false)
@@ -150,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    fun handleImageUri(uri: Uri) {
+    private fun handleImageUri(uri: Uri) {
         val userId = galleryViewModel.getUserId() // Get userId from ViewModel/Interactor
         if (userId != null) {
             galleryViewModel.uploadPhoto(uri) // Pass image URI and userId to upload function
@@ -226,7 +231,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("İptal", null)
             .show()
     }
-    fun switchFragment(fragmentClass: Class<out Fragment>) {
+    private fun switchFragment(fragmentClass: Class<out Fragment>) {
         val fragment = getFragment(fragmentClass)
         val transaction = supportFragmentManager.beginTransaction()
 
@@ -249,10 +254,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun getFragment(fragmentClass: Class<out Fragment>): Fragment {
         val fragmentTag = fragmentClass.simpleName
         return fragmentCache.getOrPut(fragmentTag) {
             fragmentClass.newInstance()
+        }
+    }
+    private fun getFragmentt(fragmentClass: Class<out Fragment>): Fragment {
+        return when (fragmentClass) {
+            UserProfileFragment::class.java -> UserProfileFragment()
+            else -> throw IllegalArgumentException("Unknown fragment class: $fragmentClass")
         }
     }
 

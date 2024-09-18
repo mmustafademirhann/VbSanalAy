@@ -1,6 +1,8 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
 import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings.Global.putString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +16,8 @@ import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,17 +39,36 @@ class GalleryViewModel @Inject constructor(
     val posts: LiveData<List<Post>> = _posts
     private var hasFetchedPosts = false
 
-    var x=""
+    private val _currentUserId = MutableStateFlow<String?>(null)
+    val currentUserId: StateFlow<String?> = _currentUserId
+
+
+    var IDGET=""
 
     init {
         loadPosts() // Initialize posts LiveData when ViewModel is created
+        fetchCurrentUserId()
+    }
+
+    fun fetchUserId(callback: (String?) -> Unit) {
+        viewModelScope.launch {
+            val userId = getUserIdByEmail() // Asynchronous call
+            callback(userId) // Pass userId to the callback function
+        }
+    }
+    private fun fetchCurrentUserId() {
+        viewModelScope.launch {
+            _currentUserId.value = authInteractor.getCurrentUserId()
+        }
     }
 
     fun loadPosts() {
         if (!hasFetchedPosts){
             viewModelScope.launch {
                 try {
-                    x=getUserIdByEmail().toString()
+                    IDGET=getUserIdByEmail().toString()
+
+
                     val posts = postInteractor.getPosts() // Use the suspend function
                     _posts.value = posts
                     hasFetchedPosts = true

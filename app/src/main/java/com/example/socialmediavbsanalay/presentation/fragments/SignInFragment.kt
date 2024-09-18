@@ -85,8 +85,9 @@ class SignInFragment : Fragment() {
 
     }
     fun navigateToSignUp(view: View){
-        val action =SignInFragmentDirections.actionSignInFragmentToSignUpFragment()
-        Navigation.findNavController(view).navigate(action)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, SignUpFragment())
+            .commit()
     }
     fun navigateToMainPage(view: View){
         requireActivity().supportFragmentManager.beginTransaction()

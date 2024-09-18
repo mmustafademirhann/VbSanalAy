@@ -4,6 +4,7 @@ import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseA
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
 import com.example.socialmediavbsanalay.domain.model.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
@@ -53,6 +54,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun getCurrentUserEmail(): String {
         return firebaseAuthDataSource.getCurrentUserEmail()
+    }
+    override fun getCurrentUserId():String?{
+        val user= FirebaseAuth.getInstance().currentUser
+        return user?.uid
     }
 
 }
