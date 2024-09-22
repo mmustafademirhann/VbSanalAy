@@ -58,8 +58,9 @@ class MainActivity : AppCompatActivity() {
     private val galleryViewModel: GalleryViewModel by viewModels()
     private val fragmentCache = mutableMapOf<String, Fragment>()
 
-    //git'e yükledim mi ? linuxdan ?
 
+
+//linuxdan gitti öi ?
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
