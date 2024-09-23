@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     val myRef = database.getReference("message")
     private val galleryViewModel: GalleryViewModel by viewModels()
     private val fragmentCache = mutableMapOf<String, Fragment>()
-
+    //sldnlaksdn
 
 
     private val requestPermissionLauncher = registerForActivityResult(
