@@ -18,8 +18,10 @@ import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,6 +48,14 @@ class GalleryViewModel @Inject constructor(
     val currentUserId: StateFlow<String?> = _currentUserId
     private val _currentUser = MutableLiveData<User?>()
     val currentUser: LiveData<User?> get() = _currentUser
+    private val _userData = MutableLiveData<Result<User?>>()
+    val userData: LiveData<Result<User?>> get() = _userData
+    private val _userId = MutableStateFlow<String?>(null)
+    val userId: StateFlow<String?> get() = _userId
+    var currentUserInId=""
+    private val _userIdFlow = MutableStateFlow<String?>(null)
+    val userIdFlow: StateFlow<String?> get() = _userIdFlow
+
 
 
     var IDGET=""
@@ -54,6 +64,9 @@ class GalleryViewModel @Inject constructor(
         loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
     }
+    //suspend fun fetchUserData(): User? {
+        //return authInteractor.fetchUserData().getOrNull()
+   // }
 
     fun fetchUserId(callback: (String?) -> Unit) {
         viewModelScope.launch {
@@ -61,10 +74,11 @@ class GalleryViewModel @Inject constructor(
             callback(userId) // Pass userId to the callback function
         }
     }
-    private fun fetchCurrentUserId() {
-        viewModelScope.launch {
-            _currentUserId.value = authInteractor.getCurrentUserId()
-        }
+    private fun fetchCurrentUserId():String {
+
+        return authInteractor.getCurrentUserId().toString().also { currentUserInId = it }
+
+
     }
     fun getUserById(userId: String) {
         viewModelScope.launch {
@@ -119,7 +133,13 @@ class GalleryViewModel @Inject constructor(
             }
         }
     }
-
+    fun fetchUserId() {
+        viewModelScope.launch {
+            val authId = fetchCurrentUserId()
+            val userId = authInteractor.fetchUserIdByAuthId(authId)
+            _userIdFlow.value = userId.toString() // Akışa kullanıcı ID'sini atıyoruz
+        }
+    }
 
     private suspend fun getUserIdByEmail(): String? {
         val email = authInteractor.getCurrentUserEmail()
@@ -129,6 +149,7 @@ class GalleryViewModel @Inject constructor(
     fun getUserId(): String? {
         return authInteractor.getCurrentUserEmail() // Return current user email directly or use getUserId
     }
+
 
 
     fun uploadPhoto(imageUri: Uri) {

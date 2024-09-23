@@ -59,5 +59,8 @@ class AuthRepositoryImpl @Inject constructor(
         val user= FirebaseAuth.getInstance().currentUser
         return user?.uid
     }
+    override fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow {
+         firebaseAuthDataSource.fetchUserIdByAuthId(authId)
+    }
 
 }

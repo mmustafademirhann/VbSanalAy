@@ -40,6 +40,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     private lateinit var userId: String
     private lateinit var ownerUser:String
 
+
     //private var isOwner: Boolean = false
 
     override fun onCreateView(
@@ -126,16 +127,21 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
 
 
-
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, fragment) // Use your actual container ID
+            .addToBackStack(null) // Optional, if you want back navigation
+            .commit()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
         binding.settingsIcon
             .setOnClickListener{
-
+                replaceFragment(SettingsFragment())
             }
 
-        val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
+
         if (isOwner){
             userId = arguments?.getString("userId") ?: ""
             if (userId.isNotEmpty()) {
@@ -148,10 +154,10 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
 
 
-
+            galleryViewModel.fetchUserId()
             galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
-                ownerUser=galleryViewModel.IDGET
-                val filteredPosts = postsForUsers.filter { post -> post.username == ownerUser }
+                ownerUser=galleryViewModel.fetchUserId().toString()
+                val filteredPosts = postsForUsers.filter { post -> post.username == galleryViewModel.IDGET }
                 userPostAdapter.setPosts(filteredPosts)
                 galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
                     user?.let {
@@ -211,7 +217,19 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     }
 
     override fun onItemClicked(post:Post) {
-        val postDetailFragment = PostDetailFragment.newInstance(userId)
+        val isOwner=arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
+        var string=""
+        var postDetailFragment=PostDetailFragment.newInstance(string)
+        if(isOwner){
+            string=userId
+             postDetailFragment = PostDetailFragment.newInstance(string)
+        }
+        else{
+            string=galleryViewModel.IDGET
+             postDetailFragment = PostDetailFragment.newInstance(string)
+        }
+
+
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, postDetailFragment)
             .addToBackStack(null)

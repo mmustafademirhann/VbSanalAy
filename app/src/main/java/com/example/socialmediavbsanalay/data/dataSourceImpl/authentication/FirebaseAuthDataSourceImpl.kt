@@ -1,6 +1,7 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.authentication
 
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
+import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
@@ -53,4 +54,15 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
         val user=FirebaseAuth.getInstance().currentUser
         return user?.uid
     }
+    override fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow {
+        val userDocument = firestore.collection("user").document(authId).get().await()
+
+        if (userDocument.exists()) {
+            val userId = userDocument.getString("id") // Firestore'daki 'id' alanını al
+            emit(userId) // Kullanıcı ID'sini emit et
+        } else {
+            emit(null) // Belge yoksa null döndür
+        }
+    }
+
 }

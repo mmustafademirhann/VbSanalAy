@@ -5,6 +5,7 @@ import com.example.socialmediavbsanalay.data.repositoryImpl.authentication.AuthR
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AuthInteractor @Inject constructor(
@@ -26,6 +27,14 @@ class AuthInteractor @Inject constructor(
     }
     fun getCurrentUserId():String?{
         return authRepository.getCurrentUserId()
+    }
+    fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow {
+        val userIdFlow = authRepository.fetchUserIdByAuthId(authId)
+
+        userIdFlow.collect { userId ->
+            emit(userId) // Kullanıcı ID'sini emit et
+        }
+
     }
 
 
