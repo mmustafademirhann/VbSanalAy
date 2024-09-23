@@ -320,11 +320,11 @@ class MainActivity : AppCompatActivity() {
                 // If currently on one of these fragments, go back to MainPageFragment
                 switchFragment(MainPageFragment::class.java,true)
             }
-            is MainPageFragment -> {
+            is MainPageFragment, is WelcomeFragment -> {
                 // If already on MainPageFragment, exit the app
                 finishAffinity()
             }
-            is WelcomeFragment, is SignInFragment, is SignUpFragment -> {
+            is SignInFragment, is SignUpFragment -> {
                 // Let NavController handle back navigation for the sign-in flow
                 super.onBackPressed()
             }

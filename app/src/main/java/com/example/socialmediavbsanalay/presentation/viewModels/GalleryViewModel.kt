@@ -112,6 +112,9 @@ class GalleryViewModel @Inject constructor(
         }
 
     }
+    fun signOut() {
+        authInteractor.signOut()
+    }
 
     suspend fun refreshGallery() {
         try {

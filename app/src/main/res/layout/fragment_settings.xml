@@ -38,7 +38,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/backgroundImage"
                 android:layout_width="0dp"
-                app:shapeAppearanceOverlay="@style/CircularImageView"
+                app:shapeAppearanceOverlay="@style/CircularImageViewTwo"
                 android:background="@drawable/rounded_edit_text"
                 android:layout_height="140dp"
                 android:scaleType="centerCrop"
@@ -47,10 +47,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Change Background Button -->
-            <Button
-                android:id="@+id/changeBackgroundButton"
-                android:layout_width="0dp"
+            <!-- Background Edit Icon (write.png) -->
+            <ImageView
+                android:id="@+id/backgroundEditIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/write"
+                app:layout_constraintBottom_toBottomOf="@id/backgroundImage"
+                app:layout_constraintEnd_toEndOf="@id/backgroundImage"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/changeBackgroundText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Change Background"
                 android:textColor="@android:color/white"
@@ -67,7 +77,7 @@
                 android:text="Profile Picture"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
-                app:layout_constraintTop_toBottomOf="@id/changeBackgroundButton"
+                app:layout_constraintTop_toBottomOf="@id/changeBackgroundText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp"/>
@@ -78,17 +88,29 @@
                 android:layout_height="100dp"
                 android:src="@drawable/aysegulmustafa"
                 android:scaleType="centerCrop"
+                android:padding="5dp"
                 app:layout_constraintTop_toBottomOf="@id/profilePictureLabel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:strokeWidth="4dp"
                 app:shapeAppearanceOverlay="@style/CircularImageView"/>
 
-            <!-- Change Profile Image Button -->
-            <Button
-                android:id="@+id/changeProfileImageButton"
-                android:layout_width="0dp"
+            <!-- Profile Edit Icon (pencil.png) -->
+            <ImageView
+                android:id="@+id/profileEditIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/pencil"
+                app:layout_constraintBottom_toBottomOf="@id/profileImage"
+                app:layout_constraintEnd_toEndOf="@id/profileImage"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/changeProfileText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Change Profile Image"
+                android:text="Change Profile Picture"
                 android:textColor="@android:color/white"
                 app:layout_constraintTop_toBottomOf="@id/profileImage"
                 app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +125,7 @@
                 android:text="Account"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
-                app:layout_constraintTop_toBottomOf="@id/changeProfileImageButton"
+                app:layout_constraintTop_toBottomOf="@id/changeProfileText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="32dp"/>

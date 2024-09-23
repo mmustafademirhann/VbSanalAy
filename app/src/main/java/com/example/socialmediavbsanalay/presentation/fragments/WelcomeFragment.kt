@@ -1,11 +1,13 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.socialmediavbsanalay.R
@@ -19,6 +21,7 @@ class WelcomeFragment : Fragment() {
 
     private var isMoved = false
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,9 +33,29 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         (activity as MainActivity).hideBottomBar()
+        val sharedPreferences = requireActivity().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isSignedIn = sharedPreferences.getBoolean("is_signed_in", false)
+
+        if (!isSignedIn) {
+            // Kullanıcı çıkış yaptı, UI'yi güncelle
+            //binding.welcomeMessage.text = "Hoş geldiniz! Giriş yapın."
+            binding.navigateButton.visibility = View.VISIBLE
+        } else {
+            // Kullanıcı giriş yaptı, farklı bir durum
+            //binding.welcomeMessage.text = "Hoş geldiniz geri!"
+            binding.navigateButton.visibility = View.GONE
+        }
+        updateUI(isSignedIn)
+
         initClickListeners()
+    }
+    private fun updateUI(isSignedIn: Boolean) {
+        if (!isSignedIn) {
+            binding.navigateButton.visibility = View.VISIBLE
+        } else {
+            binding.navigateButton.visibility = View.GONE
+        }
     }
 
     private fun initClickListeners() {

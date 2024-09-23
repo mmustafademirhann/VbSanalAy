@@ -12,5 +12,6 @@ interface AuthRepository {
     fun getCurrentUserEmail(): String
     fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow{}
     fun getCurrentUserId():String?
+    fun signOut()
 
 }

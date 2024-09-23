@@ -64,5 +64,8 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
             emit(null) // Belge yoksa null döndür
         }
     }
+    override fun signOut() {
+        firebaseAuth.signOut()
+    }
 
 }

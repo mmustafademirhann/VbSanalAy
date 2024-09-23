@@ -62,5 +62,8 @@ class AuthRepositoryImpl @Inject constructor(
     override fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow {
          firebaseAuthDataSource.fetchUserIdByAuthId(authId)
     }
+    override fun signOut() {
+        firebaseAuthDataSource.signOut()
+    }
 
 }
