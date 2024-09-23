@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
+import com.example.socialmediavbsanalay.domain.model.Post
+import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.presentation.OnItemClickListener
 import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserPostAdapter
@@ -27,15 +30,17 @@ import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
+class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClickListener {
 
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
     private lateinit var userPostAdapter: UserPostAdapter
     private lateinit var binding: FragmentUserProfileBinding
     private val galleryViewModel: GalleryViewModel by viewModels()
+    private lateinit var userId: String
+    private lateinit var ownerUser:String
 
-    private var isOwner: Boolean = false
+    //private var isOwner: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,33 +76,113 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     }
 
     companion object {
-        private const val ARG_USER_ID = "user_id"
+        private const val ARG_USER_ID = "userId"
         private const val ARG_IS_FROM_SEARCH = "is_from_search"
+        fun newInstance(userId: String): PostDetailFragment {
+            val fragment = PostDetailFragment()
+            val args = Bundle().apply {
+                putString(ARG_USER_ID, userId)
+            }
+            fragment.arguments = args
+            return fragment
+        }
 
         fun newInstance(userId: String, isFromSearch: Boolean): UserProfileFragment {
             val fragment = UserProfileFragment()
-            val args = Bundle()
-            args.putString(ARG_USER_ID, userId)
-            args.putBoolean(ARG_IS_FROM_SEARCH, isFromSearch)
+            val args = Bundle().apply {
+                putString(ARG_USER_ID, userId)
+                putBoolean(ARG_IS_FROM_SEARCH, isFromSearch)
+            }
             fragment.arguments = args
             return fragment
         }
     }
+    // Filtreleme işlemi, userId kullanarak postları filtreliyoruz
+    private fun observePosts(userId: String) {
+        // Postları userId'ye göre filtreleme işlemi
+        galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
+            val filteredPosts = postsForUsers.filter { post -> post.username == userId }
+            userPostAdapter.setPosts(filteredPosts)
+        }
+
+        // Kullanıcı verilerini gözlemleme işlemi
+        galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                // Kullanıcı bulundu, UI'yi güncelle
+                binding.usernameM.text = it.id
+                binding.userHandle.text = "@${it.name}" // Kullanıcının handle'ı
+                // Kullanıcının profil resmini güncelle
+                // Örneğin: Glide ile resim yükleme işlemi yapılabilir
+                // Glide.with(this).load(it.profileImageUrl).into(binding.profileImage)
+            } ?: run {
+                // Eğer kullanıcı bulunamazsa hata mesajı göster
+                Toast.makeText(context, "User not found", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Kullanıcıyı userId ile yükleme işlemi
+        galleryViewModel.getUserById(userId)
+    }
+
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize user post adapter
-        userPostAdapter = UserPostAdapter()
+        binding.settingsIcon
+            .setOnClickListener{
 
-        // Observe posts and filter by username
-        galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
-            val filteredPosts = postsForUsers.filter { post -> post.username == galleryViewModel.IDGET }
-            userPostAdapter.setPosts(filteredPosts)
+            }
+
+        val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
+        if (isOwner){
+            userId = arguments?.getString("userId") ?: ""
+            if (userId.isNotEmpty()) {
+                observePosts(userId)
+            }
+        }
+        else{
+            userId = arguments?.getString("userId") ?: ""
+
+
+
+
+
+            galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
+                ownerUser=galleryViewModel.IDGET
+                val filteredPosts = postsForUsers.filter { post -> post.username == ownerUser }
+                userPostAdapter.setPosts(filteredPosts)
+                galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+                    user?.let {
+                        // Kullanıcı bulundu, UI'yi güncelle
+                        binding.usernameM.text = it.id
+                        binding.userHandle.text = "@${it.name}" // Kullanıcının handle'ı
+                        // Kullanıcının profil resmini güncelle
+                        // Örneğin: Glide ile resim yükleme işlemi yapılabilir
+                        // Glide.with(this).load(it.profileImageUrl).into(binding.profileImage)
+                    } ?: run {
+                        binding.usernameM.text = galleryViewModel.IDGET
+                        binding.userHandle.text = galleryViewModel.IDGET
+                    }
+
+                }
+                galleryViewModel.getUserById(ownerUser)
+            }
+
+
+
+
         }
 
-        val isFromSearch = arguments?.getBoolean(ARG_IS_FROM_SEARCH) ?: false
-        isOwner = !isFromSearch // searchFragment'den gelmediyse true, geldiyse false
+
+        // Initialize user post adapter
+        userPostAdapter = UserPostAdapter(this)
+
+        // Observe posts and filter by username
+
+        //val isFromSearch = arguments?.getBoolean(ARG_IS_FROM_SEARCH) ?: false
+        //isOwner = !isFromSearch // searchFragment'den gelmediyse true, geldiyse false
 
         // Observe posts and update UI
         lifecycleScope.launch {
@@ -113,7 +198,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     }
 
     private fun updateUIBasedOnOwnership() {
-        if (isOwner) {
+        val isOwner=arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
+        if (!isOwner) {
             binding.settingsIcon.visibility = View.VISIBLE
             binding.followButton.visibility = View.GONE
             binding.messageButton.visibility = View.GONE
@@ -122,5 +208,13 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
             binding.followButton.visibility = View.VISIBLE
             binding.messageButton.visibility = View.VISIBLE
         }
+    }
+
+    override fun onItemClicked(post:Post) {
+        val postDetailFragment = PostDetailFragment.newInstance(userId)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, postDetailFragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

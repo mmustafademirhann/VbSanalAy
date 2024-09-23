@@ -100,10 +100,10 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             if (isSignedIn) {
                 // If user is signed in, navigate to MainPageFragment
-                switchFragment(MainPageFragment::class.java)
+                switchFragment(MainPageFragment::class.java,true)
             } else {
                 // If user is not signed in, navigate to WelcomeFragment
-                switchFragment(WelcomeFragment::class.java)
+                switchFragment(WelcomeFragment::class.java,true)
             }
         }
         galleryViewModel.uploadStatus.observe(this) { status ->
@@ -121,19 +121,19 @@ class MainActivity : AppCompatActivity() {
     private fun clickEvents(){
         binding.userImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.userline)
-            switchFragment(UserProfileFragment::class.java)
+            switchFragment(UserProfileFragment::class.java,true)
         }
         binding.homeImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.homeline)
-            switchFragment(MainPageFragment::class.java)
+            switchFragment(MainPageFragment::class.java,true)
         }
         binding.messagetwoiconLayout.setOnClickListener {
             setVisibilityForLine(binding.messageline)
-            switchFragment(MessageFragment::class.java)
+            switchFragment(MessageFragment::class.java,true)
         }
         binding.notificationImageViewLayout.setOnClickListener {
             setVisibilityForLine(binding.notificationline)
-            switchFragment(NotificationBarFragment::class.java)
+            switchFragment(NotificationBarFragment::class.java,true)
         }
         binding.addButton.setOnClickListener{
 
@@ -231,22 +231,25 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("İptal", null)
             .show()
     }
-    private fun switchFragment(fragmentClass: Class<out Fragment>) {
-        val fragment = getFragment(fragmentClass)
-        val transaction = supportFragmentManager.beginTransaction()
+    private fun switchFragment(fragmentClass: Class<out Fragment>, isOwner: Boolean) {
+        val fragment = getFragment(fragmentClass).apply {
+            arguments = Bundle().apply {
+                putBoolean("isOwner", isOwner) // isOwner'ı argüman olarak ekleyin
+            }
+        }
 
-        // Optional: Add animations for smoother transitions (customize as needed)
+        val transaction = supportFragmentManager.beginTransaction()
 
         transaction.replace(R.id.fragmentContainerView, fragment)
 
-        // Add to back stack unless it's WelcomeFragment or MainPageFragment
+        // Back stack işlemi
         if (fragment !is WelcomeFragment && fragment !is MainPageFragment) {
             transaction.addToBackStack(null)
         }
 
         transaction.commit()
 
-        // Manage bottom bar visibility
+        // Bottom bar görünürlüğü yönetimi
         if (fragment is WelcomeFragment) {
             hideBottomBar()
         } else {
@@ -315,7 +318,7 @@ class MainActivity : AppCompatActivity() {
         when (currentFragment) {
             is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
                 // If currently on one of these fragments, go back to MainPageFragment
-                switchFragment(MainPageFragment::class.java)
+                switchFragment(MainPageFragment::class.java,true)
             }
             is MainPageFragment -> {
                 // If already on MainPageFragment, exit the app

@@ -21,4 +21,7 @@ class CreateUserRepositoryImpl(private val createUserDataSource: CreateUserDataS
             false // Return false if any exception occurs during the check
         }
     }
+    override suspend fun getUserById(userId: String): Result<User?>{
+        return createUserDataSource.getUserById(userId)
+    }
 }

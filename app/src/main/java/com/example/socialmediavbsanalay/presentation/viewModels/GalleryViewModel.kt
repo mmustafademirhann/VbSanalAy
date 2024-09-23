@@ -11,8 +11,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
+import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
 import com.example.socialmediavbsanalay.domain.model.Gallery
 import com.example.socialmediavbsanalay.domain.model.Post
+import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +28,8 @@ class GalleryViewModel @Inject constructor(
     private val galleryInteractor: GalleryInteractor,
     private val galleryAdapter: GalleryAdapter,
     private val postInteractor: PostInteractor,
-    private val authInteractor: AuthInteractor
+    private val authInteractor: AuthInteractor,
+    private val createUserInteractor:CreateUserInteractor
 ) : ViewModel() {
 
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
@@ -41,6 +44,8 @@ class GalleryViewModel @Inject constructor(
 
     private val _currentUserId = MutableStateFlow<String?>(null)
     val currentUserId: StateFlow<String?> = _currentUserId
+    private val _currentUser = MutableLiveData<User?>()
+    val currentUser: LiveData<User?> get() = _currentUser
 
 
     var IDGET=""
@@ -61,6 +66,20 @@ class GalleryViewModel @Inject constructor(
             _currentUserId.value = authInteractor.getCurrentUserId()
         }
     }
+    fun getUserById(userId: String) {
+        viewModelScope.launch {
+
+            val result = createUserInteractor.getUserById(userId)
+
+            result.onSuccess { user ->
+                _currentUser.value = user
+            }.onFailure {
+                _currentUser.value = null
+            }
+        }
+    }
+
+
 
     fun loadPosts() {
         if (!hasFetchedPosts){
@@ -110,6 +129,7 @@ class GalleryViewModel @Inject constructor(
     fun getUserId(): String? {
         return authInteractor.getCurrentUserEmail() // Return current user email directly or use getUserId
     }
+
 
     fun uploadPhoto(imageUri: Uri) {
         viewModelScope.launch {

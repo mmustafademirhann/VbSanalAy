@@ -25,6 +25,7 @@ class SearchUserPostFragment : Fragment() {
     private lateinit var binding: FragmentSearchUserPostBinding
     private val userViewModel: UserViewModel by viewModels()
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,15 +75,16 @@ class SearchUserPostFragment : Fragment() {
     }
 
     private fun navigateToUserProfile(userId: String) {
-        val isFromSearch = true // Set this to true to indicate navigation from search
+        val isFromSearch = true // Search'ten geldiğini belirtiyoruz
         val userProfileFragment = UserProfileFragment.newInstance(userId, isFromSearch)
 
         // Perform navigation
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, userProfileFragment)
-            .addToBackStack(null) // Optional: add to back stack if you want to navigate back
+            .addToBackStack(null) // Geri gitmek istersen back stack'e ekle
             .commit()
     }
+
 
     private fun showEditTextWithKeyboard() {
         // Request focus for the EditText

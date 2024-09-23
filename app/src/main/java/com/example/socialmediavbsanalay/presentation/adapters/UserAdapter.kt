@@ -14,6 +14,7 @@ class UserAdapter @Inject constructor(
 
     private var users: List<User> = listOf()
 
+
     // Function to update the users list with DiffUtil
     fun updateUsers(newUsers: List<User>) {
         val diffCallback = UserDiffCallback(users, newUsers)
@@ -23,14 +24,20 @@ class UserAdapter @Inject constructor(
     }
 
     // ViewHolder class for binding user items
-    inner class UserViewHolder(val binding: UserItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener {
-                val user = users[adapterPosition]
-                onItemClick(user.id) // Trigger the click listener with user ID
+    inner class UserViewHolder(private val binding: UserItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(user: User) {
+            binding.userName.text = user.id // Kullanıcı ismini gösteriyoruz
+
+
+            // Tıklama olayını burada yönetiyoruz
+             binding.root.setOnClickListener {
+                val isim =binding.userName.text.toString()
+                onItemClick(user.id) // Tıklanan kullanıcıyı döndürüyoruz
             }
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding = UserItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -38,8 +45,8 @@ class UserAdapter @Inject constructor(
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        val user = users.getOrNull(position) ?: return
-        holder.binding.userName.text = user.id // Binding the user's name to the TextView
+        val user = users[position]
+        holder.bind(user)
     }
 
     override fun getItemCount() = users.size

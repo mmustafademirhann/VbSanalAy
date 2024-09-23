@@ -10,4 +10,7 @@ class CreateUserInteractor(private val repository: CreateUserRepository) {
     suspend fun checkIfUserExists(email: String): Boolean {
         return repository.checkIfUserExists(email)
     }
+    suspend fun getUserById(userId: String): Result<User?>{
+        return repository.getUserById(userId)
+    }
 }

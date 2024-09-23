@@ -4,10 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.PostForRecyclerBinding
 import com.example.socialmediavbsanalay.domain.model.Post
-import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.presentation.OnItemClickListener
 
 import javax.inject.Inject
 
@@ -104,6 +103,7 @@ class PostAdapter @Inject constructor() : RecyclerView.Adapter<PostAdapter.PostV
                 .load(post.imageResId) // Assuming `post.imageUrl` holds the URL of the image
                 .into(binding.postImage)
         }
+
     }
 
 
