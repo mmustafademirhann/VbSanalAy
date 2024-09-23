@@ -69,7 +69,7 @@
             android:ems="10"
             android:hint="Email/telefon numarası"
 
-            android:inputType="text"
+            android:inputType="textEmailAddress"
             android:textColorHint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

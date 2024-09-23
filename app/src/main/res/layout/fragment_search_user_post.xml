@@ -29,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:focusable="true"
+            android:textColor="@color/white"
             android:clickable="true"
             android:layout_marginRight="10dp"
             android:layout_weight="1"

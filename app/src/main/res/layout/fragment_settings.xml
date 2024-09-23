@@ -1,92 +1,124 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/signup">
 
+    <!-- NestedScrollView to allow scrolling on small screens -->
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:id="@+id/nestedScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <!-- Header Section -->
             <TextView
+                android:id="@+id/settingsHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginBottom="16dp"/>
 
             <!-- Background Image Section -->
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/backgroundImage"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_width="0dp"
+                app:shapeAppearanceOverlay="@style/CircularImageView"
+                android:background="@drawable/rounded_edit_text"
+                android:layout_height="140dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/rainy_minecraft"
-                 />
+                app:layout_constraintTop_toBottomOf="@id/settingsHeader"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <!-- Change Background Button -->
             <Button
                 android:id="@+id/changeBackgroundButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Change Background"
-                android:layout_marginTop="8dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/backgroundImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"/>
 
             <!-- Profile Image Section -->
             <TextView
+                android:id="@+id/profilePictureLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Profile Picture"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/changeBackgroundButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp"/>
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/profileImage"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_gravity="center_horizontal"
                 android:src="@drawable/aysegulmustafa"
                 android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/CircularImageView" />
+                app:layout_constraintTop_toBottomOf="@id/profilePictureLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:shapeAppearanceOverlay="@style/CircularImageView"/>
 
             <!-- Change Profile Image Button -->
             <Button
                 android:id="@+id/changeProfileImageButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Change Profile Image"
-                android:layout_marginTop="8dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/profileImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"/>
 
-            <!-- Log Out Button -->
+            <!-- Account Section -->
             <TextView
+                android:id="@+id/accountLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Account"
                 android:textSize="18sp"
                 android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/changeProfileImageButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="32dp"/>
 
+            <!-- Log Out Button -->
             <Button
                 android:id="@+id/logOutButton"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Log Out"
-                android:layout_marginTop="8dp"
-                android:textColor="@android:color/white" />
-
-        </LinearLayout>
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/accountLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
