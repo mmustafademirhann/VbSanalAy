@@ -42,15 +42,11 @@ class CreateUserDataSourceImpl @Inject constructor(
             }
     }
     override suspend fun getUserById(userId: String): Result<User?> {
-        return try {
-            val documentSnapshot = firestore.collection("user").document(userId).get().await()
-            if (documentSnapshot.exists()) {
-                Result.success(documentSnapshot.toObject(User::class.java))
-            } else {
-                Result.success(null)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
+        val documentSnapshot = firestore.collection("user").document(userId).get().await()
+        return if (documentSnapshot.exists()) {
+            Result.success(documentSnapshot.toObject(User::class.java))
+        } else {
+            Result.success(null)
         }
     }
 
