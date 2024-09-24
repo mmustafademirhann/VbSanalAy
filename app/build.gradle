@@ -6,6 +6,8 @@ plugins {
 
     id 'androidx.navigation.safeargs'
     id 'com.google.gms.google-services'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -99,4 +101,5 @@ kapt {
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 

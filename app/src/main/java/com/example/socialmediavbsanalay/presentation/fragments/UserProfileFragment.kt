@@ -86,7 +86,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             }
             fragment.arguments = args
             return fragment
-        }
+        }//?
 
         fun newInstance(userId: String, isFromSearch: Boolean): UserProfileFragment {
             val fragment = UserProfileFragment()
@@ -173,7 +173,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                     }
 
                 }
-                galleryViewModel.getUserById(ownerUser)
+                galleryViewModel.getUserById(userId)
             }
 
 
@@ -216,23 +216,26 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         }
     }
 
-    override fun onItemClicked(post:Post) {
-        val isOwner=arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
-        var string=""
-        var postDetailFragment=PostDetailFragment.newInstance(string)
-        if(isOwner){
-            string=userId
-             postDetailFragment = PostDetailFragment.newInstance(string)
-        }
-        else{
-            string=galleryViewModel.IDGET
-             postDetailFragment = PostDetailFragment.newInstance(string)
+    override fun onItemClicked(post: Post) {
+        val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
+        val postDetailFragment: PostDetailFragment
+
+        // You may not need to set the string variable if it's not used later
+        val userId = if (isOwner) {
+            // Assuming userId is defined in your UserProfileFragment
+            userId
+        } else {
+            galleryViewModel.IDGET
         }
 
+        // Create the PostDetailFragment with the post
+        postDetailFragment = PostDetailFragment.newInstance(userId)
 
+        // Start the fragment transaction
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, postDetailFragment)
             .addToBackStack(null)
             .commit()
     }
+
 }

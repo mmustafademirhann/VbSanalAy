@@ -51,6 +51,13 @@ class UserDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateUserProfileImage(userId: String, imageUrl: String) {
+
+        firestore.collection("users").document(userId).update("profileImageUrl", imageUrl).await()
+
+    }
+
+
     override fun searchUsers(query: String): Flow<List<User>> = flow {
         if (query.isNotBlank()) {
             val userList = mutableListOf<User>()

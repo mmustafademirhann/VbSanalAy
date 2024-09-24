@@ -308,7 +308,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         //val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         //val navController = navHostFragment.navController
-        setVisibilityForLine(binding.homeline)
+
 
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
         /*supportFragmentManager.beginTransaction()
@@ -317,19 +317,25 @@ class MainActivity : AppCompatActivity() {
             .commit()*/
         when (currentFragment) {
             is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
+
+                setVisibilityForLine(binding.homeline)
                 // If currently on one of these fragments, go back to MainPageFragment
                 switchFragment(MainPageFragment::class.java,true)
             }
             is MainPageFragment, is WelcomeFragment -> {
+
+                setVisibilityForLine(binding.homeline)
                 // If already on MainPageFragment, exit the app
                 finishAffinity()
             }
             is SignInFragment, is SignUpFragment -> {
                 // Let NavController handle back navigation for the sign-in flow
+                setVisibilityForLine(binding.homeline)
                 super.onBackPressed()
             }
             else -> {
                 // Default behavior for other fragments, or if no specific action is required
+
                 super.onBackPressed()
             }
         }

@@ -10,5 +10,7 @@ interface UserRepository {
     suspend fun getAllUsers(): List<User>
     fun searchUsers(query: String): Flow<List<User>>
     suspend fun getUsersByIds(userIds: List<String>): Map<String, User>
+    suspend fun updateUserProfileImage(userId: String, imageUrl: String): Result<Unit>
+
 }
 

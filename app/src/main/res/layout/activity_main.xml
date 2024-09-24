@@ -32,15 +32,17 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="7dp"
-                    android:text="+"
                     android:textStyle="bold"
                     android:textSize="@dimen/text_header"
-                    android:background="@drawable/ekle"
-                    android:backgroundTintMode="add"
-                    >
+                    android:background="@drawable/newbutton"
+                    android:drawableTop="@drawable/ic_add_icon"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:padding="11dp"
+                    android:elevation="8dp"
+                        android:translationZ="12dp" 
+                />
 
-
-                </Button>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -62,9 +64,9 @@
 
                                 <ImageView
                                     android:id="@+id/homeImageView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/homeicon" />
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/homesecondbig" />
 
                                 <!-- Line below the notification icon -->
                                 <ImageView
@@ -93,9 +95,9 @@
 
                                 <ImageView
                                     android:id="@+id/messagetwoicon"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/messagevector" />
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/messageboloonsecond" />
 
                                 <!-- Line below the notification icon -->
                                 <ImageView
@@ -131,9 +133,9 @@
 
                                 <ImageView
                                     android:id="@+id/userImageView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/usericon" />
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/usersecond" />
 
                                 <!-- Line below the notification icon -->
                                 <ImageView
@@ -160,9 +162,9 @@
 
                                 <ImageView
                                     android:id="@+id/notificationImageView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:src="@drawable/notificationbarview" />
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/notificationsecond" />
 
                                 <!-- Line below the notification icon -->
                                 <ImageView

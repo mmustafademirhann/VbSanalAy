@@ -27,4 +27,7 @@ class UserInteractor  @Inject constructor(
     suspend fun getUsersByIds(userIds: List<String>): Map<String, User> {
         return userRepository.getUsersByIds(userIds)
     }
+    suspend fun updateUserProfileImage(userId: String, imageUrl: String): Result<Unit>{
+        return userRepository.updateUserProfileImage(userId,imageUrl)
+    }
 }

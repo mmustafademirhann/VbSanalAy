@@ -31,4 +31,13 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUsersByIds(userIds: List<String>): Map<String, User> {
         return userDataSource.getUsersByIds(userIds)
     }
+    override suspend fun updateUserProfileImage(userId: String, imageUrl: String): Result<Unit> {
+        return try {
+            userDataSource.updateUserProfileImage(userId, imageUrl) // Call the data source method
+            Result.success(Unit) // Return success result
+        } catch (e: Exception) {
+            // Handle the exception and return failure result
+            Result.failure(Exception("Failed to update user profile image in repository: ${e.message}", e))
+        }
+    }
 }

@@ -81,10 +81,10 @@
 
         <ImageView
             android:id="@+id/imageView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_weight="0"
-            app:srcCompat="@drawable/heart" />
+            app:srcCompat="@drawable/heartsecondheard" />
 
         <TextView
             android:id="@+id/likeCount"
@@ -96,10 +96,10 @@
 
         <ImageView
             android:id="@+id/imageView7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_weight="0"
-            app:srcCompat="@drawable/messageicon" />
+            app:srcCompat="@drawable/messagesecondpost" />
 
         <TextView
             android:id="@+id/commentCount"
@@ -112,9 +112,9 @@
 
         <ImageView
             android:id="@+id/shareButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/sendicon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/sendmessagesecond"
             />
     </LinearLayout>
 </LinearLayout>

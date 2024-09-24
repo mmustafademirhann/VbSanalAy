@@ -12,6 +12,7 @@ import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInt
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
+import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.domain.model.Gallery
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.domain.model.User
@@ -31,7 +32,8 @@ class GalleryViewModel @Inject constructor(
     private val galleryAdapter: GalleryAdapter,
     private val postInteractor: PostInteractor,
     private val authInteractor: AuthInteractor,
-    private val createUserInteractor:CreateUserInteractor
+    private val createUserInteractor:CreateUserInteractor,
+    private val userInteractor: UserInteractor
 ) : ViewModel() {
 
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
@@ -56,18 +58,40 @@ class GalleryViewModel @Inject constructor(
     private val _userIdFlow = MutableStateFlow<String?>(null)
     val userIdFlow: StateFlow<String?> get() = _userIdFlow
 
+    private val _updateProfileImageResult = MutableStateFlow<Result<Unit>?>(null)
+    val updateProfileImageResult: StateFlow<Result<Unit>?> = _updateProfileImageResult
+
+
 
 
     var IDGET=""
 
     init {
+
+
         loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
     }
     //suspend fun fetchUserData(): User? {
         //return authInteractor.fetchUserData().getOrNull()
    // }
-
+    fun uploadProfilePicture(imageUri: Uri) {
+        viewModelScope.launch {
+            val userId = getCurrentUserId()
+            try {
+                postInteractor.uploadPhoto(imageUri, userId)
+                // Notify success or update LiveData to reflect changes
+            } catch (e: Exception) {
+                // Handle error (e.g., notify user)
+            }
+        }
+    }
+    fun updateUserProfileImage(userId: String, imageUrl: String) {
+        viewModelScope.launch {
+            val result = userInteractor.updateUserProfileImage(userId, imageUrl)
+            _updateProfileImageResult.value = result // Update the StateFlow with the result
+        }
+    }
     fun fetchUserId(callback: (String?) -> Unit) {
         viewModelScope.launch {
             val userId = getUserIdByEmail() // Asynchronous call
@@ -151,6 +175,10 @@ class GalleryViewModel @Inject constructor(
 
     fun getUserId(): String? {
         return authInteractor.getCurrentUserEmail() // Return current user email directly or use getUserId
+    }
+    fun getCurrentUserId():String{
+
+        return authInteractor.getCurrentUserId().toString()
     }
 
 
