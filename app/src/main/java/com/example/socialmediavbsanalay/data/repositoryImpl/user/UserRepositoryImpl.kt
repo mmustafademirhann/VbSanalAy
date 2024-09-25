@@ -40,4 +40,8 @@ class UserRepositoryImpl @Inject constructor(
             Result.failure(Exception("Failed to update user profile image in repository: ${e.message}", e))
         }
     }
+
+    override suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String) {
+        userDataSource.updateUserProfileImageByEmail(email, imageUrl)
+    }
 }

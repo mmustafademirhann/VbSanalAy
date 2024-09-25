@@ -27,6 +27,15 @@ class UserDataSourceImpl @Inject constructor(
             throw e
         }
     }
+    override suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String) {
+        val query = firestore.collection("users").whereEqualTo("email", email).get().await()
+        if (!query.isEmpty) {
+            val document = query.documents[0]
+            document.reference.update("profileImageUrl", imageUrl).await()
+        } else {
+            throw Exception("Kullanıcı bulunamadı.")
+        }
+    }
 
     override suspend fun getUser(userId: String): User? {
         return try {

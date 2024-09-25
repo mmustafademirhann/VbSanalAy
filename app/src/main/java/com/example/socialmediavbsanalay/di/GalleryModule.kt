@@ -9,6 +9,7 @@ import com.example.socialmediavbsanalay.data.repositoryImpl.gallery.GalleryRepos
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractorImpl
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,8 +29,8 @@ object GalleryModule {
 
     @Provides
     @Singleton
-    fun provideGalleryDataSource(@ApplicationContext context: Context): GalleryDataSource {
-        return GalleryDataSourceImpl(context)
+    fun provideGalleryDataSource(@ApplicationContext context: Context,firebaseStorage: FirebaseStorage): GalleryDataSource {
+        return GalleryDataSourceImpl(context,firebaseStorage)
     }
 
     @Provides

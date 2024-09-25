@@ -9,12 +9,16 @@ import android.provider.MediaStore
 import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.gallery.GalleryDataSource
 import com.example.socialmediavbsanalay.domain.model.Gallery
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class GalleryDataSourceImpl @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val firebaseStorage: FirebaseStorage
 ) : GalleryDataSource {
 
     override suspend fun fetchRecentPhotos(): ArrayList<Gallery> {
@@ -68,5 +72,16 @@ class GalleryDataSourceImpl @Inject constructor(
 
         // Return the list of images sorted by date
         return images.sortedByDescending { it.dateAdded } as ArrayList<Gallery>
+    }
+    override suspend fun uploadProfilePicture(imageUri: Uri): String {
+        val userId = FirebaseAuth.getInstance().uid ?: throw Exception("Kullanıcı oturumu yok")
+        val storageRef = firebaseStorage.reference.child("profile_images/$userId.jpg")
+        val uploadTask = storageRef.putFile(imageUri).await()
+
+        if (uploadTask.task.isSuccessful) {
+            return storageRef.downloadUrl.await().toString()
+        } else {
+            throw Exception("Resim yükleme hatası")
+        }
     }
 }

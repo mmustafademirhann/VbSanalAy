@@ -11,6 +11,7 @@ interface UserRepository {
     fun searchUsers(query: String): Flow<List<User>>
     suspend fun getUsersByIds(userIds: List<String>): Map<String, User>
     suspend fun updateUserProfileImage(userId: String, imageUrl: String): Result<Unit>
+    suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String)
 
 }
 

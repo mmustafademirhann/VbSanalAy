@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.data.repositoryImpl.gallery
 
+import android.net.Uri
 import com.example.socialmediavbsanalay.data.dataSource.gallery.GalleryDataSource
 import com.example.socialmediavbsanalay.data.repository.gallery.GalleryRepository
 import com.example.socialmediavbsanalay.domain.model.Gallery
@@ -11,5 +12,9 @@ class GalleryRepositoryImpl @Inject constructor(
 ) : GalleryRepository {
     override suspend fun getRecentPhotos(): List<Gallery> {
         return galleryDataSource.fetchRecentPhotos()
+    }
+
+    override suspend fun uploadProfilePicture(imageUri: Uri): String {
+        return galleryDataSource.uploadProfilePicture(imageUri)
     }
 }

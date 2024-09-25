@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.domain.interactor.gallery
 
+import android.net.Uri
 import com.example.socialmediavbsanalay.data.repository.gallery.GalleryRepository
 import com.example.socialmediavbsanalay.domain.model.Gallery
 import kotlinx.coroutines.flow.Flow
@@ -10,5 +11,8 @@ class GalleryInteractorImpl @Inject constructor(
 ) : GalleryInteractor {
     override suspend fun fetchRecentPhotos(): List<Gallery> {
         return galleryRepository.getRecentPhotos()
+    }
+    override suspend fun uploadProfilePicture(imageUri: Uri): String {
+        return galleryRepository.uploadProfilePicture(imageUri)
     }
 }

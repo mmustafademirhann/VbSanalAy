@@ -18,6 +18,7 @@ import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +34,8 @@ class GalleryViewModel @Inject constructor(
     private val postInteractor: PostInteractor,
     private val authInteractor: AuthInteractor,
     private val createUserInteractor:CreateUserInteractor,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
@@ -61,6 +63,11 @@ class GalleryViewModel @Inject constructor(
     private val _updateProfileImageResult = MutableStateFlow<Result<Unit>?>(null)
     val updateProfileImageResult: StateFlow<Result<Unit>?> = _updateProfileImageResult
 
+    private val _uploadStatuss = MutableLiveData<String>()
+    val uploadStatuss: LiveData<String> get() = _uploadStatuss
+
+
+
 
 
 
@@ -75,6 +82,19 @@ class GalleryViewModel @Inject constructor(
     //suspend fun fetchUserData(): User? {
         //return authInteractor.fetchUserData().getOrNull()
    // }
+    fun uploadProfilePicturee(imageUri: Uri) {
+        viewModelScope.launch {
+            try {
+                val imageUrl = galleryInteractor.uploadProfilePicture(imageUri)
+                val userEmail = auth.currentUser?.email ?: throw Exception("E-posta alınamadı.")
+                userInteractor.updateUserProfileImageByEmail(userEmail, imageUrl)
+                _uploadStatuss.value = "Profil resmi güncellendi."
+            } catch (e: Exception) {
+                _uploadStatuss.value = "Hata: ${e.message}"
+            }
+        }
+    }
+
     fun uploadProfilePicture(imageUri: Uri) {
         viewModelScope.launch {
             val userId = getCurrentUserId()
@@ -86,10 +106,16 @@ class GalleryViewModel @Inject constructor(
             }
         }
     }
-    fun updateUserProfileImage(userId: String, imageUrl: String) {
+    fun updateUserProfileImage(email: String, imageUrl: String) {
         viewModelScope.launch {
-            val result = userInteractor.updateUserProfileImage(userId, imageUrl)
-            _updateProfileImageResult.value = result // Update the StateFlow with the result
+            try {
+                userInteractor.updateUserProfileImageByEmail(email, imageUrl)
+                // Güncelleme başarılı ise uygun bir bildirim yapabilirsiniz
+                _uploadStatuss.postValue("Profil resmi güncellendi.")
+            } catch (e: Exception) {
+                // Hata durumunda bildirim yapabilirsiniz
+                _uploadStatuss.postValue(e.message)
+            }
         }
     }
     fun fetchUserId(callback: (String?) -> Unit) {
