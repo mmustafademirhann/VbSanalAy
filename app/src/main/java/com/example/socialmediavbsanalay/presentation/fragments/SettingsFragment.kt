@@ -21,6 +21,7 @@ import com.example.socialmediavbsanalay.databinding.FragmentSettingsBinding
 import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.migration.CustomInjection.inject
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 class SettingsFragment : Fragment() {
 
     private val galleryViewModel: GalleryViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 

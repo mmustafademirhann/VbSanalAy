@@ -24,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val createUserInteractor: CreateUserInteractor
 
 
 ) : ViewModel() {
@@ -37,6 +38,13 @@ class UserViewModel @Inject constructor(
 
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> get() = _users
+
+    private val _currentUser = MutableLiveData<Result<User?>>()
+    val currentUser: LiveData<Result<User?>> = _currentUser
+
+    private val _usersListt = MutableLiveData<Result<List<User>>?>()
+    val usersListt: LiveData<Result<List<User>>?> = _usersListt
+
 
 
     fun searchUsers(query: String) {
@@ -59,7 +67,21 @@ class UserViewModel @Inject constructor(
             }
         }
     }
-
+    fun fetchCurrentUser() {
+        viewModelScope.launch {
+            _currentUser.value = createUserInteractor.getCurrentUser()
+        }
+    }
+    fun getAllUsers() {
+        viewModelScope.launch {
+            try {
+                val usersResultt = createUserInteractor.getAllUser()
+                _usersListt.value = usersResultt
+            } catch (e: Exception) {
+                _usersListt.value = Result.failure(e)
+            }
+        }
+    }
     fun fetchUser(userId: String) {
         viewModelScope.launch {
             try {

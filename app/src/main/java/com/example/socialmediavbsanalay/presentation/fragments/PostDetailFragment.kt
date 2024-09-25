@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.databinding.FragmentPostDetailBinding
 import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,7 @@ class PostDetailFragment : Fragment() {
     private lateinit var binding: FragmentPostDetailBinding
     private val galleryViewModel: GalleryViewModel by viewModels()
     private lateinit var postAdapter: PostAdapter
+    private val userViewModel: UserViewModel by viewModels()
 
     companion object {
         private const val ARG_USER_ID = "userId"
@@ -45,7 +47,7 @@ class PostDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Adapter'ı başlat
-        postAdapter = PostAdapter()
+        postAdapter = PostAdapter(userViewModel)
 
         // RecyclerView ayarlarını yap
         binding.postsRecyclerViewForDetails.apply {

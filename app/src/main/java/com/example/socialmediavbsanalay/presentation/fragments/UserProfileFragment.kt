@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
 import com.example.socialmediavbsanalay.domain.model.Post
@@ -72,6 +73,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
         // Load all users
         userViewModel.fetchAllUsers()
+
 
         return binding.root
     }
@@ -135,6 +137,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
         binding.settingsIcon
             .setOnClickListener{
@@ -180,6 +183,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
 
         }
+
 
 
         // Initialize user post adapter

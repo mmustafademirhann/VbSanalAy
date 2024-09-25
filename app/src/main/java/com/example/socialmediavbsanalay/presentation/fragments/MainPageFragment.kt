@@ -34,6 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import kotlinx.coroutines.launch
 
 
@@ -50,6 +51,7 @@ class MainPageFragment : Fragment() {
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var postAdapter: PostAdapter
     private val galleryViewModel: GalleryViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
 
 
     private fun navigateToSearchResultsFragment() {
@@ -85,7 +87,7 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
-        postAdapter = PostAdapter()
+        postAdapter = PostAdapter(userViewModel)
 
         return binding.root
     }
@@ -131,7 +133,7 @@ class MainPageFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = storyAdapter
         }
-        postAdapter = PostAdapter()
+        postAdapter = PostAdapter(userViewModel)
 
         binding.postsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

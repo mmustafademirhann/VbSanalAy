@@ -28,7 +28,7 @@ class UserDataSourceImpl @Inject constructor(
         }
     }
     override suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String) {
-        val query = firestore.collection("users").whereEqualTo("email", email).get().await()
+        val query = firestore.collection("user").whereEqualTo("email", email).get().await()
         if (!query.isEmpty) {
             val document = query.documents[0]
             document.reference.update("profileImageUrl", imageUrl).await()

@@ -6,4 +6,8 @@ interface CreateUserRepository {
     suspend fun createUser(userId: String, user: User): Result<Unit>
     suspend fun checkIfUserExists(email: String): Boolean
     suspend fun getUserById(userId: String): Result<User?>
+    suspend fun getCurrentUser(): Result<User?>
+    suspend fun getAllUsers(): Result<List<User>>
+
+
 }

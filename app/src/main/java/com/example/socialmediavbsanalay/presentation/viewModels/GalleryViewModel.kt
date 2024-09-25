@@ -65,6 +65,8 @@ class GalleryViewModel @Inject constructor(
 
     private val _uploadStatuss = MutableLiveData<String>()
     val uploadStatuss: LiveData<String> get() = _uploadStatuss
+    private val _profileImageUrl = MutableLiveData<String>()
+    val profileImageUrl: LiveData<String> get() = _profileImageUrl
 
 
 
@@ -93,7 +95,10 @@ class GalleryViewModel @Inject constructor(
                 _uploadStatuss.value = "Hata: ${e.message}"
             }
         }
+
     }
+
+
 
     fun uploadProfilePicture(imageUri: Uri) {
         viewModelScope.launch {

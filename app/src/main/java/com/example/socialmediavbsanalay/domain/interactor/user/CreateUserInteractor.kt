@@ -13,4 +13,10 @@ class CreateUserInteractor(private val repository: CreateUserRepository) {
     suspend fun getUserById(userId: String): Result<User?>{
         return repository.getUserById(userId)
     }
+    suspend fun getCurrentUser(): Result<User?>{
+        return repository.getCurrentUser()
+    }
+    suspend fun getAllUser(): Result<List<User>> {
+        return repository.getAllUsers()
+    }
 }
