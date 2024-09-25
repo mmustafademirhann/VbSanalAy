@@ -52,6 +52,13 @@ class PostAdapter @Inject constructor(
         }
 
     }
+    companion object {
+        fun from(parent: ViewGroup): PostViewHolder {
+            val layoutInflater = LayoutInflater.from(parent.context)
+            val binding = PostForRecyclerBinding.inflate(layoutInflater, parent, false)
+            return PostViewHolder(binding)
+        }
+    }
 
     fun setPosts(newPosts: List<Post>) {
         posts = newPosts+mockItem

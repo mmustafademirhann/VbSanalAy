@@ -4,7 +4,9 @@ import com.example.socialmediavbsanalay.data.dataSource.post.PostDataSource
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.domain.model.Post
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -38,7 +40,6 @@ class PostDataSourceImpl @Inject constructor(
 
     override suspend fun uploadPhoto(imageUri: Uri, userId: String) {
         try {
-            // Önce resmi Firebase Storage'a yükleyin
             val imageRef = firebaseStorage.reference.child("images/${UUID.randomUUID()}")
             imageRef.putFile(imageUri).await()
 
@@ -48,12 +49,17 @@ class PostDataSourceImpl @Inject constructor(
             val user = createUserDataSource.getUserById(userId)
             val username = user.getOrNull()?.id ?: "Unknown" // Kullanıcı adını alın, yoksa "Unknown" döner
 
+            // Firebase sunucu zamanını alın (Server Timestamp)
+            val timestamp = FieldValue.serverTimestamp()
+
             // Post verisini Firestore'a pushlayın
             val postData = mapOf(
                 "imageUrl" to downloadUrl,
                 "username" to username, // Kullanıcı adını ekleyin
-                "userId" to userId // ID'yi de ekleyin
+                "userId" to userId,     // ID'yi de ekleyin
+                "timestamp" to timestamp // Zaman damgasını ekleyin
             )
+
 
             postsCollection.add(postData).await()
         } catch (e: Exception) {
@@ -62,8 +68,11 @@ class PostDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getPosts(): List<Post> {
-        // Firestore'dan postları alın
-        val snapshot = firestore.collection("posts").get().await()
+        // Firestore'dan postları timestamp'e göre sıralı olarak alın (azalan sıralama: en yeni en üstte)
+        val snapshot = firestore.collection("posts")
+            .orderBy("timestamp", Query.Direction.DESCENDING) // Timestamp'e göre sıralama
+            .get()
+            .await()
 
         // Postları ve kullanıcı ID'lerini elde edin
         val posts = snapshot.documents.map { document ->
@@ -77,12 +86,13 @@ class PostDataSourceImpl @Inject constructor(
         val users = userRepository.getUsersByIds(userIds)
 
         // Postları kullanıcı adı ile güncelleyin
-        return postsCollection.get().await().documents.map { document ->
+        return snapshot.documents.map { document ->
             val imageUrl = document.getString("imageUrl") ?: ""
             val userId = document.getString("userId") ?: ""
             Post(imageUrl, userId)
         }
     }
+
 
 
 
