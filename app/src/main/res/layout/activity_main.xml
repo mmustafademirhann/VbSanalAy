@@ -47,6 +47,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
+                    android:elevation="10dp"
+
                     android:layout_gravity="bottom|center"
                     android:background="@drawable/bottombartwo"
                     android:orientation="horizontal"

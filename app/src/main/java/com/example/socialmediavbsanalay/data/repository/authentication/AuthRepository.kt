@@ -13,5 +13,6 @@ interface AuthRepository {
     fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow{}
     fun getCurrentUserId():String?
     fun signOut()
+    suspend fun getUserProfileImageByEmail(email: String): Result<String?>
 
 }

@@ -39,6 +39,9 @@ class AuthInteractor @Inject constructor(
     fun signOut() {
         authRepository.signOut()
     }
+    suspend fun getUserProfileImageByEmail(email: String): Result<String?>{
+       return authRepository.getUserProfileImageByEmail(email)
+    }
 
 
 }

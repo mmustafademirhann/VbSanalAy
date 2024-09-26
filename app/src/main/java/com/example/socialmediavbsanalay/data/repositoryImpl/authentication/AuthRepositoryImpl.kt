@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.data.repositoryImpl.authentication
 
+import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
@@ -64,6 +65,15 @@ class AuthRepositoryImpl @Inject constructor(
     }
     override fun signOut() {
         firebaseAuthDataSource.signOut()
+    }
+    override suspend fun getUserProfileImageByEmail(email: String): Result<String?> {
+        return try {
+            val imageUrl = firebaseAuthDataSource.getUserProfileImageByEmail(email)
+            Result.success(imageUrl) // Return success with the image URL
+        } catch (exception: Exception) {
+            Log.e("UserRepository", "Error getting user profile image: ${exception.message}")
+            Result.failure(exception) // Return failure with the exception
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.authentication
 
+import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -66,6 +67,17 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
     }
     override fun signOut() {
         firebaseAuth.signOut()
+    }
+    override suspend fun getUserProfileImageByEmail(email: String): String? {
+        val userCollection = firestore.collection("user")
+        val documents = userCollection.whereEqualTo("email", email).get().await() // Use await to wait for the result
+
+        if (!documents.isEmpty) {
+            for (document in documents) {
+                return document.getString("profileImageUrl") // Replace with your actual field name
+            }
+        }
+        return null // Return null if no documents are found
     }
 
 }

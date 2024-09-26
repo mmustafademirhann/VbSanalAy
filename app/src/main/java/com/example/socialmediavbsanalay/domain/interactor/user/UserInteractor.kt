@@ -33,4 +33,5 @@ class UserInteractor  @Inject constructor(
     suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String) {
         userRepository.updateUserProfileImageByEmail(email, imageUrl)
     }
+
 }

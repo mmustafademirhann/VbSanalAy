@@ -65,8 +65,11 @@ class GalleryViewModel @Inject constructor(
 
     private val _uploadStatuss = MutableLiveData<String>()
     val uploadStatuss: LiveData<String> get() = _uploadStatuss
-    private val _profileImageUrl = MutableLiveData<String>()
-    val profileImageUrl: LiveData<String> get() = _profileImageUrl
+    private val _profileImageUrl = MutableLiveData<String?>()
+    val profileImageUrl: LiveData<String?> get() = _profileImageUrl
+
+    private val _currentImageUrl = MutableLiveData<String>() // LiveData for current image URL
+    val currentImageUrl: LiveData<String> get() = _currentImageUrl
 
 
 
@@ -76,8 +79,6 @@ class GalleryViewModel @Inject constructor(
     var IDGET=""
 
     init {
-
-
         loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
     }
@@ -87,15 +88,28 @@ class GalleryViewModel @Inject constructor(
     fun uploadProfilePicturee(imageUri: Uri) {
         viewModelScope.launch {
             try {
-                val imageUrl = galleryInteractor.uploadProfilePicture(imageUri)
-                val userEmail = auth.currentUser?.email ?: throw Exception("E-posta alınamadı.")
-                userInteractor.updateUserProfileImageByEmail(userEmail, imageUrl)
-                _uploadStatuss.value = "Profil resmi güncellendi."
+                // Check if the current image URL is already set
+                if (_currentImageUrl.value == null) {
+                    val imageUrl = galleryInteractor.uploadProfilePicture(imageUri)
+                    val userEmail = auth.currentUser?.email ?: throw Exception("E-posta alınamadı.")
+                    userInteractor.updateUserProfileImageByEmail(userEmail, imageUrl)
+                    _currentImageUrl.value = imageUrl // Update current image URL
+                    _uploadStatuss.value = "Profil resmi güncellendi."
+                } else {
+                    _uploadStatuss.value = "Profil resmi zaten güncellenmiş."
+                }
             } catch (e: Exception) {
                 _uploadStatuss.value = "Hata: ${e.message}"
             }
         }
+    }
+    fun getUserProfileImage(email: String) {
+        viewModelScope.launch {
+            val result = authInteractor.getUserProfileImageByEmail(email)
 
+            // Extract the value from the Result and post it to LiveData
+            _profileImageUrl.postValue(result.getOrNull()) // This will be String? or null
+        }
     }
 
 
@@ -199,7 +213,7 @@ class GalleryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getUserIdByEmail(): String? {
+    suspend fun getUserIdByEmail(): String? {
         val email = authInteractor.getCurrentUserEmail()
         return email?.let { authInteractor.getUserIdByEmail(it) }
     }

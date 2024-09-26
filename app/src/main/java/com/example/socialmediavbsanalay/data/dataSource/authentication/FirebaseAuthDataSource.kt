@@ -14,4 +14,5 @@ interface FirebaseAuthDataSource {
     fun getCurrentUserId():String?
     fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow{}
     fun signOut()
+    suspend fun getUserProfileImageByEmail(email: String):String?
 }

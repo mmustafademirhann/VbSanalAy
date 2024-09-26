@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.user
 
+import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.DatabaseReference
@@ -26,6 +27,26 @@ class UserDataSourceImpl @Inject constructor(
         } catch (e: Exception) {
             throw e
         }
+    }
+    fun getUserProfileImageByEmail(email: String): String? {
+        // Return a Flow or a suspend function to fetch the data
+        var imageUrl: String? = null
+        val userCollection = firestore.collection("user")
+
+        // Assuming the user document is named by their email or some unique identifier
+        userCollection.whereEqualTo("email", email).get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    for (document in documents) {
+                        imageUrl = document.getString("profileImageUrl") // Replace with your actual field name
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("UserInteractor", "Error getting user profile image: ${exception.message}")
+            }
+
+        return imageUrl // This might be null until the asynchronous call completes
     }
     override suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String) {
         val query = firestore.collection("user").whereEqualTo("email", email).get().await()

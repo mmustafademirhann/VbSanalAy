@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentSettingsBinding
 import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.presentation.MainActivity
@@ -39,6 +41,8 @@ class SettingsFragment : Fragment() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
     private var imageUri: Uri? = null
+    var x=""
+    private lateinit var userId: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +69,7 @@ class SettingsFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     imageUri = uri
+
                     binding.profileImage.setImageURI(imageUri) // Seçilen resmi ImageView'a yerleştir
                     imageUri?.let { galleryViewModel.uploadProfilePicturee(it) }
 
@@ -93,24 +98,23 @@ class SettingsFragment : Fragment() {
         }
 
         // Upload durumu izleme
-        galleryViewModel.uploadStatus.observe(viewLifecycleOwner) { status ->
-            Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show()
+        val email = FirebaseAuth.getInstance().currentUser?.email
+        email?.let {
+            galleryViewModel.getUserProfileImage(it) // Fetch the user's profile image
         }
-        galleryViewModel.uploadStatus.observe(viewLifecycleOwner) { status ->
-            if (status == "Yükleme başarılı") {
-                imageUri?.let { uri ->
-                    viewLifecycleOwner.lifecycleScope.launch { // Coroutine başlat
-                        try {
-                            val imageUrl = galleryViewModel.uploadProfilePicturee(uri)// Doğru şekilde çağır
-                            val email = FirebaseAuth.getInstance().currentUser?.email
-                            if (email != null) {
-                                galleryViewModel.updateUserProfileImage(email, imageUrl.toString())
-                            }
-                        } catch (e: Exception) {
-                            Toast.makeText(requireContext(), "Resim yükleme hatası: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+
+        // Observe the profile image URL LiveData
+        galleryViewModel.profileImageUrl.observe(viewLifecycleOwner) { imageUrl ->
+            if (imageUrl != null) {
+                // Load the profile image using Glide
+                Glide.with(this)
+                    .load(imageUrl) // Load the URL
+                    .placeholder(R.drawable.add) // Placeholder image while loading
+                    .error(R.drawable.add) // Error image if the load fails
+                    .into(binding.profileImage) // Your ImageView
+            } else {
+                // Handle the case where the imageUrl is null (e.g., show a default image)
+                binding.profileImage.setImageResource(R.drawable.add)
             }
         }
     }

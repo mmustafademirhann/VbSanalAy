@@ -1,3 +1,12 @@
+eksikler--
+cash'e kaydedilmeli
+proggresbar-
+foto atıldığında main'e gitmeli
+searchlemeye pp eklenicek,
+
+
+
+
 package com.example.socialmediavbsanalay.presentation
 
 import android.Manifest
@@ -16,7 +25,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -79,26 +87,6 @@ class MainActivity : AppCompatActivity() {
         private const val PICK_IMAGE_REQUEST = 1
     }
 
-
-    // Function to apply the scaling and alpha animation
-    private fun applyAnimation(view: View) {
-        view.animate()
-            .scaleX(0.9f) // Scale down slightly
-            .scaleY(0.9f)
-            .alpha(0.5f) // Change opacity to give a pressed effect
-            .setDuration(100) // Duration of the press effect
-            .withEndAction {
-                // Revert back to the original size and opacity
-                view.animate()
-                    .scaleX(1.0f) // Reset scale
-                    .scaleY(1.0f)
-                    .alpha(1.0f) // Reset opacity
-                    .setDuration(100) // Duration of the reset effect
-                    .start()
-            }
-            .start()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
@@ -139,38 +127,29 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    fun clickEvents() {
-        // List of all layouts with corresponding fragments and lines to be updated
-        val layoutActions = listOf(
-            Triple(binding.homeImageViewLayout, MainPageFragment::class.java, binding.homeline),
-            Triple(binding.messagetwoiconLayout, MessageFragment::class.java, binding.messageline),
-            Triple(binding.userImageViewLayout, UserProfileFragment::class.java, binding.userline),
-            Triple(binding.notificationImageViewLayout, NotificationBarFragment::class.java, binding.notificationline)
-        )
-
-        // Set up click listeners with animation for each layout
-        layoutActions.forEach { (layout, fragmentClass, line) ->
-            layout.setOnClickListener { view ->
-                applyAnimation(view) // Apply animation on click
-                setVisibilityForLine(line) // Perform specific action
-                switchFragment(fragmentClass, true) // Switch fragment as intended
-            }
-
-            // Apply click animation for each child inside the layout
-            for (i in 0 until layout.childCount) {
-                val child = layout.getChildAt(i)
-                child.setOnClickListener {
-                    applyAnimation(child) // Apply animation to the child view
-                    layout.performClick() // Trigger the layout's click event for fragment switch
-                }
-            }
+    private fun clickEvents(){
+        binding.userImageViewLayout.setOnClickListener {
+            setVisibilityForLine(binding.userline)
+            switchFragment(UserProfileFragment::class.java,true)
         }
+        binding.homeImageViewLayout.setOnClickListener {
+            setVisibilityForLine(binding.homeline)
+            switchFragment(MainPageFragment::class.java,true)
+        }
+        binding.messagetwoiconLayout.setOnClickListener {
+            setVisibilityForLine(binding.messageline)
+            switchFragment(MessageFragment::class.java,true)
+        }
+        binding.notificationImageViewLayout.setOnClickListener {
+            setVisibilityForLine(binding.notificationline)
+            switchFragment(NotificationBarFragment::class.java,true)
+        }
+        binding.addButton.setOnClickListener{
 
-        // Handle click event for the add button separately
-        binding.addButton.setOnClickListener {
-            applyAnimation(it) // Optionally animate the button
             checkPermission()
+
         }
+
     }
 
 
