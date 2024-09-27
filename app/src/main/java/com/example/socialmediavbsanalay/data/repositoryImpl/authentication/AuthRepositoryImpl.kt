@@ -53,6 +53,16 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getUserByEmail(email: String): Result<User?> {
+        return try {
+            Result.success(firebaseAuthDataSource.getUserByEmail(email))
+        } catch (e: FirebaseAuthInvalidUserException) {
+            throw Exception("User not found with email: $email", e)
+        } catch (e: Exception) {
+            throw Exception("Failed to retrieve userId: ${e.message}", e)
+        }
+    }
+
     override fun getCurrentUserEmail(): String {
         return firebaseAuthDataSource.getCurrentUserEmail()
     }

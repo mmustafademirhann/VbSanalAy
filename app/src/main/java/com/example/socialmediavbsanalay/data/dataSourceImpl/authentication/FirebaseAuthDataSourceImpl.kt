@@ -48,6 +48,27 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun getUserByEmail(email: String): User? {
+        return withContext(Dispatchers.IO) {
+            val querySnapshot = firestore.collection("user")
+                .whereEqualTo("email", email)
+                .get()
+                .await()
+
+            val userDocument = querySnapshot.documents.firstOrNull()
+
+            // If user not found, throw an exception
+            if (userDocument != null) {
+                userDocument.toObject(User::class.java)
+            } else {
+                throw FirebaseAuthInvalidUserException(
+                    "ERROR_USER_NOT_FOUND",
+                    "User not found with email: $email"
+                )
+            }
+        }
+    }
     override fun getCurrentUserEmail(): String {
         return firebaseAuth.currentUser?.email.toString()
     }

@@ -14,19 +14,26 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.example.socialmediavbsanalay.R
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.FragmentSignInBinding
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignInFragment : Fragment() {
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
     private val hideHandler = Handler(Looper.myLooper()!!)
     private var _binding: FragmentSignInBinding? = null
     private val binding get() = _binding!!
     private val authViewModel: AuthViewModel by viewModels()
 
 
+    private var email: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,14 +57,14 @@ class SignInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).hideBottomBar()
         binding.signInButton.setOnClickListener{
-            val email=binding.editTextMail.text.toString()
+            email=binding.editTextMail.text.toString()
             val password=binding.editTextNumberPassword.text.toString()
             authViewModel.signIn(email,password)
         }
         authViewModel.authState.observe(viewLifecycleOwner){result->
             result.onSuccess { user ->
                 onSignInSuccess()
-               navigateToMainPage(view)
+                authViewModel.getUserByEmail(email)
 
             }.onFailure { exception ->
                 if (exception.message == "User not found") {
@@ -68,6 +75,15 @@ class SignInFragment : Fragment() {
                         "Sign-in failed: ${exception.message}",
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+            }
+        }
+
+        authViewModel.loggedUser.observe(viewLifecycleOwner) {
+            if (it.isSuccess) {
+                it.getOrNull()?.let {user ->
+                    userPreferences.saveUser(user)
+                    navigateToMainPage(view)
                 }
             }
         }

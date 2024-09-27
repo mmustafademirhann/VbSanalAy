@@ -26,9 +26,17 @@ class AuthViewModel @Inject constructor(
     private val _signUpResult = MutableLiveData<Result<FirebaseUser?>>()
     val signUpResult: LiveData<Result<FirebaseUser?>> get() = _signUpResult
     private val _createUserLiveData = MutableLiveData<Result<Unit>>()
-    val createUserLiveData = MutableLiveData<Result<Unit>>()
+    val createUserLiveData: LiveData<Result<Unit>> get() = _createUserLiveData
     private val _user = MutableLiveData<Result<FirebaseUser?>>()
-    val user: LiveData<Result<FirebaseUser?>> get() = _user
+
+    private val _loggedUser = MutableLiveData<Result<User?>>()
+    val loggedUser: LiveData<Result<User?>> get() = _loggedUser
+
+    fun getUserByEmail(email: String) {
+        viewModelScope.launch {
+            _loggedUser.value = authInteractor.getUserByEmail(email)
+        }
+    }
 
 
     fun signIn(email: String, password: String) {

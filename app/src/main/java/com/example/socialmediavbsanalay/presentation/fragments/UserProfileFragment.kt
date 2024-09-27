@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.domain.model.User
@@ -30,9 +31,13 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClickListener {
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var userAdapter: UserAdapter
@@ -172,7 +177,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                 // Kullanıcı kimliğini al
                 ownerUser = x
                 // Kullanıcı kimliğiyle postları filtrele
-                val filteredPosts = postsForUsers.filter { post -> post.username == x }
+                val filteredPosts = postsForUsers.filter { post -> post.username == userPreferences.getUser()?.id }
                 userPostAdapter.setPosts(filteredPosts)
                 galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
                     user?.let {

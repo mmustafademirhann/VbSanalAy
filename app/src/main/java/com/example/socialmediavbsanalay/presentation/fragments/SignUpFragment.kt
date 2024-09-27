@@ -9,17 +9,24 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.FragmentSignUpBinding
+import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignUpFragment : Fragment() {
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
@@ -27,11 +34,12 @@ class SignUpFragment : Fragment() {
     val database = Firebase.database("https://sanalay-b69cd-default-rtdb.europe-west1.firebasedatabase.app/")
     val myRef = database.getReference("message")
 
-    val user = hashMapOf(
-        "first" to "d",
-        "last" to "d",
-        "born" to 2,
-    )
+    var id: String = ""
+    var email: String = ""
+    var password: String = ""
+    var name: String = ""
+    var surName: String = ""
+    var genders: String = ""
 
     private val authViewModel: AuthViewModel by viewModels()
 
@@ -69,12 +77,12 @@ class SignUpFragment : Fragment() {
             )
         }
         binding.btnRegister.setOnClickListener {
-            val id=binding.userName.text.toString()
-            val email = binding.etMail.text.toString()
-            val password = binding.editTextNumberPassword2.text.toString()
-            val name = binding.etName.text.toString()
-            val surName = binding.etSurName.text.toString()
-            val genders = when (binding.radioGenders.checkedRadioButtonId) {
+            id = binding.userName.text.toString()
+            email = binding.etMail.text.toString()
+            password = binding.editTextNumberPassword2.text.toString()
+            name = binding.etName.text.toString()
+            surName = binding.etSurName.text.toString()
+            genders = when (binding.radioGenders.checkedRadioButtonId) {
                 binding.radioMale.id -> "Male"
                 binding.radioFemale.id -> "Female"
                 binding.radioOthers.id -> "Other"
@@ -87,6 +95,7 @@ class SignUpFragment : Fragment() {
             // Observe the result of the sign-up process before creating the user
             authViewModel.signUpResult.observe(viewLifecycleOwner) { signUpResult ->
                 if (signUpResult.isSuccess) {
+                    userPreferences
                     // Sign-up successful, create the user
                     authViewModel.createUser(id,name, surName, email, genders)
                     Toast.makeText(requireContext(), "Sign-up successful, creating user...", Toast.LENGTH_SHORT).show()
@@ -98,6 +107,19 @@ class SignUpFragment : Fragment() {
             }
         }
 
+        authViewModel.createUserLiveData.observe(viewLifecycleOwner) {
+            if (it.isSuccess) {
+                userPreferences.saveUser(
+                    User(
+                        id,
+                        name,
+                        surName,
+                        email,
+                        genders
+                    )
+                )
+            }
+        }
 
 
         /*myRef.setValue("Hello!").addOnSuccessListener {
