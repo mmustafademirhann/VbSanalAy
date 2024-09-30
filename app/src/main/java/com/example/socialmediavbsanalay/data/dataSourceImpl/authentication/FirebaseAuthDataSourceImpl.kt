@@ -99,5 +99,16 @@ class FirebaseAuthDataSourceImpl @Inject constructor(
         }
         return null // Return null if no documents are found
     }
+    override suspend fun getBacgroundByEmail(email: String): String? {
+        val userCollection = firestore.collection("user")
+        val documents = userCollection.whereEqualTo("email", email).get().await() // Use await to wait for the result
+
+        if (!documents.isEmpty) {
+            for (document in documents) {
+                return document.getString("profileBacgroundImageUrl") // Replace with your actual field name
+            }
+        }
+        return null // Return null if no documents are found
+    }
 
 }

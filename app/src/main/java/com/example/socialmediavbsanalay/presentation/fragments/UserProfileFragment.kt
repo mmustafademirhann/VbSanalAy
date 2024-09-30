@@ -66,7 +66,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         lifecycleScope.launch {
             userViewModel.users.collect { userList ->
                 userAdapter.updateUsers(userList)
-                x=galleryViewModel.getUserIdByEmail().toString()
+                x= userPreferences.getUser()!!.id
             }
         }
 
@@ -119,6 +119,14 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                     .error(R.drawable.sayfabitti) // Hata durumunda gösterilecek resim
                     .circleCrop() // Resmi yuvarlak yapar
                     .into(binding.profileImageP)
+                Glide.with(this)
+                    .load(it.profileBacgroundImageUrl) // Kullanıcının profil resim URL'si
+                    .placeholder(R.drawable.rainy_minecraft) // Yükleme sırasında gösterilecek varsayılan resim
+                    .error(R.drawable.rainy_minecraft) // Hata durumunda gösterilecek resim
+                    .into(binding.mainBackgroundImage)
+
+
+
                 // Örneğin: Glide ile resim yükleme işlemi yapılabilir
                 // Glide.with(this).load(it.profileImageUrl).into(binding.profileImage)
             } ?: run {
@@ -185,6 +193,11 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                         .error(R.drawable.sayfabitti) // Hata durumunda gösterilecek resim
                         .circleCrop() // Resmi yuvarlak yapar
                         .into(binding.profileImageP)
+                    Glide.with(this)
+                        .load(it.profileBacgroundImageUrl) // Kullanıcının profil resim URL'si
+                        .placeholder(R.drawable.add) // Yükleme sırasında gösterilecek varsayılan resim
+                        .error(R.drawable.sayfabitti) // Hata durumunda gösterilecek resim
+                        .into(binding.mainBackgroundImage)
                 } ?: run {
                     // Eğer kullanıcı bulunamazsa, default değerleri göster
                     binding.usernameM.text = galleryViewModel.IDGET

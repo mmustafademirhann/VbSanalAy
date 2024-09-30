@@ -40,4 +40,8 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String) {
         userDataSource.updateUserProfileImageByEmail(email, imageUrl)
     }
+
+    override suspend fun updateBacgroundByEmail(email: String, imageUrl: String) {
+        userDataSource.updateBacgroundByEmail(email, imageUrl)
+    }
 }

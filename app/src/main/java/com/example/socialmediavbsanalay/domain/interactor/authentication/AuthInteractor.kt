@@ -45,6 +45,9 @@ class AuthInteractor @Inject constructor(
     suspend fun getUserProfileImageByEmail(email: String): Result<String?>{
        return authRepository.getUserProfileImageByEmail(email)
     }
+    suspend fun getBacgroundByEmail(email: String): Result<String?>{
+        return authRepository.getBacgroundByEmail(email)
+    }
 
 
 }

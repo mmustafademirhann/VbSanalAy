@@ -42,21 +42,16 @@ class SettingsFragment : Fragment() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
     private var imageUri: Uri? = null
-    var x=""
-    private lateinit var userId: String
-
+    private var isSelectingBackground: Boolean = false // Profil mi arka plan mı seçiliyor?
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
 
-        // İzin isteme işlemi için launcher tanımlaması
         requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                // Eğer izin verildiyse galeriyi aç
                 openGallery()
             } else {
-                // İzin verilmediyse kullanıcıya bildirimde bulun
                 Toast.makeText(
                     requireContext(),
                     "Galeriden resim seçmek için izin gerekli.",
@@ -65,15 +60,17 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        // Galeri açma işlemi için launcher tanımlaması
         imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
                     imageUri = uri
-
-                    binding.profileImage.setImageURI(imageUri) // Seçilen resmi ImageView'a yerleştir
-                    imageUri?.let { galleryViewModel.uploadProfilePicturee(it) }
-
+                    if (isSelectingBackground) {
+                        binding.backgroundImage.setImageURI(imageUri)
+                        imageUri?.let { galleryViewModel.uploadBacgroundPicturee(it) }
+                    } else {
+                        binding.profileImage.setImageURI(imageUri)
+                        imageUri?.let { galleryViewModel.uploadProfilePicturee(it) }
+                    }
                 }
             }
         }
@@ -96,42 +93,53 @@ class SettingsFragment : Fragment() {
         }
 
         binding.profileEditIcon.setOnClickListener {
+            isSelectingBackground = false
             handleProfileEditIconClick()
         }
 
-        // Upload durumu izleme
-        val email = FirebaseAuth.getInstance().currentUser?.email
-        email?.let {
-            galleryViewModel.getUserProfileImage(it) // Fetch the user's profile image
+        binding.backgroundEditIcon.setOnClickListener {
+            isSelectingBackground = true
+            handleProfileEditIconClick()
         }
 
-        // Observe the profile image URL LiveData
+        val email = FirebaseAuth.getInstance().currentUser?.email
+        email?.let {
+            galleryViewModel.getUserProfileImage(it)
+            galleryViewModel.getBacgroudImage(it)
+        }
+
         galleryViewModel.profileImageUrl.observe(viewLifecycleOwner) { imageUrl ->
             if (imageUrl != null) {
-                // Load the profile image using Glide
                 Glide.with(this)
-                    .load(imageUrl) // Load the URL
-                    .placeholder(R.drawable.add) // Placeholder image while loading
-                    .error(R.drawable.add) // Error image if the load fails
-                    .into(binding.profileImage) // Your ImageView
+                    .load(imageUrl)
+                    .placeholder(R.drawable.add)
+                    .error(R.drawable.add)
+                    .into(binding.profileImage)
             } else {
-                // Handle the case where the imageUrl is null (e.g., show a default image)
                 binding.profileImage.setImageResource(R.drawable.add)
+            }
+        }
+
+        galleryViewModel.profilebImageUrl.observe(viewLifecycleOwner) { backgroundUrl ->
+            if (backgroundUrl != null) {
+                Glide.with(this)
+                    .load(backgroundUrl)
+                    .placeholder(R.drawable.add)
+                    .error(R.drawable.sayfabitti
+                    )
+                    .into(binding.backgroundImage)
+            } else {
+                binding.backgroundImage.setImageResource(R.drawable.sayfabitti)
             }
         }
     }
 
-    // Profil düzenleme simgesine tıklanınca çağrılan metot
     private fun handleProfileEditIconClick() {
-        // İzin kontrolü yapılıyor
         when {
-            // Android 13 ve sonrası için farklı izin gereksinimleri olabilir.
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                // Android 13 (API 33) için farklı izinler kontrol edilebilir
                 checkAndRequestPermission(android.Manifest.permission.READ_MEDIA_IMAGES)
             }
             else -> {
-                // Android 13'ten düşük sürümler için klasik izin kontrolü
                 checkAndRequestPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
@@ -139,23 +147,19 @@ class SettingsFragment : Fragment() {
 
     private fun checkAndRequestPermission(permission: String) {
         when {
-            // Eğer izin verilmişse direkt galeriyi aç
             ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED -> {
                 openGallery()
             }
-            // İzin verilmemişse ve kullanıcıya sebebini gösterme gerekliliği varsa
             shouldShowRequestPermissionRationale(permission) -> {
                 Toast.makeText(requireContext(), "Profil resmi seçmek için izin vermeniz gerekiyor.", Toast.LENGTH_SHORT).show()
                 requestPermissionLauncher.launch(permission)
             }
-            // İzin daha önce sorulmamışsa veya kullanıcı reddettiyse tekrar izin iste
             else -> {
                 requestPermissionLauncher.launch(permission)
             }
         }
     }
 
-    // Galeriyi açmak için kullanılan metot
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK).apply {
             type = "image/*"

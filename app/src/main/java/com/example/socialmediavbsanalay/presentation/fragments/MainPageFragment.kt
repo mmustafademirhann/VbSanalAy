@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentMainPageBinding
@@ -73,9 +72,10 @@ class MainPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as MainActivity).showBottomBar()
-
+        binding.progressBar.visibility = View.VISIBLE
         galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
             postAdapter.setPosts(posts)
+            binding.progressBar.visibility = View.INVISIBLE
         }
 
         val recyclerView = binding.postsRecyclerView

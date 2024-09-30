@@ -15,4 +15,5 @@ interface FirebaseAuthDataSource {
     fun fetchUserIdByAuthId(authId: String): Flow<String?> = flow{}
     fun signOut()
     suspend fun getUserProfileImageByEmail(email: String):String?
+    suspend fun getBacgroundByEmail(email: String):String?
 }

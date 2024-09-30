@@ -16,7 +16,7 @@ import javax.inject.Inject
 class PostAdapter @Inject constructor(
     private val userViewModel: UserViewModel // UserViewModel'i enjekte et
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
-    private val mockItem=Post("","mock")
+    private val mockItem=Post("","mock",null)
 
     private var posts: List<Post> = emptyList()
 
@@ -27,6 +27,7 @@ class PostAdapter @Inject constructor(
             binding.postUsername.text = post.username
             binding.postContent.text = "Nasıl ?"
 
+
             // Find the correct user profile based on the post's username
             val matchingUser = users?.find { user -> user.id == post.username }
 
@@ -34,9 +35,7 @@ class PostAdapter @Inject constructor(
                 // Load the user's profile image with Glide using circle crop
                 Glide.with(binding.root)
                     .load(matchingUser.profileImageUrl) // URL of the user's profile image
-                    .circleCrop() // This will transform the image into a circular shape
-                    .placeholder(R.drawable.shin) // Optional placeholder
-                    .error(R.drawable.shin) // Optional error image
+                    .circleCrop() // This will transform the image into a circular shape// Optional error image
                     .into(binding.storyImageView) // Ensure `storyImageView` is correctly referenced
             } else {
                 // Load a default profile image with circle crop
@@ -76,11 +75,16 @@ class PostAdapter @Inject constructor(
 
         // Kullanıcı bilgilerini al ve gözlemle
         userViewModel.getAllUsers() // Öncelikle kullanıcıyı çek
+
+
+
         userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
             val profileImageUrl =
                 result?.getOrNull() // Keskulla profil resmini al
             holder.bind(post, profileImageUrl) // Post ve profil resmini bağla
         }
+
+
         Glide.with(holder.itemView.context)
             .load(post.imageResId)
             .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache the image

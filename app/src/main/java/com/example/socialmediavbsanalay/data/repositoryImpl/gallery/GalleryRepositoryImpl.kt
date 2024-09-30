@@ -16,4 +16,8 @@ class GalleryRepositoryImpl @Inject constructor(
     override suspend fun uploadProfilePicture(imageUri: Uri): String {
         return galleryDataSource.uploadProfilePicture(imageUri)
     }
+
+    override suspend fun uploadBacground(imageUri: Uri): String {
+        return galleryDataSource.uploadBacground(imageUri)
+    }
 }

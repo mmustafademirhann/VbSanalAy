@@ -14,4 +14,8 @@ class GalleryInteractorImpl @Inject constructor(
     override suspend fun uploadProfilePicture(imageUri: Uri): String {
         return galleryRepository.uploadProfilePicture(imageUri)
     }
+
+    override suspend fun uploadBacground(imageUri: Uri): String {
+        return galleryRepository.uploadBacground(imageUri)
+    }
 }

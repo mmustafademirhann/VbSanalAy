@@ -30,7 +30,7 @@ class PostDataSourceImpl @Inject constructor(
                 val imageUrl = document.getString("imageUrl") ?: ""
                 val username = document.getString("username") ?: "Unknown"
                 val userId = document.getString("userId") ?: "" // Retrieve userId
-                Post(imageResId = imageUrl, username = userId)
+                Post(imageResId = imageUrl, username = userId,null)
             }
             Result.success(posts)
         } catch (e: Exception) {
@@ -78,7 +78,7 @@ class PostDataSourceImpl @Inject constructor(
         val posts = snapshot.documents.map { document ->
             val imageUrl = document.getString("imageUrl") ?: ""
             val userId = document.getString("userId") ?: ""
-            Post(imageUrl, userId)
+            Post(imageUrl, userId,null)
         }
 
         // Kullanıcı ID'lerini topluca alın
@@ -89,7 +89,7 @@ class PostDataSourceImpl @Inject constructor(
         return snapshot.documents.map { document ->
             val imageUrl = document.getString("imageUrl") ?: ""
             val userId = document.getString("userId") ?: ""
-            Post(imageUrl, userId)
+            Post(imageUrl, userId,null)
         }
     }
 

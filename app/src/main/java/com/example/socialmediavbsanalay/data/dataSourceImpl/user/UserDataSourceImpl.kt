@@ -58,6 +58,16 @@ class UserDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateBacgroundByEmail(email: String, imageUrl: String) {
+        val query = firestore.collection("user").whereEqualTo("email", email).get().await()
+        if (!query.isEmpty) {
+            val document = query.documents[0]
+            document.reference.update("profileBacgroundImageUrl", imageUrl).await()
+        } else {
+            throw Exception("Kullanıcı bulunamadı.")
+        }
+    }
+
     override suspend fun getUser(userId: String): User? {
         return try {
             val snapshot = usersRef.child(userId).get().await()

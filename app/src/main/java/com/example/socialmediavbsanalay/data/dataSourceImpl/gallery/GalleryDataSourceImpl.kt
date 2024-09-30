@@ -82,4 +82,15 @@ class GalleryDataSourceImpl @Inject constructor(
             throw Exception("Resim yükleme hatası")
         }
     }
+    override suspend fun uploadBacground(imageUri: Uri): String {
+        val userId = FirebaseAuth.getInstance().uid ?: throw Exception("Kullanıcı oturumu yok")
+        val storageRef = firebaseStorage.reference.child("bacground_images/$userId.jpg")
+        val uploadTask = storageRef.putFile(imageUri).await()
+
+        if (uploadTask.task.isSuccessful) {
+            return storageRef.downloadUrl.await().toString()
+        } else {
+            throw Exception("Resim yükleme hatası")
+        }
+    }
 }

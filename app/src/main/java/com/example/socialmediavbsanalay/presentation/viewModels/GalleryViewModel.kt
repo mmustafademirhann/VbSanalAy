@@ -60,11 +60,20 @@ class GalleryViewModel @Inject constructor(
 
     private val _uploadStatuss = MutableLiveData<String>()
     val uploadStatuss: LiveData<String> get() = _uploadStatuss
+    private val _uploadbStatuss = MutableLiveData<String>()
+    val uploadbStatuss: LiveData<String> get() = _uploadbStatuss
+
+
     private val _profileImageUrl = MutableLiveData<String?>()
     val profileImageUrl: LiveData<String?> get() = _profileImageUrl
 
+    private val _profilebImageUrl = MutableLiveData<String?>()
+    val profilebImageUrl: LiveData<String?> get() = _profilebImageUrl
+
     private val _currentImageUrl = MutableLiveData<String>() // LiveData for current image URL
     val currentImageUrl: LiveData<String> get() = _currentImageUrl
+    private val _currentbImageUrl = MutableLiveData<String>() // LiveData for current image URL
+    val currentbImageUrl: LiveData<String> get() = _currentbImageUrl
 
 
 
@@ -78,8 +87,8 @@ class GalleryViewModel @Inject constructor(
         fetchCurrentUserId()
     }
     //suspend fun fetchUserData(): User? {
-        //return authInteractor.fetchUserData().getOrNull()
-   // }
+    //return authInteractor.fetchUserData().getOrNull()
+    // }
     fun uploadProfilePicturee(imageUri: Uri) {
         viewModelScope.launch {
             try {
@@ -104,6 +113,32 @@ class GalleryViewModel @Inject constructor(
 
             // Extract the value from the Result and post it to LiveData
             _profileImageUrl.postValue(result.getOrNull()) // This will be String? or null
+        }
+    }
+    fun uploadBacgroundPicturee(imageUri: Uri) {
+        viewModelScope.launch {
+            try {
+                // Check if the current image URL is already set
+                if (_currentbImageUrl.value == null) {
+                    val imageUrl = galleryInteractor.uploadBacground(imageUri)
+                    val userEmail = auth.currentUser?.email ?: throw Exception("E-posta alınamadı.")
+                    userInteractor.updateBacgroundByEmail(userEmail, imageUrl)
+                    _currentbImageUrl.value = imageUrl // Update current image URL
+                    _uploadbStatuss.value = "Profil resmi güncellendi."
+                } else {
+                    _uploadbStatuss.value = "Profil resmi zaten güncellenmiş."
+                }
+            } catch (e: Exception) {
+                _uploadbStatuss.value = "Hata: ${e.message}"
+            }
+        }
+    }
+    fun getBacgroudImage(email: String) {
+        viewModelScope.launch {
+            val result = authInteractor.getBacgroundByEmail(email)
+
+            // Extract the value from the Result and post it to LiveData
+            _profilebImageUrl.postValue(result.getOrNull()) // This will be String? or null
         }
     }
 

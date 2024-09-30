@@ -85,4 +85,14 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getBacgroundByEmail(email: String): Result<String?> {
+        return try {
+            val imageUrl = firebaseAuthDataSource.getBacgroundByEmail(email)
+            Result.success(imageUrl) // Return success with the image URL
+        } catch (exception: Exception) {
+            Log.e("UserRepository", "Error getting user profile image: ${exception.message}")
+            Result.failure(exception) // Return failure with the exception
+        }
+    }
+
 }

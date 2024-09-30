@@ -26,7 +26,6 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:paddingBottom="45dp"
-
                 android:src="@drawable/rainy_minecraft"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="0.5" />

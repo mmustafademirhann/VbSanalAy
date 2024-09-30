@@ -16,5 +16,6 @@ interface AuthRepository {
     fun getCurrentUserId():String?
     fun signOut()
     suspend fun getUserProfileImageByEmail(email: String): Result<String?>
+    suspend fun getBacgroundByEmail(email: String): Result<String?>
 
 }
