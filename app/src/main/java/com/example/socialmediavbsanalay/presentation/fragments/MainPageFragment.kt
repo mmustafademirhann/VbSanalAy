@@ -1,37 +1,19 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
-import android.app.AlertDialog
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentMainPageBinding
 import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import android.Manifest
-import android.content.Context
-import android.net.Uri
-import android.util.Log
-import android.widget.EditText
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
@@ -60,12 +42,6 @@ class MainPageFragment : Fragment() {
     }
 
 
-
-
-    fun navigateToSignUp(view: View){
-        val action =SignInFragmentDirections.actionSignInFragmentToSignUpFragment()
-        Navigation.findNavController(view).navigate(action)
-    }
     private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, fragment) // Use your actual container ID

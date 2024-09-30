@@ -2,7 +2,6 @@ package com.example.socialmediavbsanalay.domain.interactor.user
 
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.domain.model.User
-import com.google.firebase.database.Query
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

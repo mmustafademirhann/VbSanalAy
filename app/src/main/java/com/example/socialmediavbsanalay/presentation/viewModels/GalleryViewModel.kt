@@ -1,12 +1,9 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
 import android.net.Uri
-import android.os.Bundle
-import android.provider.Settings.Global.putString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
@@ -20,10 +17,8 @@ import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject

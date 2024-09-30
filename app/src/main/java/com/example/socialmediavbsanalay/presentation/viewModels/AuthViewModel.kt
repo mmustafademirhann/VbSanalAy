@@ -1,6 +1,6 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
-import android.util.Printer
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,10 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
 import com.example.socialmediavbsanalay.domain.model.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.UUID
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +32,7 @@ class AuthViewModel @Inject constructor(
 
     private val _loggedUser = MutableLiveData<Result<User?>>()
     val loggedUser: LiveData<Result<User?>> get() = _loggedUser
+    private var isThereis:Boolean=false
 
     fun getUserByEmail(email: String) {
         viewModelScope.launch {
@@ -49,9 +51,10 @@ class AuthViewModel @Inject constructor(
 
     fun signUp(email: String, password: String) {
 
-            viewModelScope.launch {
-                _signUpResult.value = authInteractor.signUp(email, password)
-            }
+                viewModelScope.launch {
+                    _signUpResult.value = authInteractor.signUp(email, password)
+                }
+
     }
 
     fun signUpAndCreateUser(email: String, password: String, name: String, surName: String, gender: String) {
@@ -76,6 +79,11 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+    fun checkIfUserExists(id: String) {
+        viewModelScope.launch {
+            val result = createUserInteractor.checkIfUserExists(id)
+        }
+    }
 
 
     fun createUser(userName:String,name:String,surName:String,email:String,gender:String) {
@@ -88,7 +96,9 @@ class AuthViewModel @Inject constructor(
                 )
                 _createUserLiveData.value = createResult
             } else {
+
                 _createUserLiveData.value = Result.failure(Exception("User already exists"))
+                isThereis=true
             }
 
 

@@ -1,6 +1,5 @@
 package com.example.socialmediavbsanalay.di
 
-import android.app.Application
 import android.content.Context
 import com.example.socialmediavbsanalay.data.dataSource.gallery.GalleryDataSource
 import com.example.socialmediavbsanalay.data.dataSourceImpl.gallery.GalleryDataSourceImpl

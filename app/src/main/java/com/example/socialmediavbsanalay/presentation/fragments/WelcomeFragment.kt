@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentWelcomeBinding
 import com.example.socialmediavbsanalay.presentation.MainActivity

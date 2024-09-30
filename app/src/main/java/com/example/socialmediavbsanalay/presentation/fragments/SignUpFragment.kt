@@ -1,8 +1,6 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
-import android.os.Binder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +12,6 @@ import com.example.socialmediavbsanalay.databinding.FragmentSignUpBinding
 import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.AuthViewModel
-import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -76,6 +72,7 @@ class SignUpFragment : Fragment() {
                 }
             )
         }
+        val usersRef = Firebase.firestore.collection("user")
         binding.btnRegister.setOnClickListener {
             id = binding.userName.text.toString()
             email = binding.etMail.text.toString()
@@ -88,23 +85,38 @@ class SignUpFragment : Fragment() {
                 binding.radioOthers.id -> "Other"
                 else -> "Not Selected" // In case no radio button is selected
             }
+            usersRef.whereEqualTo("id", id)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        // Aynı id ile kullanıcı bulundu, hata mesajı göster
+                        Toast.makeText(requireContext(), "User ID already exists. Please choose a different ID.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Aynı ID yok, kullanıcı kaydı yapılabilir
+                        authViewModel.signUp(email, password)
+                        // Sign-up işlemini gözlemleyin
+                        authViewModel.signUpResult.observe(viewLifecycleOwner) { signUpResult ->
+                            if (signUpResult.isSuccess) {
+                                userPreferences
+                                // Sign-up başarılı, kullanıcı oluşturuluyor
+                                authViewModel.createUser(id, name, surName, email, genders)
+
+                                Toast.makeText(requireContext(), "Sign-up successful, creating user...", Toast.LENGTH_SHORT).show()
+
+                            } else {
+                                // Sign-up başarısız, hata mesajı göster
+                                Toast.makeText(requireContext(), "Sign-up failed: ${signUpResult.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Error checking user ID: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
 
             // Sign up the user first
-            authViewModel.signUp(email, password)
 
-            // Observe the result of the sign-up process before creating the user
-            authViewModel.signUpResult.observe(viewLifecycleOwner) { signUpResult ->
-                if (signUpResult.isSuccess) {
-                    userPreferences
-                    // Sign-up successful, create the user
-                    authViewModel.createUser(id,name, surName, email, genders)
-                    Toast.makeText(requireContext(), "Sign-up successful, creating user...", Toast.LENGTH_SHORT).show()
 
-                } else {
-                    // Sign-up failed, show error message
-                    Toast.makeText(requireContext(), "Sign-up failed: ${signUpResult.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
         }
 
         authViewModel.createUserLiveData.observe(viewLifecycleOwner) {

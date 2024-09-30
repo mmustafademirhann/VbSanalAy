@@ -5,10 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.socialmediavbsanalay.R
-import com.example.socialmediavbsanalay.databinding.FragmentMainPageBinding
 import com.example.socialmediavbsanalay.databinding.FragmentMessageBinding
 import com.example.socialmediavbsanalay.presentation.adapters.MessageItemAdaptor
 import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter

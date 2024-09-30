@@ -1,9 +1,7 @@
 package com.example.socialmediavbsanalay.domain.interactor.authentication
 
 import com.example.socialmediavbsanalay.data.repository.authentication.AuthRepository
-import com.example.socialmediavbsanalay.data.repositoryImpl.authentication.AuthRepositoryImpl
 import com.example.socialmediavbsanalay.domain.model.User
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

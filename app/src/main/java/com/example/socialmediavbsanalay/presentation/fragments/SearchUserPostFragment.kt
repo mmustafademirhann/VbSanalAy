@@ -16,7 +16,6 @@ import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentSearchUserPostBinding
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,9 +1,7 @@
 package com.example.socialmediavbsanalay.data.dataSource.authentication
 
 import com.example.socialmediavbsanalay.domain.model.User
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

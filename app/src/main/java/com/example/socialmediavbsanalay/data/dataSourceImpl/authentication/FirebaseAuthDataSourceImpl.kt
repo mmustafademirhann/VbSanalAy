@@ -1,6 +1,5 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.authentication
 
-import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.authentication.FirebaseAuthDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.auth.FirebaseAuth

@@ -9,6 +9,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:background="@android:color/transparent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -25,8 +26,8 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:paddingBottom="45dp"
+
                 android:src="@drawable/rainy_minecraft"
-                android:background="@drawable/signup"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="0.5" />
 
@@ -34,6 +35,7 @@
                 android:id="@+id/profileImageP"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                app:strokeWidth="5dp"
                 android:layout_gravity="center_horizontal|top"
                 android:layout_marginTop="200dp"
                 android:src="@drawable/aysegulmustafa"
@@ -71,7 +73,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="2dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical">

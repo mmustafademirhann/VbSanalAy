@@ -1,7 +1,4 @@
 package com.example.socialmediavbsanalay.presentation.fragments
-
-import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,24 +9,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
 import com.example.socialmediavbsanalay.domain.model.Post
-import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.OnItemClickListener
-import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserPostAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
-import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -170,38 +160,42 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             userId = arguments?.getString("userId") ?: ""
 
             // ViewModel'den userId'yi çek
+            ownerUser = x
             galleryViewModel.fetchUserId()
 
             // Postları gözlemle
             galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
                 // Kullanıcı kimliğini al
-                ownerUser = x
+
                 // Kullanıcı kimliğiyle postları filtrele
                 val filteredPosts = postsForUsers.filter { post -> post.username == userPreferences.getUser()?.id }
                 userPostAdapter.setPosts(filteredPosts)
-                galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
-                    user?.let {
-                        // Kullanıcı bulundu, UI'yi güncelle
-                        binding.usernameM.text = it.id
-                        binding.userHandle.text = "@${it.name}"
 
-                        // Kullanıcının profil resmini Glide ile yükle
-                        Glide.with(this)
-                            .load(it.profileImageUrl) // Kullanıcının profil resim URL'si
-                            .placeholder(R.drawable.add) // Yükleme sırasında gösterilecek varsayılan resim
-                            .error(R.drawable.sayfabitti) // Hata durumunda gösterilecek resim
-                            .circleCrop() // Resmi yuvarlak yapar
-                            .into(binding.profileImageP)
-                    } ?: run {
-                        // Eğer kullanıcı bulunamazsa, default değerleri göster
-                        binding.usernameM.text = galleryViewModel.IDGET
-                        binding.userHandle.text = galleryViewModel.IDGET
-                    }
+            }
+            galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+                user?.let {
+                    // Kullanıcı bulundu, UI'yi güncelle
+                    binding.usernameM.text = userPreferences.getUser()!!.id
+                    binding.userHandle.text = "@${userPreferences.getUser()!!.name}"
+
+                    // Kullanıcının profil resmini Glide ile yükle
+                    Glide.with(this)
+                        .load(it.profileImageUrl) // Kullanıcının profil resim URL'si
+                        .placeholder(R.drawable.add) // Yükleme sırasında gösterilecek varsayılan resim
+                        .error(R.drawable.sayfabitti) // Hata durumunda gösterilecek resim
+                        .circleCrop() // Resmi yuvarlak yapar
+                        .into(binding.profileImageP)
+                } ?: run {
+                    // Eğer kullanıcı bulunamazsa, default değerleri göster
+                    binding.usernameM.text = galleryViewModel.IDGET
+                    binding.userHandle.text = galleryViewModel.IDGET
                 }
 
-                // Belirtilen userId ile kullanıcıyı getirmeye çalış
-                galleryViewModel.getUserById(ownerUser)
             }
+            userPreferences.getUser()?.let { galleryViewModel.getUserById(it.id) }
+
+            // Belirtilen userId ile kullanıcıyı getirmeye çalış
+
 
             // Kullanıcı bilgilerini gözlemle
 

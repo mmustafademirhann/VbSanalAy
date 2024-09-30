@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.MessageItemBinding
 import com.example.socialmediavbsanalay.domain.model.MessageItem
-import com.example.socialmediavbsanalay.domain.model.Story
 import javax.inject.Inject
 
 class MessageItemAdaptor @Inject constructor() : RecyclerView.Adapter<MessageItemAdaptor.MessageItemViewHolder>() {
