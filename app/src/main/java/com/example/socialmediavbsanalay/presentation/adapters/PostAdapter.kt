@@ -14,16 +14,17 @@ import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import javax.inject.Inject
 
 class PostAdapter @Inject constructor(
-    private val userViewModel: UserViewModel // UserViewModel'i enjekte et
+    private val userViewModel: UserViewModel ,
+    private val onCommentClick: (String) -> Unit// UserViewModel'i enjekte et
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
-    private val mockItem=Post("","mock",null)
+    private val mockItem=Post("","","mock",null)
 
     private var posts: List<Post> = emptyList()
 
     class PostViewHolder( val binding: PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(post: Post, users: List<User>?) {
+        fun bind(post: Post, users: List<User>?,onCommentClick: (String) -> Unit) {
             binding.postUsername.text = post.username
             binding.postContent.text = "Nasıl ?"
 
@@ -44,7 +45,9 @@ class PostAdapter @Inject constructor(
                     .circleCrop() // Transform the image into a circular shape
                     .into(binding.storyImageView)
             }
-
+            binding.commentImage.setOnClickListener {
+                onCommentClick(post.id) // Burada post'un ID'sini geçiriyoruz
+            }
             // Load the post image using Glide
 
         }
@@ -81,7 +84,7 @@ class PostAdapter @Inject constructor(
         userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
             val profileImageUrl =
                 result?.getOrNull() // Keskulla profil resmini al
-            holder.bind(post, profileImageUrl) // Post ve profil resmini bağla
+            holder.bind(post, profileImageUrl,onCommentClick) // Post ve profil resmini bağla
         }
 
 

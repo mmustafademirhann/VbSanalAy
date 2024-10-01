@@ -5,11 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.socialmediavbsanalay.domain.interactor.CommentInteractor
 import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
+import com.example.socialmediavbsanalay.domain.model.Comment
 import com.example.socialmediavbsanalay.domain.model.Gallery
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.domain.model.User
@@ -17,6 +19,7 @@ import com.example.socialmediavbsanalay.presentation.adapters.GalleryAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -30,7 +33,8 @@ class GalleryViewModel @Inject constructor(
     private val authInteractor: AuthInteractor,
     private val createUserInteractor:CreateUserInteractor,
     private val userInteractor: UserInteractor,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val commentInteractor: CommentInteractor
 ) : ViewModel() {
 
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
@@ -75,6 +79,13 @@ class GalleryViewModel @Inject constructor(
     private val _currentbImageUrl = MutableLiveData<String>() // LiveData for current image URL
     val currentbImageUrl: LiveData<String> get() = _currentbImageUrl
 
+    private val _addCommentStatus = MutableLiveData<Result<Unit>>()
+    val addCommentStatus: LiveData<Result<Unit>> get() = _addCommentStatus
+
+    // Yorumları almak için LiveData
+    private val _comments = MutableLiveData<List<Comment>>()
+    val comments: LiveData<List<Comment>> get() = _comments
+
 
 
 
@@ -82,6 +93,26 @@ class GalleryViewModel @Inject constructor(
 
     var IDGET=""
 
+    fun loadComments(postId: String): Flow<List<Comment>> {
+        return commentInteractor.getComments(postId)
+    }
+    fun fetchComments(postId: String) {
+        viewModelScope.launch {
+            val commentList = commentInteractor.loadComments(postId)
+            _comments.value = commentList
+        }
+    }
+
+
+
+    // Yorum eklemek için fonksiyon
+    fun addComment(comment: Comment) {
+        viewModelScope.launch {
+            val result = commentInteractor.addComment(comment)
+            _addCommentStatus.value = result
+            loadComments(comment.postId)
+        }
+    }
     init {
         loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
@@ -89,6 +120,17 @@ class GalleryViewModel @Inject constructor(
     //suspend fun fetchUserData(): User? {
     //return authInteractor.fetchUserData().getOrNull()
     // }
+    fun commentOnPost(postId: String, commentText: String, userId: String) {
+        val comment = Comment(
+            userId = userId,
+            postId = postId,
+            comment = commentText
+        )
+
+        // Firestore'a yorum ekleme işlemi
+       addComment(comment)
+    }
+
     fun uploadProfilePicturee(imageUri: Uri) {
         viewModelScope.launch {
             try {

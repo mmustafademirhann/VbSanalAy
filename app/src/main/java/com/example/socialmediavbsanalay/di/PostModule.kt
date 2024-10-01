@@ -1,10 +1,14 @@
 package com.example.socialmediavbsanalay.di
 
+import com.example.socialmediavbsanalay.data.dataSource.post.CommentDataSource
 import com.example.socialmediavbsanalay.data.dataSource.post.PostDataSource
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
+import com.example.socialmediavbsanalay.data.dataSourceImpl.post.CommentDataSourceImpl
 import com.example.socialmediavbsanalay.data.dataSourceImpl.post.PostDataSourceImpl
+import com.example.socialmediavbsanalay.data.repository.post.CommentRepository
 import com.example.socialmediavbsanalay.data.repository.post.PostRepository
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
+import com.example.socialmediavbsanalay.data.repositoryImpl.post.CommentRepositoryImpl
 import com.example.socialmediavbsanalay.data.repositoryImpl.post.PostRepositoryImpl
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -35,6 +39,20 @@ object PostModule {
         postDataSource: PostDataSource
     ): PostRepository {
         return PostRepositoryImpl(postDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCommentDataSource(
+        firestore: FirebaseFirestore
+    ): CommentDataSource {
+        return CommentDataSourceImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCommentRepository(commentDataSource: CommentDataSource): CommentRepository {
+        return CommentRepositoryImpl(commentDataSource) // CommentRepositoryImpl örneğini sağlar
     }
 
 }

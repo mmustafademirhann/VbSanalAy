@@ -47,7 +47,7 @@ class PostDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Adapter'ı başlat
-        postAdapter = PostAdapter(userViewModel)
+        /////////////////postAdapter = PostAdapter(userViewModel, onCommentClick = )
 
         // RecyclerView ayarlarını yap
         binding.postsRecyclerViewForDetails.apply {
