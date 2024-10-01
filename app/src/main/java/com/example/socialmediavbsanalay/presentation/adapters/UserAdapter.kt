@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.UserItemBinding
 import com.example.socialmediavbsanalay.domain.model.User
 import javax.inject.Inject
@@ -29,7 +31,10 @@ class UserAdapter @Inject constructor(
         fun bind(user: User) {
             binding.userName.text = user.id // Kullanıcı ismini gösteriyoruz
 
-
+            Glide.with(binding.root)
+                .load(user.profileImageUrl) // Default profile image
+                .circleCrop() // Transform the image into a circular shape
+                .into(binding.imageView6)
             // Tıklama olayını burada yönetiyoruz
              binding.root.setOnClickListener {
                 val isim =binding.userName.text.toString()
