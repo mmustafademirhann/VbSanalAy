@@ -1,0 +1,28 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Transparan köşeler için alt arka plan -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- Transparan köşeler oluşturmak için solid color transparent -->
+            <solid android:color="@android:color/transparent" />
+            <!-- Yuvarlak köşeler -->
+            <corners
+                android:topLeftRadius="24dp"
+                android:topRightRadius="24dp" />
+        </shape>
+    </item>
+
+    <!-- Asıl içerik (arka plan rengi veya resim) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#CEC9D3"
+                android:endColor="#7B57D3"
+                android:angle="45" />
+            <corners
+                android:topLeftRadius="24dp"
+                android:topRightRadius="24dp" />
+        </shape>
+    </item>
+
+</layer-list>
