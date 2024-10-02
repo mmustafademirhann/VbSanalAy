@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.di
 
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.dataSource.post.CommentDataSource
 import com.example.socialmediavbsanalay.data.dataSource.post.PostDataSource
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
@@ -28,9 +29,10 @@ object PostModule {
         firebaseStorage: FirebaseStorage,
         firebaseFirestore: FirebaseFirestore,
         createUserDataSource: CreateUserDataSource,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        userPreferences: UserPreferences
     ): PostDataSource {
-        return PostDataSourceImpl(firebaseStorage,firebaseFirestore,createUserDataSource,userRepository)
+        return PostDataSourceImpl(firebaseStorage,firebaseFirestore,createUserDataSource,userRepository,userPreferences)
     }
 
     @Provides

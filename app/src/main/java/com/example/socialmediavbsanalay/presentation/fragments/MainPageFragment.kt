@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.domain.model.Comment
+import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
@@ -112,9 +113,16 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
-        postAdapter = PostAdapter(userViewModel) { postId ->
-            showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
-        }
+        postAdapter = PostAdapter(userViewModel,
+            onCommentClick = { postId ->
+                showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
+            },
+            onLikeClick = { postId, userId -> // Beğeni tıklama olayı
+                // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
+                userViewModel.likePost(postId, userId) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
+            }
+        )
+
 
         return binding.root
     }
@@ -153,25 +161,69 @@ class MainPageFragment : Fragment() {
             .replace(R.id.fragmentContainerView, fragment)
             .commit()
     }
+    private fun loadStories(){
+        userViewModel.stories.observe(viewLifecycleOwner) { stories ->
+            // Update the adapter with the fetched stories
+            storyAdapter.setStories(stories)
+        }
+
+        // Fetch stories from the ViewModel
+        userViewModel.fetchStories() // This will trigger the fetch process
+
+    }
+
+    private fun onStoryClicked(position: Int) {
+        // Handle the logic when a story is clicked
+        // For example, navigate to a story detail fragment
+        Toast.makeText(requireContext(), "Story clicked: $position", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun openUploadStoryDialog() {
+        // Implement the logic to open an upload story dialog or activity
+        Toast.makeText(requireContext(), "Upload Story clicked", Toast.LENGTH_SHORT).show()
+    }
 
     private fun adapterFunctions() {
-        storyAdapter = StoryAdapter()
+        val currentUserId = userPreferences.getUser()?.id.toString() // Get the current user's ID
 
+        // Initialize the StoryAdapter with the necessary parameters
+        storyAdapter = StoryAdapter(
+            stories = emptyList(), // Load your list of stories
+            currentUser = currentUserId,
+            onStoryClick = { position ->
+                // Handle the story click event (e.g., open story detail)
+                onStoryClicked(position)
+            },
+            onUploadStoryClick = {
+                // Handle the upload story action (e.g., open upload dialog)
+                openUploadStoryDialog()
+            }
+        )
+        loadStories()
         binding.storyRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = storyAdapter
         }
-        postAdapter = PostAdapter(userViewModel) { postId ->
-            showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
-        }
+        postAdapter = PostAdapter(userViewModel,
+            onCommentClick = { postId ->
+                showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
+            },
+            onLikeClick = { postId, userId -> // Beğeni tıklama olayı
+                // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
+                userViewModel.likePost(postId, userId) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
+            }
+        )
 
         binding.postsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = postAdapter
         }
-        val stories =
-            storyAdapter.loadStories() // Implement this function to get your list of stories
-        storyAdapter.setStories(stories)
+        userViewModel.stories.observe(viewLifecycleOwner) { stories ->
+            storyAdapter.setStories(stories) // Update the adapter with the fetched stories
+        }
+
+        // Fetch the stories
+        userViewModel.fetchStories() // Trigger the fetch process
 
     }
 

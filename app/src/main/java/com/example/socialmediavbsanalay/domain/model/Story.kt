@@ -1,6 +1,9 @@
 package com.example.socialmediavbsanalay.domain.model
 
 data class Story(
-    val imageResId: Int, // Resource ID of the image for the story
-    val username: String // Username of the user associated with the story
+    val id: String,
+    val ownerUser: String,
+    val imageUrl: String,
+    val profileImageUrl: String, // Profil fotoğrafı URL'si
+    val timestamp: Long // Zaman damgası, hikayenin paylaşım zamanını tutar
 )

@@ -6,10 +6,14 @@ import com.example.socialmediavbsanalay.domain.model.Story
 import javax.inject.Inject
 
 class StoryRepositoryImpl @Inject constructor(
-    private val storyDataSource: StoryDataSource
+    private val dataSource: StoryDataSource
 ) : StoryRepository {
 
     override suspend fun getStories(): Result<List<Story>> {
-        return storyDataSource.fetchStories()
+        return dataSource.fetchStories()
+    }
+
+    override suspend fun addStory(story: Story): Result<Unit> {
+        return dataSource.uploadStory(story)
     }
 }

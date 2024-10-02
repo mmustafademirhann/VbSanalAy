@@ -1,5 +1,7 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.post
 import android.net.Uri
+import android.util.Log
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.dataSource.post.PostDataSource
 import com.example.socialmediavbsanalay.data.dataSource.user.CreateUserDataSource
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
@@ -16,8 +18,10 @@ class PostDataSourceImpl @Inject constructor(
     private val firebaseStorage: FirebaseStorage,
     private val firestore: FirebaseFirestore ,// Add Firestore dependency
     private val createUserDataSource: CreateUserDataSource,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    var userPreferences: UserPreferences
 ): PostDataSource {
+
 
     // Collection where you will store the post metadata in Firestore
     private val postsCollection = firestore.collection("posts")
@@ -91,6 +95,18 @@ class PostDataSourceImpl @Inject constructor(
             val userId = document.getString("userId") ?: ""
             Post(document.id,imageUrl, userId,null)
         }
+    }
+    override fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val postRef = firestore.collection("posts").document(postId)
+
+        // Firestore'da beğeni sayısını ve beğenen kullanıcıları güncelle
+        postRef.update("likes", FieldValue.increment(1), "likedBy", FieldValue.arrayUnion(userPreferences.getUser()?.id))
+            .addOnSuccessListener {
+                onSuccess()  // Başarılı olduğunda geri bildirim
+            }
+            .addOnFailureListener { e ->
+                onFailure(e)  // Hata olduğunda geri bildirim
+            }
     }
 
 

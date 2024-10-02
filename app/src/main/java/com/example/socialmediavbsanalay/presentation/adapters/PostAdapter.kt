@@ -1,6 +1,10 @@
 package com.example.socialmediavbsanalay.presentation.adapters
 
+import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -9,22 +13,26 @@ import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.PostForRecyclerBinding
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 
 import javax.inject.Inject
 
 class PostAdapter @Inject constructor(
     private val userViewModel: UserViewModel ,
-    private val onCommentClick: (String) -> Unit// UserViewModel'i enjekte et
+    private val onCommentClick: (String) -> Unit,// UserViewModel'i enjekte et
+    private val onLikeClick: (String, String) -> Unit
+
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
     private val mockItem=Post("","","mock",null)
 
     private var posts: List<Post> = emptyList()
 
+
     class PostViewHolder( val binding: PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(post: Post, users: List<User>?,onCommentClick: (String) -> Unit) {
+        fun bind(post: Post, users: List<User>?,onCommentClick: (String) -> Unit,onLikeClick: (String, String) -> Unit) {
             binding.postUsername.text = post.username
             binding.postContent.text = "Nasıl ?"
 
@@ -48,9 +56,48 @@ class PostAdapter @Inject constructor(
             binding.commentImage.setOnClickListener {
                 onCommentClick(post.id) // Burada post'un ID'sini geçiriyoruz
             }
+            binding.heartImageView.setOnClickListener {
+                onLikeClick(post.id, post.username) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
+            }
             // Load the post image using Glide
 
         }
+        private val gestureDetector = GestureDetector(binding.root.context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                Log.d("PostAdapter", "Double tap detected")
+                showHeartAnimation() // Kalp animasyonunu göster
+                return true
+            }
+        })
+
+        init {
+            binding.root.setOnTouchListener { _, event ->
+                gestureDetector.onTouchEvent(event)
+                true // Olayın tüketilmesi için true döndür
+            }
+        }
+
+
+        private fun showHeartAnimation() {
+            val heart = binding.heartImageView
+            heart.visibility = View.VISIBLE
+
+            heart.scaleX = 1.0f // Başlangıçta normal boyutta
+            heart.scaleY = 1.0f
+            heart.alpha = 1.0f // Başlangıçta tamamen opak
+
+            heart.animate()
+                .scaleX(3.0f) // Kalp büyüsün
+                .scaleY(3.0f)
+                .alpha(0.0f) // Saydamlık tamamen
+                .setDuration(600) // Büyüme ve saydamlaşma süresi
+                .withEndAction {
+                    heart.visibility = View.GONE // Animasyonun sonunda gizle
+                }
+                .start()
+        }
+
+
 
     }
     companion object {
@@ -84,7 +131,7 @@ class PostAdapter @Inject constructor(
         userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
             val profileImageUrl =
                 result?.getOrNull() // Keskulla profil resmini al
-            holder.bind(post, profileImageUrl,onCommentClick) // Post ve profil resmini bağla
+            holder.bind(post, profileImageUrl,onCommentClick,onLikeClick) // Post ve profil resmini bağla
         }
 
 

@@ -16,4 +16,13 @@ class PostRepositoryImpl @Inject constructor(
         return postDataSource.uploadPhoto(imageUri,userId)
     }
 
+    override fun likePost(
+        postId: String,
+        userId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        return postDataSource.likePost(postId,userId,onSuccess,onFailure)
+    }
+
 }

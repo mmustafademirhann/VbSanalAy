@@ -7,5 +7,6 @@ data class User(
     val email: String = "",
     val gender:String="",
     val profileImageUrl:String="",
-    val profileBacgroundImageUrl:String=""
+    val profileBacgroundImageUrl:String="",
+    val stories: List<Story> = listOf()
 )

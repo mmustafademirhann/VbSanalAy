@@ -5,10 +5,13 @@ import com.example.socialmediavbsanalay.domain.model.Story
 import javax.inject.Inject
 
 class StoryInteractor @Inject constructor(
-    private val storyRepository: StoryRepository
+    private val repository: StoryRepository
 ) {
+    suspend fun fetchStories(): Result<List<Story>> {
+        return repository.getStories()
+    }
 
-    suspend fun getStories(): Result<List<Story>> {
-        return storyRepository.getStories()
+    suspend fun uploadStory(story: Story): Result<Unit> {
+        return repository.addStory(story)
     }
 }

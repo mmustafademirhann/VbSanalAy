@@ -7,5 +7,6 @@ interface PostDataSource {
     suspend fun fetchPosts(): Result<List<Post>>
     suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit
     suspend fun getPosts(): List<Post>
+    fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 
 }

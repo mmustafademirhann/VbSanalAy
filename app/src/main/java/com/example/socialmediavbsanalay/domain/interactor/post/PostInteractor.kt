@@ -14,5 +14,8 @@ class PostInteractor @Inject constructor(
     suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit {
         return postRepository.uploadPhoto(imageUri,userId)
     }
+    fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit){
+        return postRepository.likePost(postId,userId,onSuccess,onFailure)
+    }
 
 }

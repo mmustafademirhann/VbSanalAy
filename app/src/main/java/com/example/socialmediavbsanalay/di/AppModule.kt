@@ -4,6 +4,7 @@ import com.example.socialmediavbsanalay.data.dataSource.post.StoryDataSource
 import com.example.socialmediavbsanalay.data.dataSourceImpl.post.StoryDataSourceImpl
 import com.example.socialmediavbsanalay.data.repository.post.StoryRepository
 import com.example.socialmediavbsanalay.data.repositoryImpl.post.StoryRepositoryImpl
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,8 +17,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideStoryDataSource(): StoryDataSource {
-        return StoryDataSourceImpl()
+    fun provideStoryDataSource(
+        firebaseFirestore: FirebaseFirestore
+    ): StoryDataSource {
+        return StoryDataSourceImpl(firebaseFirestore)
     }
 
     @Provides

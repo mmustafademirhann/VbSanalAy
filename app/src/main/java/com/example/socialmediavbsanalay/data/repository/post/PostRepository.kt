@@ -7,5 +7,7 @@ interface PostRepository {
     suspend fun getPosts(): List<Post>
     suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit
 
+    fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+
 
 }

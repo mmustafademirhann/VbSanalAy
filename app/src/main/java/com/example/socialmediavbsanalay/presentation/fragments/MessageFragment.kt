@@ -40,12 +40,12 @@ class MessageFragment : Fragment() {
 
 
 
-        storyAdapter = StoryAdapter()
+        //storyAdapter = StoryAdapter()
         messageItemAdaptor=MessageItemAdaptor()
-        binding.storyRecyclerViewMs.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = storyAdapter
-        }
+     //   binding.storyRecyclerViewMs.apply {
+       //     layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+         //   adapter = storyAdapter
+        //}
 
 
 
@@ -55,9 +55,9 @@ class MessageFragment : Fragment() {
         }
 
 
-        val stories =
-            storyAdapter.loadStories() // Implement this function to get your list of stories
-        storyAdapter.setStories(stories)
+      //  val stories =
+        //    storyAdapter.loadStories() // Implement this function to get your list of stories
+        //storyAdapter.setStories(stories)
 
         val messages=
             messageItemAdaptor.loadMessages()
