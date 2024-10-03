@@ -197,7 +197,8 @@ class MainPageFragment : Fragment() {
             onUploadStoryClick = {
                 // Handle the upload story action (e.g., open upload dialog)
                 openUploadStoryDialog()
-            }
+            },
+            galleryViewModel
         )
         loadStories()
         binding.storyRecyclerView.apply {

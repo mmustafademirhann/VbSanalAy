@@ -234,6 +234,14 @@ class GalleryViewModel @Inject constructor(
             }
         }
     }
+    suspend fun getUserByIdUsr(userId: String): User? {
+        return try {
+            val result = createUserInteractor.getUserById(userId)
+            result.getOrNull() // Eğer işlem başarılıysa User döner, başarısızsa null döner
+        } catch (e: Exception) {
+            null // Eğer bir hata olursa null döndür
+        }
+    }
 
 
 

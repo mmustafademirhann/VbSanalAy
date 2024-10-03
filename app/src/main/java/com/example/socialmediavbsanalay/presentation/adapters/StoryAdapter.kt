@@ -7,13 +7,18 @@ import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.StoryTemplateBinding
 import com.example.socialmediavbsanalay.domain.model.Story
+import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class StoryAdapter(
     private var stories: List<Story>,
     private val currentUser: String, // Şu anki kullanıcının adı
     private val onStoryClick: (Int) -> Unit,
-    private val onUploadStoryClick: () -> Unit // Hikaye yükleme butonu için
+    private val onUploadStoryClick: () -> Unit, // Hikaye yükleme butonu için
+    private val galleryViewModel: GalleryViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -28,12 +33,19 @@ class StoryAdapter(
     inner class CurrentUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind() {
-            binding.storyUsername.text = currentUser
-            // Kendi profil fotoğrafını yükle
-            Glide.with(binding.storyImageView.context)
-                .load("your_current_user_profile_image_url") // Profil fotoğrafı URL'si
-                .circleCrop()
-                .into(binding.storyImageView)
+            CoroutineScope(Dispatchers.Main).launch {
+                val user = galleryViewModel.getUserByIdUsr(currentUser) // Suspend fonksiyonu çağırıyoruz
+                user?.let {
+                    binding.storyUsername.text = it.id // Kullanıcı adı ekrana yansıtılır
+                    Glide.with(binding.storyImageView.context)
+                        .load(it.profileImageUrl)
+                        .circleCrop()
+                        .into(binding.storyImageView)
+                } ?: run {
+                    // Kullanıcı bulunamazsa veya hata varsa bir işlem yap
+                    binding.storyUsername.text = "Kullanıcı bulunamadı"
+                }
+            }
 
             binding.root.setOnClickListener {
                 onUploadStoryClick() // Hikaye yükleme işlemi
