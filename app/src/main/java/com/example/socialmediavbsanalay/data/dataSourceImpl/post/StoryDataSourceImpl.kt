@@ -2,6 +2,9 @@ package com.example.socialmediavbsanalay.data.dataSourceImpl.post
 
 import com.example.socialmediavbsanalay.data.dataSource.post.StoryDataSource
 import com.example.socialmediavbsanalay.domain.model.Story
+import com.example.socialmediavbsanalay.domain.model.User
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers
@@ -48,10 +51,16 @@ class StoryDataSourceImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             val storiesList = mutableListOf<Story>()
             val storiesCollection = FirebaseFirestore.getInstance().collection("stories")
+            val usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("user")
             val result = storiesCollection.get().await()
             for (document in result) {
                 val story = document.toObject(Story::class.java)
                 storiesList.add(story)
+            }
+            storiesList.forEach {
+                val userSnapshot = usersRef.child(it.ownerUser).get().await()
+                val currentUser = userSnapshot.getValue(User::class.java)
+                it.ownerUserProfileImage = currentUser?.profileImageUrl.toString()
             }
             storiesList
         }
