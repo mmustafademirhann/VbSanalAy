@@ -2,6 +2,7 @@ package com.example.socialmediavbsanalay.data.dataSourceImpl.user
 
 import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
+import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -131,5 +132,45 @@ class UserDataSourceImpl @Inject constructor(
             user.id to user
         }
     }
+    override suspend fun getUsersWithSharedStories(): List<User> {
+        return try {
+            val snapshot = firestore.collection("users") // "users" koleksiyonu kullanılıyor
+                .whereArrayContains("stories", true) // Paylaşılan hikayeleri almak için filtre
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { document ->
+                val id = document.id
+                val name = document.getString("name") ?: return@mapNotNull null
+                val surName = document.getString("surName") ?: return@mapNotNull null
+                val email = document.getString("email") ?: return@mapNotNull null
+                val gender = document.getString("gender") ?: return@mapNotNull null
+                val profileImageUrl = document.getString("profileImageUrl") ?: return@mapNotNull null
+                val profileBackgroundImageUrl = document.getString("profileBacgroundImageUrl") ?: return@mapNotNull null
+
+                val stories = document.get("stories") as? List<Map<String, Any>> ?: listOf()
+                val storyList = stories.map { storyMap ->
+                    Story(
+                        id = storyMap["id"] as? String ?: "",
+                        timestamp = storyMap["timestamp"] as? Long ?: 0
+                    )
+                }
+
+                User(
+                    id = id,
+                    name = name,
+                    surName = surName,
+                    email = email,
+                    gender = gender,
+                    profileImageUrl = profileImageUrl,
+                    profileBacgroundImageUrl = profileBackgroundImageUrl,
+                    stories = storyList
+                )
+            }
+        } catch (e: Exception) {
+            emptyList() // Hata durumunda boş liste döndür
+        }
+    }
+
 
 }

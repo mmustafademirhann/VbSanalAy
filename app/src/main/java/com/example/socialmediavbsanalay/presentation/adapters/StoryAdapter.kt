@@ -1,24 +1,27 @@
 package com.example.socialmediavbsanalay.presentation.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.StoryTemplateBinding
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class StoryAdapter(
     private var stories: List<Story>,
     private val currentUser: String, // Şu anki kullanıcının adı
     private val onStoryClick: (Int) -> Unit,
     private val onUploadStoryClick: () -> Unit, // Hikaye yükleme butonu için
-    private val galleryViewModel: GalleryViewModel
+    private val galleryViewModel: GalleryViewModel,
+    private var requestPermissionLauncher: ActivityResultLauncher<String>,
+    private var imagePickerLauncher: ActivityResultLauncher<Intent>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -29,6 +32,7 @@ class StoryAdapter(
         this.stories = newStories
         notifyDataSetChanged() // Notify the adapter that the data has changed
     }
+    
 
     inner class CurrentUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -41,29 +45,50 @@ class StoryAdapter(
                         .load(it.profileImageUrl)
                         .circleCrop()
                         .into(binding.storyImageView)
+
+                    // Eğer giriş yapan kullanıcı kendi hikayesi ise 'storyadder' görünür hale getirilir
+                    if (it.id == currentUser) {
+                        binding.storyAdder.visibility = View.VISIBLE
+                    } else {
+                        binding.storyAdder.visibility = View.GONE
+                    }
                 } ?: run {
                     // Kullanıcı bulunamazsa veya hata varsa bir işlem yap
                     binding.storyUsername.text = "Kullanıcı bulunamadı"
+                    binding.storyAdder.visibility = View.GONE // Hata durumunda storyAdder gizlenir
                 }
             }
 
             binding.root.setOnClickListener {
                 onUploadStoryClick() // Hikaye yükleme işlemi
             }
+            binding.storyAdder.setOnClickListener{
+                openGallery()
+            }
         }
     }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"
+        }
+        imagePickerLauncher.launch(intent)
+    }
+
 
     inner class OtherUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(story: Story) {
-            binding.storyUsername.text = story.ownerUser
+            binding.storyUsername.text = story.ownerUser // Hikayeyi paylaşan kullanıcı adı
             Glide.with(binding.storyImageView.context)
-                .load(story.profileImageUrl)
+                .load(story.imageUrl)
                 .circleCrop()
                 .into(binding.storyImageView)
 
+            binding.storyAdder.visibility = View.GONE // Diğer kullanıcılar için 'storyAdder' gizli
+
             binding.root.setOnClickListener {
-                onStoryClick(adapterPosition) // Hikayeye tıklandığında pozisyonu gönder
+                // Hikaye tıklandığında yapılacaklar
             }
         }
     }
@@ -83,10 +108,11 @@ class StoryAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is CurrentUserViewHolder) {
-            holder.bind() // Kendi hikayesi için bağla
-        } else if (holder is OtherUserViewHolder) {
-            holder.bind(stories[position - 1]) // Diğer kullanıcı hikayeleri
+        if (position == 0) { // İlk pozisyon giriş yapan kullanıcının hikayesidir
+            (holder as CurrentUserViewHolder).bind()
+        } else { // Diğer kullanıcıların hikayeleri
+            val story = stories[position - 1] // stories, diğer kullanıcı hikayelerini içeren liste
+            (holder as OtherUserViewHolder).bind(story)
         }
     }
 

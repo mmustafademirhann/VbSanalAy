@@ -6,23 +6,35 @@
     android:orientation="vertical"
     android:gravity="center">
 
-
-    <LinearLayout
+    <!-- Circle background (keeping your ellipse/halo effect) -->
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/elipseforstory"
-        >
+        android:background="@drawable/elipseforstory" > <!-- Circle/Halo background -->
+
+        <!-- Story image -->
         <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="70dp"
             android:id="@+id/storyImageView"
+            android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_margin="4dp"
             android:src="@drawable/shin"
             app:shapeAppearanceOverlay="@style/CircularImageView"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop" />
 
-    </LinearLayout>
+        <!-- Plus button (hidden by default, for current user's story) -->
+        <ImageView
+            android:id="@+id/storyAdder"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/storyadder"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="4dp"
+            android:visibility="gone" />
 
+    </FrameLayout>
+
+    <!-- Username below the story image -->
     <TextView
         android:id="@+id/storyUsername"
         android:layout_width="wrap_content"
@@ -31,6 +43,5 @@
         android:text="Username"
         android:textSize="@dimen/text_medium_small"
         android:textColor="@android:color/white"
-        android:gravity="center"/>
-
+        android:gravity="center" />
 </LinearLayout>

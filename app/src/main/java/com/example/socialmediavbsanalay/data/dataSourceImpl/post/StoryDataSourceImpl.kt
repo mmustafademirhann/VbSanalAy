@@ -4,7 +4,9 @@ import com.example.socialmediavbsanalay.data.dataSource.post.StoryDataSource
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class StoryDataSourceImpl @Inject constructor(
@@ -40,6 +42,18 @@ class StoryDataSourceImpl @Inject constructor(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+    override suspend fun getAllStories(): List<Story> {
+        return withContext(Dispatchers.IO) {
+            val storiesList = mutableListOf<Story>()
+            val storiesCollection = FirebaseFirestore.getInstance().collection("stories")
+            val result = storiesCollection.get().await()
+            for (document in result) {
+                val story = document.toObject(Story::class.java)
+                storiesList.add(story)
+            }
+            storiesList
         }
     }
 }

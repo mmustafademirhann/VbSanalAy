@@ -44,4 +44,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateBacgroundByEmail(email: String, imageUrl: String) {
         userDataSource.updateBacgroundByEmail(email, imageUrl)
     }
+    override suspend fun fetchUsersWithSharedStories(): List<User> {
+        return userDataSource.getUsersWithSharedStories()
+    }
 }

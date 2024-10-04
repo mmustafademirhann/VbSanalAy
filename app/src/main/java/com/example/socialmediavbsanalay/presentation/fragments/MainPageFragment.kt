@@ -1,5 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
@@ -19,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.domain.model.Comment
 import com.example.socialmediavbsanalay.domain.model.Story
+import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
@@ -28,11 +33,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MainPageFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 @AndroidEntryPoint
 class MainPageFragment : Fragment() {
 
@@ -42,6 +43,9 @@ class MainPageFragment : Fragment() {
     private lateinit var postAdapter: PostAdapter
     private val galleryViewModel: GalleryViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
+
     @Inject
     lateinit var userPreferences: UserPreferences
 
@@ -126,6 +130,12 @@ class MainPageFragment : Fragment() {
 
         return binding.root
     }
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"
+        }
+        imagePickerLauncher.launch(intent)
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -147,6 +157,38 @@ class MainPageFragment : Fragment() {
                 binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdurun
             }
         }
+
+        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openGallery() // Eğer izin verilmişse galeriyi aç
+            } else {
+                // İzin verilmediyse yapılacak işlemler
+            }
+        }
+
+        // Galeriden resim seçme işleyicisi
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    // Kullanıcıdan açıklama al
+                    val description = "Hikaye açıklamanız" // Burayı kullanıcının girdiği açıklama ile değiştirebilirsiniz
+                    val ownerUser = userPreferences.getUser()?.id // Mevcut kullanıcı bilgisi
+
+                    // Story nesnesini oluştur
+                    val story = Story(
+                        id=id.toString(),
+                        imageUrl = uri.toString(), // veya başka bir URL alabilirsiniz, eğer resmi yüklüyorsanız
+                        ownerUser = ownerUser.toString(),
+                        description = description,
+                        timestamp = System.currentTimeMillis() // Zaman damgası ekleyin
+                    )
+
+                    // Seçilen resmi ve diğer bilgileri ViewModel aracılığıyla yükle
+                    userViewModel.uploadStory(story)
+                }
+            }
+        }
+
 
         adapterFunctions()
         // Load your stories into the adapter
@@ -182,51 +224,79 @@ class MainPageFragment : Fragment() {
         // Implement the logic to open an upload story dialog or activity
         Toast.makeText(requireContext(), "Upload Story clicked", Toast.LENGTH_SHORT).show()
     }
+    fun List<UserStories>.toStoryList(): List<Story> {
+        return this.map { userStory ->
+            Story(
+
+                id=id.toString(),
+                ownerUser = userStory.ownerUser,
+                // Diğer Story özelliklerini burada doldurun
+            )
+        }
+    }
 
     private fun adapterFunctions() {
-        val currentUserId = userPreferences.getUser()?.id.toString() // Get the current user's ID
+        val currentUserId = userPreferences.getUser()?.id.toString()
 
-        // Initialize the StoryAdapter with the necessary parameters
+        // StoryAdapter'ı başlat
         storyAdapter = StoryAdapter(
-            stories = emptyList(), // Load your list of stories
+            stories = emptyList(),
             currentUser = currentUserId,
-            onStoryClick = { position ->
-                // Handle the story click event (e.g., open story detail)
-                onStoryClicked(position)
-            },
-            onUploadStoryClick = {
-                // Handle the upload story action (e.g., open upload dialog)
-                openUploadStoryDialog()
-            },
-            galleryViewModel
+            onStoryClick = { position -> onStoryClicked(position) },
+            onUploadStoryClick = { openUploadStoryDialog() },
+            galleryViewModel,
+            requestPermissionLauncher,
+            imagePickerLauncher
         )
-        loadStories()
+
         binding.storyRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = storyAdapter
         }
-        postAdapter = PostAdapter(userViewModel,
-            onCommentClick = { postId ->
-                showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
-            },
-            onLikeClick = { postId, userId -> // Beğeni tıklama olayı
-                // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
-                userViewModel.likePost(postId, userId) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
+
+        // Kullanıcı hikayelerini ve tüm kullanıcıları yükle
+        userViewModel.loadUsersWithStories() // Kullanıcı hikayelerini yükle
+        userViewModel.fetchUserStories() // Mevcut kullanıcının hikayelerini yükle
+        userViewModel.fetchAllUsersExcludingCurrentUser() // Diğer kullanıcıları yükle
+
+        // Kullanıcı hikayelerini gözlemle
+        userViewModel.usersWithStories.observe(viewLifecycleOwner) { users ->
+            // Kullanıcıları hikayelerine dönüştürüp adapter'a aktar
+            val stories = users.flatMap { user ->
+                user.stories.map { story ->
+                    Story(id = story.id, ownerUser = user.id, imageUrl = story.imageUrl)
+                }
             }
+            // Hikaye listesini adapter'a aktar
+            storyAdapter.setStories(stories)
+        }
+
+        // Kullanıcı hikayelerini gözlemleyin
+        userViewModel.userStories.observe(viewLifecycleOwner) { userStories ->
+            // UserStories listesini Story listesine dönüştür
+            val stories = userStories.flatMap { userStory ->
+                userStory.stories.map { story ->
+                    Story(id = story.id, ownerUser = userStory.ownerUser, imageUrl = story.imageUrl)
+                }
+            }
+            // Hikaye listesini adapter'a aktar
+            storyAdapter.setStories(stories)
+        }
+
+        // PostAdapter'ı başlat
+        postAdapter = PostAdapter(userViewModel,
+            onCommentClick = { postId -> showCommentBottomSheet(postId) },
+            onLikeClick = { postId, userId -> userViewModel.likePost(postId, userId) }
         )
 
         binding.postsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = postAdapter
         }
-        userViewModel.stories.observe(viewLifecycleOwner) { stories ->
-            storyAdapter.setStories(stories) // Update the adapter with the fetched stories
-        }
-
-        // Fetch the stories
-        userViewModel.fetchStories() // Trigger the fetch process
-
     }
+
+
+
 
 
     // ContextCompat.checkSelfPermission(

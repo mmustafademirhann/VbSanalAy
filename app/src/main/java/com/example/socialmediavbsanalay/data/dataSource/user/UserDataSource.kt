@@ -12,4 +12,5 @@ interface UserDataSource {
     suspend fun updateUserProfileImage(userId: String, imageUrl: String)
     suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String)
     suspend fun updateBacgroundByEmail(email: String, imageUrl: String)
+    suspend fun getUsersWithSharedStories(): List<User>
 }

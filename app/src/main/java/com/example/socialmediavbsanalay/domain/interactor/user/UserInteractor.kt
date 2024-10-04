@@ -35,5 +35,8 @@ class UserInteractor  @Inject constructor(
     suspend fun updateBacgroundByEmail(email: String, imageUrl: String) {
         userRepository.updateBacgroundByEmail(email, imageUrl)
     }
+    suspend fun getUsersWithStories(): List<User> {
+        return userRepository.fetchUsersWithSharedStories()
+    }
 
 }

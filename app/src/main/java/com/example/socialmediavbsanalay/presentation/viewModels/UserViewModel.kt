@@ -1,20 +1,25 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
+import com.example.socialmediavbsanalay.domain.interactor.post.GetUserStoriesUseCase
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
 import com.example.socialmediavbsanalay.domain.interactor.post.StoryInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.CreateUserInteractor
 import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.domain.model.UserStories
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-
+import kotlinx.coroutines.tasks.await
 
 
 import javax.inject.Inject
@@ -24,11 +29,13 @@ class UserViewModel @Inject constructor(
     private val userInteractor: UserInteractor,
     private val createUserInteractor: CreateUserInteractor,
     private val postInteractor: PostInteractor,
-    private val storyInteractor: StoryInteractor
+    private val storyInteractor: StoryInteractor,
+    private val getUserStoriesUseCase: GetUserStoriesUseCase
+
 
 
 ) : ViewModel() {
-
+    private val firestore = FirebaseFirestore.getInstance()
     private val _userData = MutableLiveData<User?>()
     val userData: LiveData<User?> get() = _userData
 
@@ -50,11 +57,71 @@ class UserViewModel @Inject constructor(
     private val _likeError = MutableLiveData<String>()
     val likeError: LiveData<String> get() = _likeError
 
-
-
-
     private val _stories = MutableLiveData<List<Story>>()
     val stories: LiveData<List<Story>> get() = _stories
+
+
+    private val _userStories = MutableLiveData<List<UserStories>>()
+    val userStories: LiveData<List<UserStories>> get() = _userStories
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
+    private val _usersWithStories = MutableLiveData<List<User>>()
+    val usersWithStories: LiveData<List<User>> get() = _usersWithStories
+
+    fun loadUsersWithStories() {
+        viewModelScope.launch {
+            val usersList = userInteractor.getUsersWithStories()
+            _usersWithStories.value = usersList
+        }
+    }
+
+    fun fetchUserStories() {
+        viewModelScope.launch {
+            try {
+                val stories = getUserStoriesUseCase()
+                _userStories.value = stories
+            } catch (e: Exception) {
+                // Hata işleme
+                Log.e("StoryViewModel", "Error fetching stories: ${e.message}")
+            }
+        }
+    }
+    fun fetchAllUsersExcludingCurrentUser() {
+        viewModelScope.launch {
+            try {
+                val allUsers = userInteractor.getAllUsers() // Tüm kullanıcıları al
+                val currentUserId = userPreferences.getUser()?.id.toString()
+
+                // Giriş yapmış kullanıcının dışında kalan kullanıcıları filtrele
+                val filteredUsers = allUsers.filter { it.id != currentUserId }
+
+                _usersList.value = filteredUsers // Filtrelenmiş kullanıcı listesini güncelle
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Error fetching users: ${e.message}")
+            }
+        }
+    }
+
+
+
+
+    suspend fun getAllStories(): List<Story> {
+        return try {
+            val storiesList = mutableListOf<Story>()
+            val snapshot = firestore.collection("stories").get().await()
+
+            for (document in snapshot.documents) {
+                val story = document.toObject(Story::class.java)
+                if (story != null) {
+                    storiesList.add(story)
+                }
+            }
+            storiesList
+        } catch (e: Exception) {
+            emptyList() // Hata durumunda boş liste döndür
+        }
+    }
 
     fun fetchStories() {
         viewModelScope.launch {
