@@ -18,10 +18,6 @@ class StoryRepositoryImpl @Inject constructor(
         return dataSource.uploadStory(story)
     }
     override suspend fun getUserStories(): List<UserStories> {
-        val stories = dataSource.getAllStories()
-        val groupedStories = stories.groupBy { it.ownerUser }
-        return groupedStories.map { (ownerUser, userStories) ->
-            UserStories(ownerUser, userStories)
-        }
+        return dataSource.getAllStories()
     }
 }

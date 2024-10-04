@@ -3,6 +3,7 @@ package com.example.socialmediavbsanalay.data.dataSourceImpl.post
 import com.example.socialmediavbsanalay.data.dataSource.post.StoryDataSource
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -47,22 +48,60 @@ class StoryDataSourceImpl @Inject constructor(
             Result.failure(e)
         }
     }
-    override suspend fun getAllStories(): List<Story> {
+    override suspend fun getAllStories(): List<UserStories> {
         return withContext(Dispatchers.IO) {
             val storiesList = mutableListOf<Story>()
             val storiesCollection = FirebaseFirestore.getInstance().collection("stories")
-            val usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("user")
+            val usersCollection = FirebaseFirestore.getInstance().collection("user")
             val result = storiesCollection.get().await()
+            val ownerUserIds = mutableSetOf<String>()
             for (document in result) {
                 val story = document.toObject(Story::class.java)
                 storiesList.add(story)
+                ownerUserIds.add(story.ownerUser)
             }
-            storiesList.forEach {
-                val userSnapshot = usersRef.child(it.ownerUser).get().await()
-                val currentUser = userSnapshot.getValue(User::class.java)
-                it.ownerUserProfileImage = currentUser?.profileImageUrl.toString()
+            // Fetch only the users whose IDs are in ownerUserIds
+            val usersMap = mutableMapOf<String, User?>()
+            ownerUserIds.forEach { userId ->
+                val userSnapshot = usersCollection.document(userId).get().await()
+                val currentUser = userSnapshot.toObject(User::class.java)
+                usersMap[userId] = currentUser
             }
-            storiesList
+
+            // Update each story with the corresponding user profile image
+            storiesList.forEach { story ->
+                val currentUser = usersMap[story.ownerUser]
+                story.ownerUserProfileImage = currentUser?.profileImageUrl.orEmpty()
+            }
+
+            val userStoriesList = mutableListOf<UserStories>()
+
+            storiesList.forEach { story ->
+                // Check if there's already a UserStories for this ownerUser
+                val existingUserStories = userStoriesList.find { it.ownerUser == story.ownerUser }
+
+                if (existingUserStories != null) {
+                    // Add the story to the existing UserStories
+                    val updatedStories = existingUserStories.stories.toMutableList()
+                    updatedStories.add(story)
+                    userStoriesList[userStoriesList.indexOf(existingUserStories)] = UserStories(
+                        existingUserStories.ownerUser,
+                        updatedStories,
+                        story.ownerUserProfileImage // Use the profile image from the story
+                    )
+                } else {
+                    // Create a new UserStories for this ownerUser and add it to the list
+                    userStoriesList.add(
+                        UserStories(
+                            story.ownerUser,
+                            listOf(story),
+                            story.ownerUserProfileImage // Use the profile image from the story
+                        )
+                    )
+                }
+            }
+
+            userStoriesList
         }
     }
 }

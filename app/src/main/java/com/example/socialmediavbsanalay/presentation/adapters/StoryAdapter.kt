@@ -9,13 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.databinding.StoryTemplateBinding
 import com.example.socialmediavbsanalay.domain.model.Story
+import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class StoryAdapter(
-    private var stories: List<Story>,
+    private var userStories: List<UserStories>,
     private val currentUser: String, // Şu anki kullanıcının adı
     private val onStoryClick: (Int) -> Unit,
     private val onUploadStoryClick: () -> Unit, // Hikaye yükleme butonu için
@@ -28,35 +29,28 @@ class StoryAdapter(
         const val VIEW_TYPE_CURRENT_USER = 0
         const val VIEW_TYPE_OTHER_USER = 1
     }
-    fun setStories(newStories: List<Story>) {
-        this.stories = newStories
+    fun setStories(userStories: List<UserStories>) {
+        this.userStories = userStories
         notifyDataSetChanged() // Notify the adapter that the data has changed
     }
     
 
     inner class CurrentUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind() {
+        fun bind(userStories: UserStories) {
             CoroutineScope(Dispatchers.Main).launch {
-                val user = galleryViewModel.getUserByIdUsr(currentUser) // Suspend fonksiyonu çağırıyoruz
-                user?.let {
-                    binding.storyUsername.text = it.id // Kullanıcı adı ekrana yansıtılır
+                    binding.storyUsername.text = userStories.ownerUser // Kullanıcı adı ekrana yansıtılır
                     Glide.with(binding.storyImageView.context)
-                        .load(it.profileImageUrl)
+                        .load(userStories.ownerUserProfileImage)
                         .circleCrop()
                         .into(binding.storyImageView)
 
                     // Eğer giriş yapan kullanıcı kendi hikayesi ise 'storyadder' görünür hale getirilir
-                    if (it.id == currentUser) {
+                    if (userStories.ownerUser == currentUser) {
                         binding.storyAdder.visibility = View.VISIBLE
                     } else {
                         binding.storyAdder.visibility = View.GONE
                     }
-                } ?: run {
-                    // Kullanıcı bulunamazsa veya hata varsa bir işlem yap
-                    binding.storyUsername.text = "Kullanıcı bulunamadı"
-                    binding.storyAdder.visibility = View.GONE // Hata durumunda storyAdder gizlenir
-                }
             }
 
             binding.root.setOnClickListener {
@@ -78,17 +72,17 @@ class StoryAdapter(
 
     inner class OtherUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(story: Story) {
-            binding.storyUsername.text = story.ownerUser // Hikayeyi paylaşan kullanıcı adı
+        fun bind(userStories: UserStories) {
+            binding.storyUsername.text = userStories.ownerUser // Hikayeyi paylaşan kullanıcı adı
             Glide.with(binding.storyImageView.context)
-                .load(story.imageUrl)
+                .load(userStories.ownerUserProfileImage)
                 .circleCrop()
                 .into(binding.storyImageView)
 
             binding.storyAdder.visibility = View.GONE // Diğer kullanıcılar için 'storyAdder' gizli
 
             binding.root.setOnClickListener {
-                // Hikaye tıklandığında yapılacaklar
+                userStories.stories
             }
         }
     }
@@ -108,17 +102,17 @@ class StoryAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (position == 0) { // İlk pozisyon giriş yapan kullanıcının hikayesidir
-            (holder as CurrentUserViewHolder).bind()
+        val userStory = userStories[position] // stories, diğer kullanıcı hikayelerini içeren liste
+        if (holder.itemViewType == VIEW_TYPE_CURRENT_USER) { // İlk pozisyon giriş yapan kullanıcının hikayesidir
+            (holder as CurrentUserViewHolder).bind(userStory)
         } else { // Diğer kullanıcıların hikayeleri
-            val story = stories[position - 1] // stories, diğer kullanıcı hikayelerini içeren liste
-            (holder as OtherUserViewHolder).bind(story)
+            (holder as OtherUserViewHolder).bind(userStory)
         }
     }
 
-    override fun getItemCount(): Int = stories.size + 1 // Kendi hikayenizi ekleyin
+    override fun getItemCount(): Int = userStories.size // Kendi hikayenizi ekleyin
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 0) VIEW_TYPE_CURRENT_USER else VIEW_TYPE_OTHER_USER
+        return if (userStories[position].ownerUser == currentUser) VIEW_TYPE_CURRENT_USER else VIEW_TYPE_OTHER_USER
     }
 }

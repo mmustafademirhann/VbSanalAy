@@ -206,7 +206,7 @@ class MainPageFragment : Fragment() {
     private fun loadStories(){
         userViewModel.stories.observe(viewLifecycleOwner) { stories ->
             // Update the adapter with the fetched stories
-            storyAdapter.setStories(stories)
+            //storyAdapter.setStories(stories)
         }
 
         // Fetch stories from the ViewModel
@@ -238,22 +238,6 @@ class MainPageFragment : Fragment() {
     private fun adapterFunctions() {
         val currentUserId = userPreferences.getUser()?.id.toString()
 
-        // StoryAdapter'ı başlat
-        storyAdapter = StoryAdapter(
-            stories = emptyList(),
-            currentUser = currentUserId,
-            onStoryClick = { position -> onStoryClicked(position) },
-            onUploadStoryClick = { openUploadStoryDialog() },
-            galleryViewModel,
-            requestPermissionLauncher,
-            imagePickerLauncher
-        )
-
-        binding.storyRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = storyAdapter
-        }
-
         // Kullanıcı hikayelerini ve tüm kullanıcıları yükle
         userViewModel.loadUsersWithStories() // Kullanıcı hikayelerini yükle
         userViewModel.fetchUserStories() // Mevcut kullanıcının hikayelerini yükle
@@ -268,19 +252,38 @@ class MainPageFragment : Fragment() {
                 }
             }
             // Hikaye listesini adapter'a aktar
-            storyAdapter.setStories(stories)
+            //storyAdapter.setStories(stories)
         }
 
         // Kullanıcı hikayelerini gözlemleyin
         userViewModel.userStories.observe(viewLifecycleOwner) { userStories ->
             // UserStories listesini Story listesine dönüştür
-            val stories = userStories.flatMap { userStory ->
-                userStory.stories.map { story ->
-                    Story(id = story.id, ownerUser = userStory.ownerUser, imageUrl = story.imageUrl)
+            // Hikaye listesini adapter'a aktar
+            // StoryAdapter'ı başlat
+            val userArrayList = userStories.toMutableList()
+            userArrayList.forEachIndexed { index, userStory ->
+                if (userStory.ownerUser == currentUserId && index != 0) {
+                    val item = userArrayList.removeAt(index)
+                    // Insert the item at the first position (index 0)
+                    userArrayList.add(0, item)
+                    // Break the loop since we only need to move the first matching item
+                    return@forEachIndexed
                 }
             }
-            // Hikaye listesini adapter'a aktar
-            storyAdapter.setStories(stories)
+            storyAdapter = StoryAdapter(
+                userStories = userArrayList,
+                currentUser = currentUserId,
+                onStoryClick = { position -> onStoryClicked(position) },
+                onUploadStoryClick = { openUploadStoryDialog() },
+                galleryViewModel,
+                requestPermissionLauncher,
+                imagePickerLauncher
+            )
+
+            binding.storyRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = storyAdapter
+            }
         }
 
         // PostAdapter'ı başlat
