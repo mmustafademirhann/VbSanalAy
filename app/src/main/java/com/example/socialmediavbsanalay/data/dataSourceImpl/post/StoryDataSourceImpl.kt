@@ -67,7 +67,6 @@ class StoryDataSourceImpl @Inject constructor(
             val storiesList = mutableListOf<Story>()
             val storiesCollection = FirebaseFirestore.getInstance().collection("stories")
                 .whereGreaterThan("storyExpireTime", System.currentTimeMillis())
-                .orderBy("timestamp", Query.Direction.DESCENDING)
             val usersCollection = FirebaseFirestore.getInstance().collection("user")
             val result = storiesCollection.get().await()
             val ownerUserIds = mutableSetOf<String>()
