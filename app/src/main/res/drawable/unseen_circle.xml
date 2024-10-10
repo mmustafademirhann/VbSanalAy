@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="67dp"
+    android:height="67dp">
+
+    <item>
+        <shape android:shape="oval">
+            <size
+                android:width="67dp"
+                android:height="67dp" />
+            <solid android:color="@android:color/transparent" /> <!-- Transparent center -->
+            <stroke
+                android:width="3dp"
+            android:color="#7323A8" /> <!-- Change this to your desired border color -->
+        </shape>
+    </item>
+</layer-list>

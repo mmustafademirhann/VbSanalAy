@@ -2,10 +2,12 @@ package com.example.socialmediavbsanalay.presentation.viewModels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
+import com.example.socialmediavbsanalay.data.repository.ApiResponse
 import com.example.socialmediavbsanalay.domain.interactor.post.GetUserStoriesUseCase
 import com.example.socialmediavbsanalay.domain.interactor.post.PostInteractor
 import com.example.socialmediavbsanalay.domain.interactor.post.StoryInteractor
@@ -14,6 +16,7 @@ import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.domain.model.UserStories
+import com.google.android.gms.common.data.DataHolder
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -31,9 +34,6 @@ class UserViewModel @Inject constructor(
     private val postInteractor: PostInteractor,
     private val storyInteractor: StoryInteractor,
     private val getUserStoriesUseCase: GetUserStoriesUseCase
-
-
-
 ) : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val _userData = MutableLiveData<User?>()
@@ -61,13 +61,17 @@ class UserViewModel @Inject constructor(
     val stories: LiveData<List<Story>> get() = _stories
 
 
-    private val _userStories = MutableLiveData<List<UserStories>>()
-    val userStories: LiveData<List<UserStories>> get() = _userStories
+    private val _userStories = MutableLiveData<ApiResponse<ArrayList<UserStories>>>()
+    val userStories: LiveData<ApiResponse<ArrayList<UserStories>>> get() = _userStories
     @Inject
     lateinit var userPreferences: UserPreferences
 
     private val _usersWithStories = MutableLiveData<List<User>>()
     val usersWithStories: LiveData<List<User>> get() = _usersWithStories
+
+    private val _uploadStoryLiveData = MutableLiveData<ApiResponse<Boolean>>()
+
+    val uploadStoryLiveData: LiveData<ApiResponse<Boolean>> get() = _uploadStoryLiveData
 
     fun loadUsersWithStories() {
         viewModelScope.launch {
@@ -78,12 +82,24 @@ class UserViewModel @Inject constructor(
 
     fun fetchUserStories() {
         viewModelScope.launch {
+            _userStories.value = ApiResponse.Loading()
             try {
                 val stories = getUserStoriesUseCase()
-                _userStories.value = stories
+                _userStories.value = ApiResponse.Success(stories)
             } catch (e: Exception) {
                 // Hata işleme
                 Log.e("StoryViewModel", "Error fetching stories: ${e.message}")
+                _userStories.value = ApiResponse.Fail(e)
+            }
+        }
+    }
+
+    fun updateSeenStatusOfStory(story: Story?, currentUserId: String) {
+        viewModelScope.launch {
+            try {
+                storyInteractor.updateSeenStatusOfStory(story, currentUserId)
+            } catch (e: Exception) {
+                Log.e("StoryViewModel", "Error update seen status: ${e.message}")
             }
         }
     }
@@ -139,8 +155,13 @@ class UserViewModel @Inject constructor(
 
     fun uploadStory(story: Story) {
         viewModelScope.launch {
-            storyInteractor.uploadStory(story)
-            fetchStories()  // Yeni hikayeyi yükledikten sonra güncelle
+            _uploadStoryLiveData.value = ApiResponse.Loading()
+            val response = storyInteractor.uploadStory(story)
+            if (response.isSuccess) {
+                _uploadStoryLiveData.postValue(ApiResponse.Success(true))
+            } else {
+                _uploadStoryLiveData.postValue(ApiResponse.Fail(java.lang.Exception()))
+            }
         }
     }
 

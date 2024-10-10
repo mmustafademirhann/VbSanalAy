@@ -17,7 +17,11 @@ class StoryRepositoryImpl @Inject constructor(
     override suspend fun addStory(story: Story): Result<Unit> {
         return dataSource.uploadStory(story)
     }
-    override suspend fun getUserStories(): List<UserStories> {
+    override suspend fun getUserStories(): ArrayList<UserStories> {
         return dataSource.getAllStories()
+    }
+
+    override suspend fun updateSeenStatusOfStory(story: Story?, currentUser: String): Result<Unit> {
+        return dataSource.updateSeenStatusOfStory(story, currentUser)
     }
 }
