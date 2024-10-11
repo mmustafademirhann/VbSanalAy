@@ -24,7 +24,7 @@ class PostAdapter @Inject constructor(
     private val onLikeClick: (String, String) -> Unit
 
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
-    private val mockItem=Post("","","mock",null)
+   // private val mockItem=Post("","","mock",null)
 
     private var posts: List<Post> = emptyList()
 
@@ -109,7 +109,7 @@ class PostAdapter @Inject constructor(
     }
 
     fun setPosts(newPosts: List<Post>) {
-        posts = newPosts+mockItem
+        posts = newPosts//+mockItem
         notifyDataSetChanged()
     }
 

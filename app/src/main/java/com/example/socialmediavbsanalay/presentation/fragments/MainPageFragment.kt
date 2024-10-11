@@ -158,7 +158,7 @@ class MainPageFragment : Fragment() {
         recyclerView.adapter=postAdapter
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                galleryViewModel.refreshGallery()
+                galleryViewModel.refreshPostsAfterFollow()
                 binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdurun
             }
         }

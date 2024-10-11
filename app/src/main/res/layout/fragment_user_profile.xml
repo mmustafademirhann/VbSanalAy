@@ -148,9 +148,10 @@
                     android:gravity="center"
                     android:layout_marginStart="32dp">
                     <TextView
+                        android:id="@+id/folowersTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="12k"
+                        android:text="0"
                         android:textColor="@color/white"
                         android:textSize="22sp"
                         android:textStyle="bold" />
@@ -169,9 +170,10 @@
                     android:gravity="center"
                     android:layout_marginStart="32dp">
                     <TextView
+                        android:id="@+id/folowingTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="200"
+                        android:text="0"
                         android:textColor="@color/white"
                         android:textSize="22sp"
                         android:textStyle="bold" />

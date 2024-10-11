@@ -9,8 +9,11 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val postDataSource: PostDataSource
 ): PostRepository {
-    override suspend fun getPosts(): List<Post> {
-        return postDataSource.getPosts()
+    override suspend fun getPosts(
+        followingList: List<String>,
+        onPostsUpdated: (List<Post>) -> Unit
+    ) {
+        postDataSource.getPosts(followingList, onPostsUpdated) // Data source'dan gelen veriyi geri döndür
     }
     override suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit {
         return postDataSource.uploadPhoto(imageUri,userId)
@@ -23,6 +26,9 @@ class PostRepositoryImpl @Inject constructor(
         onFailure: (Exception) -> Unit
     ) {
         return postDataSource.likePost(postId,userId,onSuccess,onFailure)
+    }
+    override suspend fun getPostsByFollowingUsers(followingList: List<String>): List<Post> {
+        return postDataSource.fetchFollowedUsersPosts(followingList)
     }
 
 }

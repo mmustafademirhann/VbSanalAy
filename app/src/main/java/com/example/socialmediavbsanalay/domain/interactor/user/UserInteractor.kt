@@ -2,6 +2,7 @@ package com.example.socialmediavbsanalay.domain.interactor.user
 
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.domain.model.User
+import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -37,6 +38,22 @@ class UserInteractor  @Inject constructor(
     }
     suspend fun getUsersWithStories(): List<User> {
         return userRepository.fetchUsersWithSharedStories()
+    }
+    suspend fun follow(currentUserId: String, targetUserId: String): Boolean {
+        return userRepository.followUser(currentUserId, targetUserId)
+    }
+
+    suspend fun unfollow(currentUserId: String, targetUserId: String): Boolean {
+        return userRepository.unfollowUser(currentUserId, targetUserId)
+    }
+    suspend fun isUserFollowing(currentUserId: String, targetUserId: String): Boolean {
+        return userRepository.isUserFollowing(currentUserId, targetUserId)
+    }
+    suspend fun updateFollowerCount(targetUserId: String, increment: Boolean) {
+        userRepository.updateFollowerCount(targetUserId, increment)
+    }
+    suspend fun getUserDocument(userId: String): DocumentSnapshot? {
+        return userRepository.getUserDocument(userId)
     }
 
 }

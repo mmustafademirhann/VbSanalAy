@@ -30,6 +30,7 @@ import com.example.socialmediavbsanalay.presentation.fragments.MessageFragment
 import com.example.socialmediavbsanalay.presentation.fragments.NotificationBarFragment
 import com.example.socialmediavbsanalay.presentation.fragments.SignInFragment
 import com.example.socialmediavbsanalay.presentation.fragments.SignUpFragment
+import com.example.socialmediavbsanalay.presentation.fragments.UserFollowersFragment
 import com.example.socialmediavbsanalay.presentation.fragments.UserProfileFragment
 import com.example.socialmediavbsanalay.presentation.fragments.WelcomeFragment
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
@@ -190,6 +191,14 @@ class MainActivity : AppCompatActivity() {
 
         visibleLine.visibility = View.VISIBLE
     }
+    private fun setVisibilityForLineFollow(visibleLine: View) {
+        binding.userline.visibility = View.VISIBLE
+        binding.homeline.visibility = View.INVISIBLE
+        binding.messageline.visibility = View.INVISIBLE
+        binding.notificationline.visibility = View.INVISIBLE
+
+        visibleLine.visibility = View.INVISIBLE
+    }
     private fun checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // Android 13 ve üstü için izin kontrolü
@@ -334,7 +343,21 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(null)
             .commit()*/
         when (currentFragment) {
-            is MessageFragment, is NotificationBarFragment, is UserProfileFragment -> {
+            is UserProfileFragment -> {
+                if (supportFragmentManager.backStackEntryCount > 0) {
+
+                    setVisibilityForLine(binding.homeline)
+                    super.onBackPressed()
+
+                }
+                // Eğer yığın boş ise, uygulamanın ana sayfasına git
+                else {
+                    setVisibilityForLine(binding.homeline)
+                    switchFragment(MainPageFragment::class.java, true)
+                }
+
+            }
+            is MessageFragment, is NotificationBarFragment -> {
 
                 setVisibilityForLine(binding.homeline)
                 // If currently on one of these fragments, go back to MainPageFragment
@@ -351,6 +374,12 @@ class MainActivity : AppCompatActivity() {
                 setVisibilityForLine(binding.homeline)
                 super.onBackPressed()
             }
+            is UserFollowersFragment -> {
+                // Let NavController handle back navigation for the sign-in flow
+                setVisibilityForLineFollow(binding.homeline)
+                super.onBackPressed()
+            }
+
             else -> {
                 // Default behavior for other fragments, or if no specific action is required
 

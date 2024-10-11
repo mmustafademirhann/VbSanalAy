@@ -1,12 +1,15 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.user
 
 import android.util.Log
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.User
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,7 +18,8 @@ import javax.inject.Inject
 
 class UserDataSourceImpl @Inject constructor(
     private val database: FirebaseDatabase,
-    private val firestore:FirebaseFirestore
+    private val firestore:FirebaseFirestore,
+    private val userPreferences: UserPreferences
 
 ) : UserDataSource {
 
@@ -172,5 +176,68 @@ class UserDataSourceImpl @Inject constructor(
         }
     }
 
+    private val usersCollection = firestore.collection("user")
+    override suspend fun followUser(currentUserId: String, targetUserId: String): Boolean {
+        return try {
+            usersCollection.document(currentUserId)
+                .update("following", FieldValue.arrayUnion(targetUserId)).await()
+            usersCollection.document(targetUserId)
+                .update("followers", FieldValue.arrayUnion(currentUserId)).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun unfollowUser(currentUserId: String, targetUserId: String): Boolean {
+        return try {
+            usersCollection.document(currentUserId)
+                .update("following", FieldValue.arrayRemove(targetUserId)).await()
+            usersCollection.document(targetUserId)
+                .update("followers", FieldValue.arrayRemove(currentUserId)).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+    override suspend fun isUserFollowing(currentUserId: String, targetUserId: String): Boolean {
+        return try {
+            val document = usersCollection.document(currentUserId).get().await()
+            val followingList = document.get("following") as? List<String> ?: emptyList()
+            followingList.contains(targetUserId)
+        } catch (e: Exception) {
+            false
+        }
+    }
+    override suspend fun updateFollowerCount(userId: String, isFollowing: Boolean) {
+        val userRef = firestore.collection("user").document(userId)
+
+        // Belge mevcut mu kontrol edin
+        val documentSnapshot = userRef.get().await()
+        if (documentSnapshot.exists()) {
+            // Belge mevcut, güncelleme işlemini yap
+            val followerCountChange = if (isFollowing) {
+                1L // Takip ediyorsa takipçi sayısını artır
+            } else {
+                -1L // Takipten çıkıyorsa takipçi sayısını azalt
+            }
+            // Takipçi sayısını güncelle
+            userRef.update("followerCount", FieldValue.increment(followerCountChange))
+                .await() // Gerekirse sonucu ele alabilirsiniz
+        } else {
+            // Belge yoksa durumu ele alın
+            Log.e("UserDataSourceImpl", "User document with ID $userId does not exist.")
+            // İsterseniz kullanıcı belgesini oluşturabilirsiniz
+        }
+    }
+    override suspend fun getUserDocument(userId: String): DocumentSnapshot? {
+        return try {
+            val userRef = firestore.collection("user").document(userId)
+            userRef.get().await()
+        } catch (e: Exception) {
+            Log.e("FirestoreError", "Error getting user document: ${e.message}")
+            null
+        }
+    }
 
 }

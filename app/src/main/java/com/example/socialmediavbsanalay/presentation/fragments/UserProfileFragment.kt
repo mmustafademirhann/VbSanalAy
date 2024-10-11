@@ -1,11 +1,15 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +41,13 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     private lateinit var userId: String
     private lateinit var ownerUser:String
     var x=""
+    private lateinit var currentUserId: String
+    private lateinit var targetUserId: String // Hedef kullanıcının ID'si
+
+    private lateinit var followersCountTextView: TextView
+    private lateinit var followingCountTextView: TextView
+    private lateinit var followButton: Button
+
 
 
     //private var isOwner: Boolean = false
@@ -44,8 +55,26 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         binding = FragmentUserProfileBinding.inflate(inflater, container, false)
+
+
+        // TextView'leri bul
+        followersCountTextView = binding.folowersTextView
+        followingCountTextView = binding.folowingTextView
+
+
+
+
+        // Giriş yapmış kullanıcının ID'sini al
+        // (Kullanıcı bilgilerini UserPreferences'tan alabilirsiniz)
+        currentUserId = userPreferences.getUser()?.id ?: return requireView()
+
+
+        // Hedef kullanıcıyı ayarla
+        // targetUserId, kullanıcı arayüzünden seçilebilir veya başka bir kaynaktan alınabilir.
+
+
 
         // Initialize UserAdapter with onItemClick lambda
         userAdapter = UserAdapter { userId ->
@@ -72,6 +101,11 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
         // Load all users
         userViewModel.fetchAllUsers()
+        followButton = binding.followButton
+
+
+
+
 
 
         return binding.root
@@ -99,8 +133,51 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             return fragment
         }
     }
+    private fun navigateToUserFollowing(userId: String) {
+        val userFollowingFragment = UserFollowersFragment().apply {
+            arguments = Bundle().apply {
+                putString("currentUserId", userId)
+                putBoolean("isFromSearch",true)
+                putBoolean("isFromFollowing", true) // Takip edilenler sayfası
+            }
+        }
+
+        parentFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.enter_from_center,
+                R.anim.exit_to_center,
+                R.anim.enter_from_left_center,
+                R.anim.exit_to_right_center
+            )
+            .replace(R.id.fragmentContainerView, userFollowingFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToUserFollowers(userId: String) {
+        val userFollowersFragment = UserFollowersFragment().apply {
+            arguments = Bundle().apply {
+                putString("currentUserId", userId) // Kullanıcı ID'sini geçir
+                putBoolean("isFromSearch",true)
+                putBoolean("isFromFollowing", false)
+            }
+        }
+
+        // Fragment geçişini başlat
+        parentFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.enter_from_center,
+                R.anim.exit_to_center,
+                R.anim.enter_from_left_center,
+                R.anim.exit_to_right_center
+            ) // Yeni animasyonları kullan
+            .replace(R.id.fragmentContainerView, userFollowersFragment)
+            .addToBackStack(null) // Geri butonuyla dönmek için ekle
+            .commit()
+    }
     // Filtreleme işlemi, userId kullanarak postları filtreliyoruz
     private fun observePosts(userId: String) {
+
         // Postları userId'ye göre filtreleme işlemi
         galleryViewModel.posts.observe(viewLifecycleOwner) { postsForUsers ->
             val filteredPosts = postsForUsers.filter { post -> post.username == userId }
@@ -111,8 +188,13 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
                 // Kullanıcı bulundu, UI'yi güncelle
+
+
+
                 binding.usernameM.text = it.id
+                targetUserId=it.id
                 binding.userHandle.text = "@${it.name}" // Kullanıcının handle'ı
+                //updateFollowerAndFollowingCounts()
                 Glide.with(this)
                     .load(it.profileImageUrl) // Kullanıcının profil resim URL'si
                     .placeholder(R.drawable.add) // Yükleme sırasında gösterilecek varsayılan resim
@@ -124,6 +206,52 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                     .placeholder(R.drawable.rainy_minecraft) // Yükleme sırasında gösterilecek varsayılan resim
                     .error(R.drawable.rainy_minecraft) // Hata durumunda gösterilecek resim
                     .into(binding.mainBackgroundImage)
+                userViewModel.loadFollowerCount(targetUserId)
+                userViewModel.loadFollowingCount(currentUserId)
+                userViewModel.checkIfUserIsFollowing(currentUserId, targetUserId)
+
+                // Takipçi sayısını gözlemle
+                userViewModel.followerCount.observe(viewLifecycleOwner) { count ->
+                    binding.folowersTextView.text = count.toString()
+                }
+                userViewModel.followingCount.observe(viewLifecycleOwner) { count ->
+                    binding.folowingTextView.text = count.toString() // UI'da göstermek için
+                }
+                // Takip durumunu gözlemle ve butonun metnini güncelle
+                userViewModel.isFollowing.observe(viewLifecycleOwner) { isFollowing ->
+                    if (isFollowing) {
+                        binding.followButton.text = "Unfollow"
+                    } else {
+                        binding.followButton.text = "Follow"
+                    }
+                }
+
+                // Takip butonuna tıklama işlemi
+                binding.followButton.setOnClickListener {
+                    userViewModel.toggleFollowStatus(currentUserId, targetUserId) // Takip etme işlemi
+                    userViewModel.loadFollowerCount(targetUserId) // Takipçi sayısını güncelle
+                    userViewModel.loadFollowingCount(currentUserId) // Takip edilen sayısını güncelle
+
+                    // Takip etme işleminin başarılı olduğundan emin olduktan sonra postları yükle
+                    userViewModel.isFollowing.observe(viewLifecycleOwner) { isFollowing ->
+                        if (isFollowing != null) {
+                            if (isFollowing) {
+                                // Eğer takip ediyorsa, postları yükle
+                                galleryViewModel.refreshPostsAfterFollow()
+                                galleryViewModel.loadPosts()
+                            }
+                        }
+                    }
+                }
+
+
+                binding.folowingTextView.setOnClickListener{
+                    navigateToUserFollowing(targetUserId)
+                }
+
+                binding.folowersTextView.setOnClickListener{
+                    navigateToUserFollowers(targetUserId)
+                }
 
 
 
@@ -149,6 +277,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
 
         val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
         binding.settingsIcon
@@ -198,6 +328,28 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                         .placeholder(R.drawable.add) // Yükleme sırasında gösterilecek varsayılan resim
                         .error(R.drawable.sayfabitti) // Hata durumunda gösterilecek resim
                         .into(binding.mainBackgroundImage)
+
+                    userViewModel.loadFollowingCount(currentUserId)
+                    userViewModel.loadFollowerCount(currentUserId)
+// Takip edilen kişi sayısını gözlemle
+                    userViewModel.followingCount.observe(viewLifecycleOwner) { count ->
+                        binding.folowingTextView.text = count.toString() // UI'da göstermek için
+                    }
+
+
+                    binding.folowingTextView.setOnClickListener{
+                        navigateToUserFollowing(currentUserId)
+
+                    }
+                    userViewModel.followerCount.observe(viewLifecycleOwner) { count ->
+                        binding.folowersTextView.text = count.toString() // UI'da göstermek için
+                    }
+
+                    binding.folowersTextView.setOnClickListener{
+                        navigateToUserFollowers(currentUserId)
+                    }
+
+
                 } ?: run {
                     // Eğer kullanıcı bulunamazsa, default değerleri göster
                     binding.usernameM.text = galleryViewModel.IDGET
@@ -271,5 +423,6 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             .addToBackStack(null)
             .commit()
     }
+
 
 }
