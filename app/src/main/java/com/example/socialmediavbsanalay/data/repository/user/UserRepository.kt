@@ -1,6 +1,7 @@
 package com.example.socialmediavbsanalay.data.repository.user
 
 import com.example.socialmediavbsanalay.domain.model.User
+import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -13,6 +14,10 @@ interface UserRepository {
     suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String)
     suspend fun updateBacgroundByEmail(email: String, imageUrl: String)
     suspend fun fetchUsersWithSharedStories(): List<User>
-
+    suspend fun followUser(currentUserId: String, targetUserId: String): Boolean
+    suspend fun unfollowUser(currentUserId: String, targetUserId: String): Boolean
+    suspend fun isUserFollowing(currentUserId: String, targetUserId: String): Boolean
+    suspend fun updateFollowerCount(targetUserId: String, increment: Boolean)
+    suspend fun getUserDocument(userId: String): DocumentSnapshot?
 }
 

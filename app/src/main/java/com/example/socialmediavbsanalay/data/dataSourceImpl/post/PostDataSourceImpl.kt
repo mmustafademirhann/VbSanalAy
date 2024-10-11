@@ -27,20 +27,7 @@ class PostDataSourceImpl @Inject constructor(
     private val postsCollection = firestore.collection("posts")
 
 
-    override suspend fun fetchPosts(): Result<List<Post>> {
-        return try {
-            val snapshot = postsCollection.get().await()
-            val posts = snapshot.documents.map { document ->
-                val imageUrl = document.getString("imageUrl") ?: ""
-                val username = document.getString("username") ?: "Unknown"
-                val userId = document.getString("userId") ?: "" // Retrieve userId
-                Post(document.id,imageResId = imageUrl, username = userId,null)
-            }
-            Result.success(posts)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+
 
     override suspend fun uploadPhoto(imageUri: Uri, userId: String) {
         try {
@@ -71,31 +58,48 @@ class PostDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPosts(): List<Post> {
-        // Firestore'dan postları timestamp'e göre sıralı olarak alın (azalan sıralama: en yeni en üstte)
-        val snapshot = firestore.collection("posts")
-            .orderBy("timestamp", Query.Direction.DESCENDING) // Timestamp'e göre sıralama
-            .get()
-            .await()
-
-        // Postları ve kullanıcı ID'lerini elde edin
-        val posts = snapshot.documents.map { document ->
-            val imageUrl = document.getString("imageUrl") ?: ""
-            val userId = document.getString("userId") ?: ""
-            Post(document.id,imageUrl, userId,null)
+    // Repository'de getPosts fonksiyonunu dinleyici ile güncelleyelim
+    override suspend fun getPosts(followingList: List<String>, onPostsUpdated: (List<Post>) -> Unit) {
+        if (followingList.isEmpty()) {
+            onPostsUpdated(emptyList()) // Takip edilen kullanıcı yoksa boş liste döndür
+            return
         }
 
-        // Kullanıcı ID'lerini topluca alın
-        val userIds = posts.map { it.username }.distinct()
-        val users = userRepository.getUsersByIds(userIds)
+        // Tek sorguda takip edilen kullanıcıların postlarını al
+        firestore.collection("posts")
+            .whereIn("userId", followingList)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    onPostsUpdated(emptyList())  // Hata durumunda boş liste döndür
+                    return@addSnapshotListener
+                }
 
-        // Postları kullanıcı adı ile güncelleyin
-        return snapshot.documents.map { document ->
-            val imageUrl = document.getString("imageUrl") ?: ""
-            val userId = document.getString("userId") ?: ""
-            Post(document.id,imageUrl, userId,null)
-        }
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val posts = snapshot.documents.map { document ->
+                        val imageUrl = document.getString("imageUrl") ?: ""
+                        val userId = document.getString("userId") ?: ""
+
+                        // Firestore'dan Timestamp alın ve Date'e çevirin
+                        val timestamp = document.getTimestamp("timestamp")?.toDate()
+
+                        // Post nesnesini oluşturun ve timestamp'i Date olarak ekleyin
+                        Post(
+                            id = document.id,
+                            imageResId = imageUrl,
+                            username = userId,
+                            user = null, // Eğer kullanıcı bilgisi yoksa null geçici olarak
+                            timestamp = timestamp
+                        )
+                    }
+
+                    onPostsUpdated(posts)
+                }
+            }
     }
+
+
+
     override fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         val postRef = firestore.collection("posts").document(postId)
 
@@ -107,6 +111,18 @@ class PostDataSourceImpl @Inject constructor(
             .addOnFailureListener { e ->
                 onFailure(e)  // Hata olduğunda geri bildirim
             }
+    }
+    override suspend fun fetchFollowedUsersPosts(followingList: List<String>): List<Post> {
+        return try {
+            val querySnapshot = firestore.collection("posts")
+                .whereIn("userId", followingList)
+                .get()
+                .await()
+
+            querySnapshot.toObjects(Post::class.java)
+        } catch (e: Exception) {
+            emptyList() // Eğer bir hata varsa boş liste döner
+        }
     }
 
 

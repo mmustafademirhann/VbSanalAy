@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.di
 
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.data.repositoryImpl.user.UserRepositoryImpl
@@ -23,9 +24,10 @@ object UserModule {
     @Singleton
     fun provideUserDataSource(
         firebaseDatabase: FirebaseDatabase,
-        firestore: FirebaseFirestore // No need to provide here if already provided in FirebaseModule
+        firestore: FirebaseFirestore, // No need to provide here if already provided in FirebaseModule
+        userPreferences: UserPreferences
     ): UserDataSource {
-        return UserDataSourceImpl(firebaseDatabase, firestore)
+        return UserDataSourceImpl(firebaseDatabase, firestore,userPreferences)
     }
 
     @Provides

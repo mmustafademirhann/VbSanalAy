@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.domain.interactor.CommentInteractor
 import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
@@ -34,7 +35,11 @@ class GalleryViewModel @Inject constructor(
     private val createUserInteractor:CreateUserInteractor,
     private val userInteractor: UserInteractor,
     private val auth: FirebaseAuth,
-    private val commentInteractor: CommentInteractor
+    private val commentInteractor: CommentInteractor,
+    private val userPreferences: UserPreferences,
+
+
+
 ) : ViewModel() {
 
     private val _recentPhotos = MutableLiveData<List<Gallery>>()
@@ -86,13 +91,18 @@ class GalleryViewModel @Inject constructor(
     private val _comments = MutableLiveData<List<Comment>>()
     val comments: LiveData<List<Comment>> get() = _comments
 
-
-
-
-
-
-
     var IDGET=""
+    val postss = MutableLiveData<List<Post>>()
+    private var currentUserFollowingList: List<String> = emptyList()
+
+
+    // Takip edilen kullanıcıların postlarını getir
+    fun fetchFollowedUsersPosts(followingList: List<String>) {
+        viewModelScope.launch {
+            val followedPosts = postInteractor.executePost(followingList)
+            postss.postValue(followedPosts)
+        }
+    }
 
     fun loadComments(postId: String): Flow<List<Comment>> {
         return commentInteractor.getComments(postId)
@@ -115,6 +125,7 @@ class GalleryViewModel @Inject constructor(
         }
     }
     init {
+        currentUserFollowingList = userPreferences.getUser()?.following ?: listOf()
         loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
     }
@@ -246,32 +257,50 @@ class GalleryViewModel @Inject constructor(
 
 
     fun loadPosts() {
-        if (!hasFetchedPosts){
+
             viewModelScope.launch {
                 try {
-                    IDGET=getUserIdByEmail().toString()
+                    val followingList = userPreferences.getUser()?.following ?: listOf()
 
-
-                    val posts = postInteractor.getPosts() // Use the suspend function
-                    _posts.value = posts
+                    // Interactor'dan gelen postları dinle
+                    postInteractor.getPosts(followingList) { posts ->
+                        _posts.value = posts
+                    }
                     hasFetchedPosts = true
                 } catch (e: Exception) {
-                    _posts.value = emptyList() // Handle error case
+                    _posts.value = emptyList() // Hata durumunda boş liste döner
                 }
             }
+
+    }
+    fun refreshPostsAfterFollow() {
+        viewModelScope.launch {
+            try {
+                val followingList = userPreferences.getUser()?.following ?: listOf()
+
+                // Takip edilen kullanıcıların postlarını dinlemeye başla
+                postInteractor.getPosts(followingList) { posts ->
+                    _posts.value = posts
+                }
+            } catch (e: Exception) {
+                _posts.value = emptyList()
+            }
         }
-
-    }
-    fun signOut() {
-        authInteractor.signOut()
     }
 
-    suspend fun refreshGallery() {
-        try {
-            val photos = postInteractor.getPosts()
-            _posts.value = photos
-        } catch (e: Exception) {
-            _posts.value = emptyList()
+
+    fun refreshGallery() {
+        viewModelScope.launch {
+            try {
+                val followingList = userPreferences.getUser()?.following ?: listOf()
+
+                // Postları yenile ve dinle
+                postInteractor.getPosts(followingList) { posts ->
+                    _posts.value = posts
+                }
+            } catch (e: Exception) {
+                _posts.value = emptyList()
+            }
         }
     }
 

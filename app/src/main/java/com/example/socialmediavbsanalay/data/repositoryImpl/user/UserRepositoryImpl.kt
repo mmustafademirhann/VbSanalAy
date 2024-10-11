@@ -3,6 +3,7 @@ package com.example.socialmediavbsanalay.data.repositoryImpl.user
 import com.example.socialmediavbsanalay.data.dataSource.user.UserDataSource
 import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.data.repository.user.UserRepository
+import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -47,4 +48,21 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun fetchUsersWithSharedStories(): List<User> {
         return userDataSource.getUsersWithSharedStories()
     }
+    override suspend fun followUser(currentUserId: String, targetUserId: String): Boolean {
+        return userDataSource.followUser(currentUserId, targetUserId)
+    }
+
+    override suspend fun unfollowUser(currentUserId: String, targetUserId: String): Boolean {
+        return userDataSource.unfollowUser(currentUserId, targetUserId)
+    }
+    override suspend fun isUserFollowing(currentUserId: String, targetUserId: String): Boolean {
+        return userDataSource.isUserFollowing(currentUserId, targetUserId)
+    }
+    override suspend fun updateFollowerCount(targetUserId: String, increment: Boolean) {
+        return userDataSource.updateFollowerCount(targetUserId, increment)
+    }
+    override suspend fun getUserDocument(userId: String): DocumentSnapshot? {
+        return userDataSource.getUserDocument(userId)
+    }
+
 }

@@ -7,19 +7,56 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="wrap_content"
-
-        android:layout_height="wrap_content"
-        android:text="@android:string/paste_as_plain_text"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="@color/white" />
-
-    <ImageView
-        android:id="@+id/imageView6"
+    <!-- Profil resmi ve kullanıcı adını yan yana koymak için horizontal layout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/shin" />
+        android:orientation="horizontal">
+
+        <!-- Profil resmi -->
+        <FrameLayout
+            android:layout_width="50dp"
+            android:layout_height="50dp">
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/elipseforstory"
+                android:layout_marginEnd="16dp"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/elipseforstory" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:paddingLeft="2dp"
+                android:paddingTop="2dp"
+                android:layout_marginEnd="16dp"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/shin" />
+
+        </FrameLayout>
+
+        <!-- Kullanıcı adı -->
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@android:string/paste_as_plain_text"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <!-- Altına çizgi eklemek için View -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/gradient_line"
+        android:elevation="1dp" />
+
 
 </LinearLayout>

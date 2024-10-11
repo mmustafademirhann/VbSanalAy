@@ -1,6 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
 import android.util.Log
+import android.widget.Button
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,10 +17,12 @@ import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 
 import javax.inject.Inject
@@ -30,7 +33,9 @@ class UserViewModel @Inject constructor(
     private val createUserInteractor: CreateUserInteractor,
     private val postInteractor: PostInteractor,
     private val storyInteractor: StoryInteractor,
-    private val getUserStoriesUseCase: GetUserStoriesUseCase
+    private val getUserStoriesUseCase: GetUserStoriesUseCase,
+
+
 
 
 
@@ -68,6 +73,150 @@ class UserViewModel @Inject constructor(
 
     private val _usersWithStories = MutableLiveData<List<User>>()
     val usersWithStories: LiveData<List<User>> get() = _usersWithStories
+    private val _isFollowing = MutableLiveData<Boolean>()
+    val isFollowing: LiveData<Boolean> get() = _isFollowing
+
+    private val _followerCount = MutableLiveData<Int>()
+    val followerCount: LiveData<Int> get() = _followerCount
+    private val _followingCount = MutableLiveData<Int>()
+    val followingCount: LiveData<Int> get() = _followingCount
+
+    private val _followers = MutableLiveData<List<User>>() // List<User> türünde LiveData
+    val followers: LiveData<List<User>> get() = _followers // Public getter
+
+
+    private val _following = MutableLiveData<List<User>>() // Takip edilen ID'ler
+    val following: LiveData<List<User>> get() = _following
+
+
+
+    // Kullanıcıyı takip ediyor mu kontrolü
+
+    fun loadFollowers(userId: String) {
+        viewModelScope.launch {
+            val userDoc = userInteractor.getUserDocument(userId)
+            if (userDoc != null) {
+                val user = userDoc.toObject(User::class.java)
+
+                // Takipçi ID'lerini al
+                Log.d("UserFollowersFragment", "User: $user")
+                val followerIds = user?.followers ?: emptyList()
+                Log.d("UserFollowersFragment", "Follower IDs: $followerIds")
+                // Kullanıcıları yüklemek için bir liste oluştur
+                val followerUsers = mutableListOf<User>()
+
+                // Her bir takipçi ID'si için User nesnesini yükle
+                for (followerId in followerIds) {
+                    val followerDoc = userInteractor.getUserDocument(followerId)
+                    val followerUser = followerDoc?.toObject(User::class.java)
+                    if (followerUser != null) {
+                        followerUsers.add(followerUser)
+                    }
+                }
+
+                _followers.value = followerUsers // LiveData'ya takipçi kullanıcılarını at
+            } else {
+                _followers.value = emptyList() // Kullanıcı bulunamazsa boş liste
+            }
+        }
+    }
+
+
+    fun loadFollowing(userId: String) {
+        viewModelScope.launch {
+            val userDoc = userInteractor.getUserDocument(userId)
+            if (userDoc != null) {
+                val user = userDoc.toObject(User::class.java)
+
+                // Takipçi ID'lerini al
+                Log.d("UserFollowersFragment", "User: $user")
+                val followerIds = user?.following ?: emptyList()
+                Log.d("UserFollowersFragment", "Follower IDs: $followerIds")
+                // Kullanıcıları yüklemek için bir liste oluştur
+                val followingUsers = mutableListOf<User>()
+
+                // Her bir takipçi ID'si için User nesnesini yükle
+                for (followerId in followerIds) {
+                    val followingDoc = userInteractor.getUserDocument(followerId)
+                    val followingUser = followingDoc?.toObject(User::class.java)
+                    if (followingUser != null) {
+                        followingUsers.add(followingUser)
+                    }
+                }
+
+                _following.value = followingUsers // LiveData'ya takipçi kullanıcılarını at
+            } else {
+                _following.value = emptyList() // Kullanıcı bulunamazsa boş liste
+            }
+        }
+    }
+    fun checkIfUserIsFollowing(currentUserId: String, targetUserId: String) {
+        viewModelScope.launch {
+            val result = userInteractor.isUserFollowing(currentUserId, targetUserId)
+            _isFollowing.value = result
+        }
+    }
+
+    // Takipçi sayısını yükleme
+    fun loadFollowerCount(userId: String) {
+        viewModelScope.launch {
+            val userDoc = userInteractor.getUserDocument(userId)
+            if (userDoc != null) {
+                // User nesnesini oluştur
+                val user = userDoc.toObject(User::class.java)
+                // followers listesinin boyutunu kullan
+                _followerCount.value = user?.followers?.size ?: 0
+            } else {
+                _followerCount.value = 0
+            }
+        }
+    }
+
+    fun loadFollowingCount(userId: String) {
+        viewModelScope.launch {
+            val userDoc = userInteractor.getUserDocument(userId)
+            if (userDoc != null) {
+                val user = userDoc.toObject(User::class.java)
+                _followingCount.value = user?.following?.size ?: 0 // followers listesinin boyutunu kullan
+            } else {
+                _followingCount.value = 0
+            }
+        }
+    }
+
+
+    // Takip durumunu değiştirme (takip etme/takipten çıkma)
+    fun toggleFollowStatus(currentUserId: String, targetUserId: String) {
+        viewModelScope.launch {
+            val isCurrentlyFollowing = isFollowing.value ?: false
+            if (isCurrentlyFollowing) {
+                // Takipten çıkma işlemi
+                val success = userInteractor.unfollow(currentUserId, targetUserId)
+
+                if (success) {
+                    // Takipçi sayısını güncelleme
+                    userInteractor.updateFollowerCount(targetUserId, false)
+                    _isFollowing.value = false
+                }
+            } else {
+                // Takip etme işlemi
+                val success = userInteractor.follow(currentUserId, targetUserId)
+
+                if (success) {
+                    // Takipçi sayısını güncelleme
+                    userInteractor.updateFollowerCount(targetUserId, true)
+                    _isFollowing.value = true
+                }
+            }
+            // Takipçi sayısını tekrar yükle
+            loadFollowerCount(targetUserId)
+        }
+    }
+
+
+
+
+
 
     fun loadUsersWithStories() {
         viewModelScope.launch {

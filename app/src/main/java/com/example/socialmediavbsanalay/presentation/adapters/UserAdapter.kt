@@ -34,11 +34,12 @@ class UserAdapter @Inject constructor(
             Glide.with(binding.root)
                 .load(user.profileImageUrl) // Default profile image
                 .circleCrop() // Transform the image into a circular shape
+                .error(R.drawable.userpng)
                 .into(binding.imageView6)
             // Tıklama olayını burada yönetiyoruz
              binding.root.setOnClickListener {
                 val isim =binding.userName.text.toString()
-                onItemClick(user.id) // Tıklanan kullanıcıyı döndürüyoruz
+                onItemClick(isim) // Tıklanan kullanıcıyı döndürüyoruz
             }
         }
     }
