@@ -15,4 +15,8 @@ class StoryInteractor @Inject constructor(
     suspend fun uploadStory(story: Story): Result<Unit> {
         return repository.addStory(story)
     }
+
+    suspend fun updateSeenStatusOfStory(story: Story?, currentUser: String): Result<Unit> {
+        return repository.updateSeenStatusOfStory(story, currentUser)
+    }
 }

@@ -21,14 +21,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
+import com.example.socialmediavbsanalay.data.repository.ApiResponse
 import com.example.socialmediavbsanalay.domain.model.Comment
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.example.socialmediavbsanalay.presentation.MainActivity
+import com.example.socialmediavbsanalay.presentation.story.StoryActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
+import com.google.android.gms.common.data.DataHolder
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
+import com.google.protobuf.Api
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,6 +49,7 @@ class MainPageFragment : Fragment() {
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
+    private lateinit var storyActivityLauncher: ActivityResultLauncher<Intent>
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -180,12 +185,19 @@ class MainPageFragment : Fragment() {
                         imageUrl = uri.toString(), // veya başka bir URL alabilirsiniz, eğer resmi yüklüyorsanız
                         ownerUser = ownerUser.toString(),
                         description = description,
-                        timestamp = System.currentTimeMillis() // Zaman damgası ekleyin
+                        timestamp = System.currentTimeMillis(),
+                        storyExpireTime = (System.currentTimeMillis() + 86400000)
                     )
 
                     // Seçilen resmi ve diğer bilgileri ViewModel aracılığıyla yükle
                     userViewModel.uploadStory(story)
                 }
+            }
+        }
+
+        storyActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                userViewModel.fetchUserStories()
             }
         }
 
@@ -214,10 +226,13 @@ class MainPageFragment : Fragment() {
 
     }
 
-    private fun onStoryClicked(position: Int) {
-        // Handle the logic when a story is clicked
-        // For example, navigate to a story detail fragment
-        Toast.makeText(requireContext(), "Story clicked: $position", Toast.LENGTH_SHORT).show()
+    private fun onStoryClicked(isUploadOperation: Boolean, userStories: UserStories?, adapterPosition: Int, storyPosition: Int?) {
+        if (isUploadOperation) {
+            openGallery()
+        } else {
+            val intent = StoryActivity.start(requireContext(), storyAdapter.getStories(), adapterPosition, storyPosition ?: 0)
+            storyActivityLauncher.launch(intent)
+        }
     }
 
     private fun openUploadStoryDialog() {
@@ -257,32 +272,71 @@ class MainPageFragment : Fragment() {
 
         // Kullanıcı hikayelerini gözlemleyin
         userViewModel.userStories.observe(viewLifecycleOwner) { userStories ->
-            // UserStories listesini Story listesine dönüştür
-            // Hikaye listesini adapter'a aktar
-            // StoryAdapter'ı başlat
-            val userArrayList = userStories.toMutableList()
-            userArrayList.forEachIndexed { index, userStory ->
-                if (userStory.ownerUser == currentUserId && index != 0) {
-                    val item = userArrayList.removeAt(index)
-                    // Insert the item at the first position (index 0)
-                    userArrayList.add(0, item)
-                    // Break the loop since we only need to move the first matching item
-                    return@forEachIndexed
+            if (userStories is ApiResponse.Success) {
+                // UserStories listesini Story listesine dönüştür
+                // Hikaye listesini adapter'a aktar
+                // StoryAdapter'ı başlat
+                binding.progressBar.visibility = View.GONE
+                val userArrayList = userStories.data
+                if (userArrayList.filter { it.ownerUser == currentUserId }.isEmpty()) {
+                    userArrayList.add(
+                        UserStories(
+                            userPreferences.getUser()?.id ?: "",
+                            emptyList(),
+                            userPreferences.getUser()?.profileImageUrl ?: ""
+                        )
+                    )
+                }
+                run loop@{
+                    userArrayList.forEachIndexed { index, userStory ->
+                        if (userStory.ownerUser == currentUserId && index != 0) {
+                            val item = userArrayList.removeAt(index)
+                            // Insert the item at the first position (index 0)
+                            userArrayList.add(0, item)
+                            // Break the loop since we only need to move the first matching item
+                            return@loop
+                        }
+                    }
+                }
+                storyAdapter = StoryAdapter(
+                    userStories = userArrayList as ArrayList<UserStories>,
+                    currentUser = currentUserId,
+                    onStoryClick = { isUploadOperation, userStories, adapterPosition, storyPosition ->
+                        onStoryClicked(
+                            isUploadOperation,
+                            userStories,
+                            adapterPosition,
+                            storyPosition
+                        )
+                    }
+                )
+
+                binding.storyRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    adapter = storyAdapter
                 }
             }
-            storyAdapter = StoryAdapter(
-                userStories = userArrayList,
-                currentUser = currentUserId,
-                onStoryClick = { position -> onStoryClicked(position) },
-                onUploadStoryClick = { openUploadStoryDialog() },
-                galleryViewModel,
-                requestPermissionLauncher,
-                imagePickerLauncher
-            )
+            if(userStories is ApiResponse.Loading) {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            if (userStories is ApiResponse.Fail) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), "Bilinmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-            binding.storyRecyclerView.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                adapter = storyAdapter
+        userViewModel.uploadStoryLiveData.observe(viewLifecycleOwner) {
+            if (it is ApiResponse.Success) {
+                Toast.makeText(requireContext(), "Story başarıyla yüklendi.", Toast.LENGTH_SHORT).show()
+                binding.progressBar.visibility = View.GONE
+                userViewModel.fetchUserStories()
+            }
+            if (it is ApiResponse.Loading) {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            if (it is ApiResponse.Fail) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), "Bilinmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.", Toast.LENGTH_SHORT).show()
             }
         }
 

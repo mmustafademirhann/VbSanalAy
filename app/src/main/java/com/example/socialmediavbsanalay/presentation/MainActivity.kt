@@ -10,30 +10,22 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.ActivityMainBinding
-
 import com.example.socialmediavbsanalay.presentation.fragments.MainPageFragment
-
 import com.example.socialmediavbsanalay.presentation.fragments.MessageFragment
 import com.example.socialmediavbsanalay.presentation.fragments.NotificationBarFragment
 import com.example.socialmediavbsanalay.presentation.fragments.SignInFragment
@@ -44,11 +36,7 @@ import com.example.socialmediavbsanalay.presentation.fragments.WelcomeFragment
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
-import com.google.firebase.database.getValue
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

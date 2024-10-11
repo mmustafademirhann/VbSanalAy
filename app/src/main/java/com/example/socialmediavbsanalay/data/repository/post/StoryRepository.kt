@@ -6,5 +6,7 @@ import com.example.socialmediavbsanalay.domain.model.UserStories
 interface StoryRepository {
     suspend fun getStories(): Result<List<Story>>
     suspend fun addStory(story: Story): Result<Unit>
-    suspend fun getUserStories(): List<UserStories>
+    suspend fun getUserStories(): ArrayList<UserStories>
+
+    suspend fun updateSeenStatusOfStory(story: Story?, currentUser: String): Result<Unit>
 }

@@ -45,6 +45,7 @@
         android:orientation="horizontal"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        android:paddingStart="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchBarContainer"
         tools:listitem="@layout/story_template" />

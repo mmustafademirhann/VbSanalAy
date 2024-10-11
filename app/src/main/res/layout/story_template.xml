@@ -8,9 +8,10 @@
 
     <!-- Circle background (keeping your ellipse/halo effect) -->
     <FrameLayout
+        android:id="@+id/flStory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/elipseforstory" > <!-- Circle/Halo background -->
+        android:background="@drawable/unseen_circle" > <!-- Circle/Halo background -->
 
         <!-- Story image -->
         <com.google.android.material.imageview.ShapeableImageView
@@ -27,7 +28,7 @@
             android:id="@+id/storyAdder"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/storyadder"
+            android:src="@drawable/baseline_add_circle_24"
             android:layout_gravity="bottom|end"
             android:layout_margin="4dp"
             android:visibility="gone" />
