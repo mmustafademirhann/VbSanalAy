@@ -101,6 +101,7 @@ class StoryActivity : AppCompatActivity(), StoriesProgressView.StoriesListener {
             loadImageWithGlide(--storyPosition, adapterPosition)
         } else {
             --adapterPosition
+            storyPosition = (userStories?.get(adapterPosition))?.stories?.size?.minus(1) ?: 0
             loadProfileAndName(userStories?.get(adapterPosition))
             setupStories(userStories?.get(adapterPosition))
             loadImageWithGlide(userStories?.get(adapterPosition)?.stories?.size?.minus(1) ?: 0, adapterPosition)
@@ -113,6 +114,7 @@ class StoryActivity : AppCompatActivity(), StoriesProgressView.StoriesListener {
             finish()
         } else {
             ++adapterPosition
+            storyPosition = 0
             loadProfileAndName(userStories?.get(adapterPosition))
             setupStories(userStories?.get(adapterPosition))
             loadImageWithGlide(0, adapterPosition)
