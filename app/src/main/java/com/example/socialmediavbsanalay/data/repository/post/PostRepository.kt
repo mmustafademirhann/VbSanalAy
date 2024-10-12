@@ -8,9 +8,9 @@ interface PostRepository {
         followingList: List<String>,
         onPostsUpdated: (List<Post>) -> Unit
     )
-    suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit
+    suspend fun uploadPhoto(imageUri: Uri,userId: String): Result<Boolean>
 
-    fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+    fun likeOrUnlikePost(postId: String, userId: String, isLike: Boolean, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
     suspend fun getPostsByFollowingUsers(followingList: List<String>): List<Post>
 
 

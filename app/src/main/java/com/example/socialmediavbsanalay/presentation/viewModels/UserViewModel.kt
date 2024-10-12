@@ -313,8 +313,8 @@ class UserViewModel @Inject constructor(
     }
 
 
-    fun likePost(postId: String, userId: String) {
-        postInteractor.likePost(postId, userId,
+    fun likeOrUnLikePost(postId: String, userId: String, isLike: Boolean) {
+        postInteractor.likeOrUnlikePost(postId, userId, isLike,
             onSuccess = {
                 _likeSuccess.value = true  // Başarılı olduğunda UI'yı güncelle
             },

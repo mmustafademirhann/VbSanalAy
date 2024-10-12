@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.FragmentMainPageBinding
@@ -45,7 +46,7 @@ class MainPageFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var postAdapter: PostAdapter
-    private val galleryViewModel: GalleryViewModel by viewModels()
+    private val galleryViewModel: GalleryViewModel by activityViewModels()
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
@@ -122,13 +123,17 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
-        postAdapter = PostAdapter(userViewModel,
+        postAdapter = PostAdapter(
+            userPreferences.getUser()?.id ?: "",
             onCommentClick = { postId ->
                 showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
             },
             onLikeClick = { postId, userId -> // Beğeni tıklama olayı
                 // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
-                userViewModel.likePost(postId, userId) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
+                userViewModel.likeOrUnLikePost(postId, userId, true) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
+            },
+            onUnLikeClick = {postId, userId ->
+                userViewModel.likeOrUnLikePost(postId, userId, false)
             }
         )
 
@@ -338,17 +343,6 @@ class MainPageFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
                 Toast.makeText(requireContext(), "Bilinmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.", Toast.LENGTH_SHORT).show()
             }
-        }
-
-        // PostAdapter'ı başlat
-        postAdapter = PostAdapter(userViewModel,
-            onCommentClick = { postId -> showCommentBottomSheet(postId) },
-            onLikeClick = { postId, userId -> userViewModel.likePost(postId, userId) }
-        )
-
-        binding.postsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            adapter = postAdapter
         }
     }
 

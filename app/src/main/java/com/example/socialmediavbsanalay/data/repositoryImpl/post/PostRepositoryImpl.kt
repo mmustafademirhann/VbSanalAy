@@ -15,17 +15,18 @@ class PostRepositoryImpl @Inject constructor(
     ) {
         postDataSource.getPosts(followingList, onPostsUpdated) // Data source'dan gelen veriyi geri döndür
     }
-    override suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit {
+    override suspend fun uploadPhoto(imageUri: Uri,userId: String): Result<Boolean> {
         return postDataSource.uploadPhoto(imageUri,userId)
     }
 
-    override fun likePost(
+    override fun likeOrUnlikePost(
         postId: String,
         userId: String,
+        isLike: Boolean,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        return postDataSource.likePost(postId,userId,onSuccess,onFailure)
+        return postDataSource.likeOrUnlikePost(postId,userId,isLike,onSuccess,onFailure)
     }
     override suspend fun getPostsByFollowingUsers(followingList: List<String>): List<Post> {
         return postDataSource.fetchFollowedUsersPosts(followingList)
