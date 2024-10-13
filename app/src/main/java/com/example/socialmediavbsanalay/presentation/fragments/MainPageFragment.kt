@@ -61,7 +61,7 @@ class MainPageFragment : Fragment() {
 
     @Inject
     lateinit var userPreferences: UserPreferences
-
+    //gitegittimi
 
     private fun navigateToSearchResultsFragment() {
         val searchUserPostFragment = SearchUserPostFragment()
