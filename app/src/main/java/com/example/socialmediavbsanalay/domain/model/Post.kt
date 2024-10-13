@@ -8,6 +8,7 @@ data class Post(
     val username: String,  // Username of the user associated with the story
     val user: User?,
     var likesCount: Long,
+    var commentsCount: Long,
     val likedBy: ArrayList<String> = arrayListOf(),
     val comments: List<Comment> = emptyList(), // List of comments
     val timestamp: Date?,

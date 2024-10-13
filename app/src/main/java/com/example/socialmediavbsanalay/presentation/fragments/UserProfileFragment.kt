@@ -17,11 +17,14 @@ import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
+import com.example.socialmediavbsanalay.domain.model.Notification
+import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.presentation.OnItemClickListener
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserPostAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,6 +41,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     private lateinit var userPostAdapter: UserPostAdapter
     private lateinit var binding: FragmentUserProfileBinding
     private val galleryViewModel: GalleryViewModel by viewModels()
+    private val notificationViewModel: NotificationViewModel by viewModels()
     private lateinit var userId: String
     private lateinit var ownerUser:String
     var x=""

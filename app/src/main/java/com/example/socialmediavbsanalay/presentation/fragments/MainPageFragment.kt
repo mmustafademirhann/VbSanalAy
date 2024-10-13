@@ -24,11 +24,14 @@ import androidx.lifecycle.lifecycleScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.repository.ApiResponse
 import com.example.socialmediavbsanalay.domain.model.Comment
+import com.example.socialmediavbsanalay.domain.model.Notification
+import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.story.StoryActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import com.google.android.gms.common.data.DataHolder
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -48,9 +51,13 @@ class MainPageFragment : Fragment() {
     private lateinit var postAdapter: PostAdapter
     private val galleryViewModel: GalleryViewModel by activityViewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private val notificationViewModel: NotificationViewModel by viewModels()
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
     private lateinit var storyActivityLauncher: ActivityResultLauncher<Intent>
+    private var likedPostId = ""
+    private var likedPostUserId = ""
+    private var likedPostImage = ""
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -77,10 +84,12 @@ class MainPageFragment : Fragment() {
         //private val PICK_IMAGE = 2
         //private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 100
     }
-    private fun showCommentBottomSheet(postId: String) {
+    private fun showCommentBottomSheet(postId: String, postOwner: String, postImage: String) {
         val commentBottomSheetFragment = CommentBottomSheetFragment().apply {
             arguments = Bundle().apply {
-                putString("postId", postId) // postId'yi argüman olarak gönder
+                putString("postId", postId) // postId'yi argüman olarak gönder,
+                putString("postOwner", postOwner)
+                putString("postImage", postImage)
             }
         }
         // Bottom Sheet'i oluştur
@@ -125,11 +134,14 @@ class MainPageFragment : Fragment() {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
         postAdapter = PostAdapter(
             userPreferences.getUser()?.id ?: "",
-            onCommentClick = { postId ->
-                showCommentBottomSheet(postId) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
+            onCommentClick = { postId, postOwner, postImage ->
+                showCommentBottomSheet(postId, postOwner, postImage) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
             },
-            onLikeClick = { postId, userId -> // Beğeni tıklama olayı
+            onLikeClick = { postId, userId, postImage -> // Beğeni tıklama olayı
                 // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
+                likedPostId = postId
+                likedPostUserId = userId
+                likedPostImage = postImage
                 userViewModel.likeOrUnLikePost(postId, userId, true) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
             },
             onUnLikeClick = {postId, userId ->
@@ -158,6 +170,22 @@ class MainPageFragment : Fragment() {
             binding.progressBar.visibility = View.INVISIBLE
         }
 
+        userViewModel.likeSuccess.observe(viewLifecycleOwner) {
+            if (it) {
+                notificationViewModel.addNotification(
+                    Notification(
+                        likedPostUserId,
+                        userPreferences.getUser()?.profileImageUrl ?: "",
+                        userPreferences.getUser()?.id ?: "",
+                        NotificationType.LIKE.notificationType,
+                        likedPostId,
+                        likedPostImage,
+                        false
+                    )
+                )
+            }
+        }
+
         val recyclerView = binding.postsRecyclerView
         recyclerView.layoutManager=LinearLayoutManager(context)
         recyclerView.adapter=postAdapter
@@ -167,6 +195,8 @@ class MainPageFragment : Fragment() {
                 binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdurun
             }
         }
+
+        galleryViewModel.loadPosts()
 
         requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {

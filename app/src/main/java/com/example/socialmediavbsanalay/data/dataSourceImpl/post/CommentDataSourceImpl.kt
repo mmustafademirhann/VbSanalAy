@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.post.CommentDataSource
 import com.example.socialmediavbsanalay.domain.model.Comment
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +17,9 @@ class CommentDataSourceImpl @Inject constructor(private val firestore: FirebaseF
     override suspend fun addComment(comment: Comment): Result<Unit> {
         return try {
             firestore.collection("comments").add(comment).await() // await ile asenkron işlemi bekleyin
+            val postRef = firestore.collection("posts").document(comment.postId)
+            postRef.update("commentsCount", FieldValue.increment(1)
+            )
             Result.success(Unit) // Başarılı durumda
         } catch (e: Exception) {
             Log.w(TAG, "Error adding comment", e)

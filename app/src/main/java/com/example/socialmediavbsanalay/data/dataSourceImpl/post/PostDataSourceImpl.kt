@@ -84,6 +84,7 @@ class PostDataSourceImpl @Inject constructor(
                         // Convert Firestore Timestamp to Date
                         val timestamp = document.getTimestamp("timestamp")?.toDate()
                         val likesCount = document.getLong("likesCount") ?: 0L
+                        val commentsCount = document.getLong("commentsCount") ?: 0L
                         val likedBy = document.get("likedBy") as? ArrayList<String> ?: arrayListOf()
 
                         // Create Post object and include timestamp as Date
@@ -95,7 +96,8 @@ class PostDataSourceImpl @Inject constructor(
                             timestamp = timestamp,
                             userProfileImage = userProfileImage,
                             likesCount = likesCount,
-                            likedBy = likedBy
+                            likedBy = likedBy,
+                            commentsCount = commentsCount
                         )
                     }
 

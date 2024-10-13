@@ -129,7 +129,6 @@ class GalleryViewModel @Inject constructor(
     }
     init {
         currentUserFollowingList = userPreferences.getUser()?.following ?: listOf()
-        loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
     }
     //suspend fun fetchUserData(): User? {

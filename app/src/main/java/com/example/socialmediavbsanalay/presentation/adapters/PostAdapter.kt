@@ -20,8 +20,8 @@ import javax.inject.Inject
 
 class PostAdapter(
     private val currentUserId: String,
-    private val onCommentClick: (String) -> Unit,
-    private val onLikeClick: (String, String) -> Unit,
+    private val onCommentClick: (String, String, String) -> Unit,
+    private val onLikeClick: (String, String, String) -> Unit,
     private val onUnLikeClick: (String, String) -> Unit
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
@@ -40,9 +40,10 @@ class PostAdapter(
                 .circleCrop() // This will transform the image into a circular shape// Optional error image
                 .into(binding.storyImageView) // Ensure `storyImageView` is correctly referenced
             binding.commentImage.setOnClickListener {
-                onCommentClick(post.id) // Burada post'un ID'sini geçiriyoruz
+                onCommentClick(post.id, post.username, post.imageResId) // Burada post'un ID'sini geçiriyoruz
             }
             binding.likeCount.text = post.likesCount.toString()
+            binding.commentCount.text = post.commentsCount.toString()
             if (post.likedBy.contains(currentUserId)) {
                 binding.unlikeImage.visibility = View.VISIBLE
                 binding.likeImage.visibility = View.GONE
@@ -58,7 +59,8 @@ class PostAdapter(
                 binding.unlikeImage.visibility = View.VISIBLE
                 onLikeClick(
                     post.id,
-                    post.username
+                    post.username,
+                    post.imageResId
                 ) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
             }
 
