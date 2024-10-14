@@ -10,4 +10,5 @@ class MessageDataSourceImpl @Inject constructor(
     override suspend fun fetchMessageItems(): Result<List<MessageItem>> {
         return Result.success(emptyList())
     }
+
 }
