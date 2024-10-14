@@ -74,9 +74,12 @@ class PostDataSourceImpl @Inject constructor(
         firestore.collection("posts")
             .whereIn("userId", followingList)
             .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get() // Use get() to execute the query once
-            .addOnSuccessListener { snapshot ->
-                if (!snapshot.isEmpty) {
+            .addSnapshotListener { snapshot, exception->
+                if (exception != null) {
+                    onPostsUpdated(emptyList())  // Hata durumunda boş liste döndür
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && !snapshot.isEmpty) {
                     val posts = snapshot.documents.map { document ->
                         val imageUrl = document.getString("imageUrl") ?: ""
                         val userId = document.getString("userId") ?: ""
@@ -105,9 +108,6 @@ class PostDataSourceImpl @Inject constructor(
                 } else {
                     onPostsUpdated(emptyList()) // Return empty list if no posts found
                 }
-            }
-            .addOnFailureListener { exception ->
-                onPostsUpdated(emptyList()) // Return empty list on error
             }
     }
 

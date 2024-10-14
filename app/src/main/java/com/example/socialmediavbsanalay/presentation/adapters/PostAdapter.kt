@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 class PostAdapter(
     private val currentUserId: String,
+    private val userViewModel: UserViewModel,
     private val onCommentClick: (String, String, String) -> Unit,
     private val onLikeClick: (String, String, String) -> Unit,
     private val onUnLikeClick: (String, String) -> Unit
@@ -30,15 +31,24 @@ class PostAdapter(
     inner class PostViewHolder( val binding: PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(post: Post) {
+        fun bind(post: Post, users: List<User>?) {
+            val matchingUser = users?.find { user -> user.id == post.username }
+            if (matchingUser != null) {
+                // Load the user's profile image with Glide using circle crop
+                Glide.with(binding.root)
+                    .load(matchingUser.profileImageUrl) // URL of the user's profile image
+                    .circleCrop() // This will transform the image into a circular shape// Optional error image
+                    .into(binding.storyImageView) // Ensure `storyImageView` is correctly referenced
+            } else {
+                // Load a default profile image with circle crop
+                Glide.with(binding.root)
+                    .load(R.drawable.shin) // Default profile image
+                    .circleCrop() // Transform the image into a circular shape
+                    .into(binding.storyImageView)
+            }
             binding.postUsername.text = post.username
             binding.postContent.text = "Nasıl ?"
             // Load the user's profile image with Glide using circle crop
-            Glide.with(binding.root)
-                .load(post.userProfileImage)
-                .error(R.drawable.shin)// URL of the user's profile image
-                .circleCrop() // This will transform the image into a circular shape// Optional error image
-                .into(binding.storyImageView) // Ensure `storyImageView` is correctly referenced
             binding.commentImage.setOnClickListener {
                 onCommentClick(post.id, post.username, post.imageResId) // Burada post'un ID'sini geçiriyoruz
             }
@@ -133,7 +143,13 @@ class PostAdapter(
         val post = posts[position]
 
         // Kullanıcı bilgilerini al ve gözlemle
-        holder.bind(post) // Post ve profil resmini bağla
+        userViewModel.getAllUsers() // Öncelikle kullanıcıyı çek
+
+        userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
+            val userList =
+                result?.getOrNull() // Keskulla profil resmini al
+            holder.bind(post, userList) // Post ve profil resmini bağla
+        }
 
         Glide.with(holder.itemView.context)
             .load(post.imageResId)
