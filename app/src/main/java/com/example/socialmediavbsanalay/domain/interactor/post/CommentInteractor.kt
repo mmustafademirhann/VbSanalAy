@@ -15,7 +15,7 @@ class CommentInteractor @Inject constructor(private val commentRepository: Comme
      fun getComments(postId: String): Flow<List<Comment>> {
         return commentRepository.getComments(postId)
     }
-    suspend fun loadComments(postId: String): List<Comment> {
-        return commentRepository.getCommentsForPost(postId)
+    fun loadComments(postId: String, onCommentsUpdated: (List<Comment>) -> Unit) {
+        commentRepository.getCommentsForPost(postId, onCommentsUpdated)
     }
 }

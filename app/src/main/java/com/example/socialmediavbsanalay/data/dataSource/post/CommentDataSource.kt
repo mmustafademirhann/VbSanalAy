@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.callbackFlow
 interface CommentDataSource {
     suspend fun addComment(comment: Comment) : Result<Unit>
     fun getComments(postId: String): Flow<List<Comment>>
-    suspend fun fetchCommentsForPost(postId: String): List<Comment>
+    fun fetchCommentsForPost(postId: String, onCommentsUpdated: (List<Comment>) -> Unit)
 }

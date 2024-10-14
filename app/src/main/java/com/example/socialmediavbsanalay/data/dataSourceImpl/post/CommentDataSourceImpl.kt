@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.post.CommentDataSource
 import com.example.socialmediavbsanalay.domain.model.Comment
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +17,9 @@ class CommentDataSourceImpl @Inject constructor(private val firestore: FirebaseF
     override suspend fun addComment(comment: Comment): Result<Unit> {
         return try {
             firestore.collection("comments").add(comment).await() // await ile asenkron işlemi bekleyin
+            val postRef = firestore.collection("posts").document(comment.postId)
+            postRef.update("commentsCount", FieldValue.increment(1)
+            )
             Result.success(Unit) // Başarılı durumda
         } catch (e: Exception) {
             Log.w(TAG, "Error adding comment", e)
@@ -41,25 +45,41 @@ class CommentDataSourceImpl @Inject constructor(private val firestore: FirebaseF
             awaitClose { listenerRegistration.remove() }
         }
     }
-    override suspend fun fetchCommentsForPost(postId: String): List<Comment> {
-        return try {
-            val commentsSnapshot = firestore.collection("comments")
-                .whereEqualTo("postId", postId)
-                .get()
-                .await()
-            Log.d("Firestore", "Number of comments: ${commentsSnapshot.documents.size}")
-            commentsSnapshot.documents.map { document ->
-                val id = document.id
-                val userId = document.getString("userId") ?: ""
-                val username = document.getString("userId") ?: "Unknown"
-                val userProfil=document.getString("profileImageUrl")?:"Unknown"
-                val content = document.getString("comment") ?: ""
-                val timestamp = document.getLong("timestamp") ?: 0L
-                Comment(profileImageUrl=userProfil, postId = id, userId = userId, username = username, comment = content, timestamp = timestamp)
+    override fun fetchCommentsForPost(postId: String, onCommentsUpdated: (List<Comment>) -> Unit) {
+        // Set up a snapshot listener for the comments related to the postId
+        firestore.collection("comments")
+            .whereEqualTo("postId", postId)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e("Firestore", "Error fetching comments: $exception")
+                    onCommentsUpdated(emptyList()) // Return an empty list on error
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val comments = snapshot.documents.map { document ->
+                        val id = document.id
+                        val userId = document.getString("userId") ?: ""
+                        val username = document.getString("username") ?: "Unknown" // Changed to username
+                        val userProfil = document.getString("profileImageUrl") ?: "Unknown"
+                        val content = document.getString("comment") ?: ""
+                        val timestamp = document.getLong("timestamp") ?: 0L
+                        Comment(
+                            profileImageUrl = userProfil,
+                            postId = id,
+                            userId = userId,
+                            username = username,
+                            comment = content,
+                            timestamp = timestamp
+                        )
+                    }
+
+                    onCommentsUpdated(comments) // Call the callback with the fetched comments
+                } else {
+                    onCommentsUpdated(emptyList()) // Call the callback with an empty list if no comments found
+                }
             }
-        } catch (e: Exception) {
-            emptyList()
-        }
     }
+
 
 }

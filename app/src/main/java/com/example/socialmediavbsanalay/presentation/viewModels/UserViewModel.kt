@@ -1,9 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.viewModels
 
 import android.util.Log
-import android.widget.Button
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,15 +15,13 @@ import com.example.socialmediavbsanalay.domain.interactor.user.UserInteractor
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.domain.model.UserStories
-import com.google.android.gms.common.data.DataHolder
+import com.example.socialmediavbsanalay.presentation.viewModels.utils.SingleLiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 
 import javax.inject.Inject
@@ -54,8 +50,8 @@ class UserViewModel @Inject constructor(
     private val _usersListt = MutableLiveData<Result<List<User>>?>()
     val usersListt: LiveData<Result<List<User>>?> = _usersListt
 
-    private val _likeSuccess = MutableLiveData<Boolean>()
-    val likeSuccess: LiveData<Boolean> get() = _likeSuccess
+    private val _likeSuccess = SingleLiveData<Boolean>()
+    val likeSuccess: SingleLiveData<Boolean> get() = _likeSuccess
 
     private val _likeError = MutableLiveData<String>()
     val likeError: LiveData<String> get() = _likeError
@@ -313,10 +309,11 @@ class UserViewModel @Inject constructor(
     }
 
 
-    fun likePost(postId: String, userId: String) {
-        postInteractor.likePost(postId, userId,
+    fun likeOrUnLikePost(postId: String, userId: String, isLike: Boolean) {
+        postInteractor.likeOrUnlikePost(postId, userId, isLike,
             onSuccess = {
-                _likeSuccess.value = true  // Başarılı olduğunda UI'yı güncelle
+                // Başarılı olduğunda UI'yı güncelle
+                _likeSuccess.value = isLike
             },
             onFailure = { e ->
                 _likeError.value = e.message // Hata olduğunda UI'yı güncelle

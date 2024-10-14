@@ -1,4 +1,5 @@
 package com.example.socialmediavbsanalay.data.dataSourceImpl.post
+import android.media.tv.TableRequest
 import android.net.Uri
 import android.util.Log
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
@@ -8,6 +9,7 @@ import com.example.socialmediavbsanalay.data.repository.user.UserRepository
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
@@ -29,7 +31,7 @@ class PostDataSourceImpl @Inject constructor(
 
 
 
-    override suspend fun uploadPhoto(imageUri: Uri, userId: String) {
+    override suspend fun uploadPhoto(imageUri: Uri, userId: String): Result<Boolean> {
         try {
             val imageRef = firebaseStorage.reference.child("images/${UUID.randomUUID()}")
             imageRef.putFile(imageUri).await()
@@ -39,6 +41,7 @@ class PostDataSourceImpl @Inject constructor(
             // Kullanıcının adını Firestore'dan alın
             val user = createUserDataSource.getUserById(userId)
             val username = user.getOrNull()?.id ?: "Unknown" // Kullanıcı adını alın, yoksa "Unknown" döner
+            val userProfileImage = user.getOrNull()?.profileImageUrl
 
             // Firebase sunucu zamanını alın (Server Timestamp)
             val timestamp = FieldValue.serverTimestamp()
@@ -48,11 +51,13 @@ class PostDataSourceImpl @Inject constructor(
                 "imageUrl" to downloadUrl,
                 "username" to username, // Kullanıcı adını ekleyin
                 "userId" to userId,     // ID'yi de ekleyin
-                "timestamp" to timestamp // Zaman damgasını ekleyin
+                "timestamp" to timestamp ,// Zaman damgasını ekleyin,
+                "userProfileImage" to userProfileImage
             )
 
 
             postsCollection.add(postData).await()
+            return Result.success(true)
         } catch (e: Exception) {
             throw Exception("Resim yüklenirken hata oluştu: ${e.message}", e)
         }
@@ -61,56 +66,84 @@ class PostDataSourceImpl @Inject constructor(
     // Repository'de getPosts fonksiyonunu dinleyici ile güncelleyelim
     override suspend fun getPosts(followingList: List<String>, onPostsUpdated: (List<Post>) -> Unit) {
         if (followingList.isEmpty()) {
-            onPostsUpdated(emptyList()) // Takip edilen kullanıcı yoksa boş liste döndür
+            onPostsUpdated(emptyList()) // No followed users, return an empty list
             return
         }
 
-        // Tek sorguda takip edilen kullanıcıların postlarını al
+        // Fetch the posts of the followed users only once
         firestore.collection("posts")
             .whereIn("userId", followingList)
             .orderBy("timestamp", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
-                    onPostsUpdated(emptyList())  // Hata durumunda boş liste döndür
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null && !snapshot.isEmpty) {
+            .get() // Use get() to execute the query once
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.isEmpty) {
                     val posts = snapshot.documents.map { document ->
                         val imageUrl = document.getString("imageUrl") ?: ""
                         val userId = document.getString("userId") ?: ""
-
-                        // Firestore'dan Timestamp alın ve Date'e çevirin
+                        val userProfileImage = document.getString("userProfileImage")
+                        // Convert Firestore Timestamp to Date
                         val timestamp = document.getTimestamp("timestamp")?.toDate()
+                        val likesCount = document.getLong("likesCount") ?: 0L
+                        val commentsCount = document.getLong("commentsCount") ?: 0L
+                        val likedBy = document.get("likedBy") as? ArrayList<String> ?: arrayListOf()
 
-                        // Post nesnesini oluşturun ve timestamp'i Date olarak ekleyin
+                        // Create Post object and include timestamp as Date
                         Post(
                             id = document.id,
                             imageResId = imageUrl,
                             username = userId,
-                            user = null, // Eğer kullanıcı bilgisi yoksa null geçici olarak
-                            timestamp = timestamp
+                            user = null, // Temporarily null if no user info available
+                            timestamp = timestamp,
+                            userProfileImage = userProfileImage,
+                            likesCount = likesCount,
+                            likedBy = likedBy,
+                            commentsCount = commentsCount
                         )
                     }
 
-                    onPostsUpdated(posts)
+                    onPostsUpdated(posts) // Update with fetched posts
+                } else {
+                    onPostsUpdated(emptyList()) // Return empty list if no posts found
                 }
+            }
+            .addOnFailureListener { exception ->
+                onPostsUpdated(emptyList()) // Return empty list on error
             }
     }
 
 
 
-    override fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+
+    override fun likeOrUnlikePost(
+        postId: String,
+        userId: String,
+        isLike: Boolean,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         val postRef = firestore.collection("posts").document(postId)
 
-        // Firestore'da beğeni sayısını ve beğenen kullanıcıları güncelle
-        postRef.update("likes", FieldValue.increment(1), "likedBy", FieldValue.arrayUnion(userPreferences.getUser()?.id))
-            .addOnSuccessListener {
-                onSuccess()  // Başarılı olduğunda geri bildirim
+        if (isLike) {
+            // If isLike is true, increment likes count and add userId to the 'likedBy' array
+            postRef.update(
+                "likesCount", FieldValue.increment(1),
+                "likedBy", FieldValue.arrayUnion(userId)
+            ).addOnSuccessListener {
+                onSuccess()  // Call onSuccess when the user is added to 'likedBy' and likes count is incremented
+            }.addOnFailureListener { e ->
+                onFailure(e)  // Handle any errors
             }
-            .addOnFailureListener { e ->
-                onFailure(e)  // Hata olduğunda geri bildirim
+        } else {
+            // If isLike is false, decrement likes count and remove userId from the 'likedBy' array
+            postRef.update(
+                "likesCount", FieldValue.increment(-1),
+                "likedBy", FieldValue.arrayRemove(userId)
+            ).addOnSuccessListener {
+                onSuccess()  // Call onSuccess when the user is removed from 'likedBy' and likes count is decremented
+            }.addOnFailureListener { e ->
+                onFailure(e)  // Handle any errors
             }
+        }
     }
     override suspend fun fetchFollowedUsersPosts(followingList: List<String>): List<Post> {
         return try {

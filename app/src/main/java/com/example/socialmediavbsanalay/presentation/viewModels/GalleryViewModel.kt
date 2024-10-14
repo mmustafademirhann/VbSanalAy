@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
+import com.example.socialmediavbsanalay.data.repository.ApiResponse
 import com.example.socialmediavbsanalay.domain.interactor.CommentInteractor
 import com.example.socialmediavbsanalay.domain.interactor.authentication.AuthInteractor
 import com.example.socialmediavbsanalay.domain.interactor.gallery.GalleryInteractor
@@ -47,6 +48,9 @@ class GalleryViewModel @Inject constructor(
 
     private val _uploadStatus = SingleLiveData<String>()
     val uploadStatus: LiveData<String> get() = _uploadStatus
+
+    private val _postUploadStatus = SingleLiveData<ApiResponse<Boolean>>()
+    val postUploadStatus: SingleLiveData<ApiResponse<Boolean>> get() = _postUploadStatus
 
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> = _posts
@@ -108,9 +112,8 @@ class GalleryViewModel @Inject constructor(
         return commentInteractor.getComments(postId)
     }
     fun fetchComments(postId: String) {
-        viewModelScope.launch {
-            val commentList = commentInteractor.loadComments(postId)
-            _comments.value = commentList
+        commentInteractor.loadComments(postId) { updatedComments ->
+            _comments.value = updatedComments
         }
     }
 
@@ -126,7 +129,6 @@ class GalleryViewModel @Inject constructor(
     }
     init {
         currentUserFollowingList = userPreferences.getUser()?.following ?: listOf()
-        loadPosts() // Initialize posts LiveData when ViewModel is created
         fetchCurrentUserId()
     }
     //suspend fun fetchUserData(): User? {
@@ -343,13 +345,16 @@ class GalleryViewModel @Inject constructor(
             try {
                 val userId = getUserIdByEmail()
                 if (userId != null) {
-                    postInteractor.uploadPhoto(imageUri, userId)
-                    _uploadStatus.value = "Upload Successful"
+                    _postUploadStatus.value = ApiResponse.Loading()
+                    val result = postInteractor.uploadPhoto(imageUri, userId)
+                    if (result.isSuccess) {
+                        _postUploadStatus.value = ApiResponse.Success(true)
+                    }
                 } else {
-                    _uploadStatus.value = "User ID not found"
+                    _postUploadStatus.value = ApiResponse.Fail(java.lang.Exception("\"User ID not found\""))
                 }
             } catch (e: Exception) {
-                _uploadStatus.value = "Upload Failed: ${e.message}"
+                _postUploadStatus.value = ApiResponse.Fail(e)
             }
         }
     }

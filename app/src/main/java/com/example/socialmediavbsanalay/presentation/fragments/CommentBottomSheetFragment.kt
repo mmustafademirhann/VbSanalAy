@@ -16,8 +16,11 @@ import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.BottomSheetCommentBinding
 import com.example.socialmediavbsanalay.domain.model.Comment
+import com.example.socialmediavbsanalay.domain.model.Notification
+import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.presentation.adapters.CommentAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -32,6 +35,8 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
     private var _binding: BottomSheetCommentBinding? = null
     private val binding get() = _binding!!
     private val viewModel: GalleryViewModel by viewModels()
+    private val notificationViewModel: NotificationViewModel by viewModels()
+    private var comment: Comment? = null
     private lateinit var commentAdapter: CommentAdapter
 
     @Inject
@@ -49,6 +54,8 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val postId = arguments?.getString("postId") ?: return
+        val postOwner = arguments?.getString("postOwner")
+        val postImage = arguments?.getString("postImage")
 
         // Setup RecyclerView
         setupRecyclerView()
@@ -59,7 +66,26 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
         // Yorumları gözlemleyin
         viewModel.comments.observe(viewLifecycleOwner) { commentsList ->
             Log.d("CommentBottomSheet", "Loaded comments: $commentsList")
-            commentAdapter.submitList(commentsList)
+            val commentList = commentsList.sortedBy { it.timestamp }
+            commentAdapter.submitList(commentList) {
+                binding.commentsRecyclerView.scrollToPosition(commentsList.size - 1)
+            }
+        }
+
+        viewModel.addCommentStatus.observe(viewLifecycleOwner) {
+            if (it.isSuccess) {
+                notificationViewModel.addNotification(
+                    Notification(
+                        postOwner ?: "",
+                        comment?.profileImageUrl ?: "",
+                        comment?.userId ?: "",
+                        NotificationType.COMMENT.notificationType,
+                        postId,
+                        postImage ?: "",
+                        false
+                    )
+                )
+            }
         }
 
         // Send button click listener
@@ -67,7 +93,7 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
             val commentText = binding.editTextComment.text.toString().trim()
             if (commentText.isNotEmpty()) {
                 // Create new comment
-                val newComment = Comment(
+                comment = Comment(
                     commentId = UUID.randomUUID().toString(),
                     postId = postId,
                     userId = userPreferences.getUser()!!.id,
@@ -78,7 +104,9 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
                 )
 
                 // Yorum ekle
-                viewModel.addComment(newComment)
+                comment?.let {
+                    viewModel.addComment(it)
+                }
                 binding.editTextComment.text.clear()
             } else {
                 Toast.makeText(requireContext(), "Lütfen bir yorum girin.", Toast.LENGTH_SHORT).show()

@@ -17,7 +17,10 @@ class CommentRepositoryImpl @Inject constructor(private val commentDataSource: C
     override fun getComments(postId: String): Flow<List<Comment>> {
         return commentDataSource.getComments(postId) // Yorumları al
     }
-    override suspend fun getCommentsForPost(postId: String): List<Comment> {
-        return commentDataSource.fetchCommentsForPost(postId)
+    override fun getCommentsForPost(postId: String, onCommentsUpdated: (List<Comment>) -> Unit) {
+        commentDataSource.fetchCommentsForPost(postId) { comments ->
+            // Call the callback with the list of comments from the data source
+            onCommentsUpdated(comments)
+        }
     }
 }

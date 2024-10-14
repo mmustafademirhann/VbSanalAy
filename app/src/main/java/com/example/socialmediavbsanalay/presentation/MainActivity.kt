@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.socialmediavbsanalay.R
+import com.example.socialmediavbsanalay.data.repository.ApiResponse
 import com.example.socialmediavbsanalay.databinding.ActivityMainBinding
 import com.example.socialmediavbsanalay.presentation.fragments.MainPageFragment
 import com.example.socialmediavbsanalay.presentation.fragments.MessageFragment
@@ -120,6 +121,20 @@ class MainActivity : AppCompatActivity() {
 
             // Update UI with upload status or refresh the fragment view
             Toast.makeText(this, status, Toast.LENGTH_SHORT).show()
+        }
+        galleryViewModel.postUploadStatus.observe(this) {
+            if (it is ApiResponse.Success) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(this, "Upload Successful", Toast.LENGTH_SHORT).show()
+                galleryViewModel.loadPosts()
+            }
+            if (it is ApiResponse.Loading) {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            if (it is ApiResponse.Fail) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(this, it.e.message, Toast.LENGTH_SHORT).show()
+            }
         }
         clickEvents()
 

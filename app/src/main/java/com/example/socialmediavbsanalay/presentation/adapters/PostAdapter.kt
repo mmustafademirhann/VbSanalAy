@@ -18,46 +18,62 @@ import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 
 import javax.inject.Inject
 
-class PostAdapter @Inject constructor(
-    private val userViewModel: UserViewModel ,
-    private val onCommentClick: (String) -> Unit,// UserViewModel'i enjekte et
-    private val onLikeClick: (String, String) -> Unit
-
+class PostAdapter(
+    private val currentUserId: String,
+    private val onCommentClick: (String, String, String) -> Unit,
+    private val onLikeClick: (String, String, String) -> Unit,
+    private val onUnLikeClick: (String, String) -> Unit
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
-   // private val mockItem=Post("","","mock",null)
 
     private var posts: List<Post> = emptyList()
 
-
-    class PostViewHolder( val binding: PostForRecyclerBinding) :
+    inner class PostViewHolder( val binding: PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(post: Post, users: List<User>?,onCommentClick: (String) -> Unit,onLikeClick: (String, String) -> Unit) {
+        fun bind(post: Post) {
             binding.postUsername.text = post.username
             binding.postContent.text = "Nasıl ?"
-
-
-            // Find the correct user profile based on the post's username
-            val matchingUser = users?.find { user -> user.id == post.username }
-
-            if (matchingUser != null) {
-                // Load the user's profile image with Glide using circle crop
-                Glide.with(binding.root)
-                    .load(matchingUser.profileImageUrl) // URL of the user's profile image
-                    .circleCrop() // This will transform the image into a circular shape// Optional error image
-                    .into(binding.storyImageView) // Ensure `storyImageView` is correctly referenced
-            } else {
-                // Load a default profile image with circle crop
-                Glide.with(binding.root)
-                    .load(R.drawable.shin) // Default profile image
-                    .circleCrop() // Transform the image into a circular shape
-                    .into(binding.storyImageView)
-            }
+            // Load the user's profile image with Glide using circle crop
+            Glide.with(binding.root)
+                .load(post.userProfileImage)
+                .error(R.drawable.shin)// URL of the user's profile image
+                .circleCrop() // This will transform the image into a circular shape// Optional error image
+                .into(binding.storyImageView) // Ensure `storyImageView` is correctly referenced
             binding.commentImage.setOnClickListener {
-                onCommentClick(post.id) // Burada post'un ID'sini geçiriyoruz
+                onCommentClick(post.id, post.username, post.imageResId) // Burada post'un ID'sini geçiriyoruz
             }
-            binding.heartImageView.setOnClickListener {
-                onLikeClick(post.id, post.username) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
+            binding.likeCount.text = post.likesCount.toString()
+            binding.commentCount.text = post.commentsCount.toString()
+            if (post.likedBy.contains(currentUserId)) {
+                binding.unlikeImage.visibility = View.VISIBLE
+                binding.likeImage.visibility = View.GONE
+            } else {
+                binding.unlikeImage.visibility = View.GONE
+                binding.likeImage.visibility = View.VISIBLE
+            }
+            binding.likeImage.setOnClickListener {
+                post.likedBy.add(currentUserId)
+                post.likesCount++
+                binding.likeCount.text = (post.likesCount).toString()
+                binding.likeImage.visibility = View.GONE
+                binding.unlikeImage.visibility = View.VISIBLE
+                onLikeClick(
+                    post.id,
+                    post.username,
+                    post.imageResId
+                ) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
+            }
+
+            binding.unlikeImage.setOnClickListener {
+                post.likedBy.remove(currentUserId)
+                post.likesCount--
+                binding.likeCount.text = (post.likesCount).toString()
+                binding.likeImage.visibility = View.VISIBLE
+                binding.unlikeImage.visibility = View.GONE
+                onUnLikeClick(
+                    post.id,
+                    post.username
+                ) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
             }
             // Load the post image using Glide
 
@@ -100,13 +116,6 @@ class PostAdapter @Inject constructor(
 
 
     }
-    companion object {
-        fun from(parent: ViewGroup): PostViewHolder {
-            val layoutInflater = LayoutInflater.from(parent.context)
-            val binding = PostForRecyclerBinding.inflate(layoutInflater, parent, false)
-            return PostViewHolder(binding)
-        }
-    }
 
     fun setPosts(newPosts: List<Post>) {
         posts = newPosts//+mockItem
@@ -124,16 +133,7 @@ class PostAdapter @Inject constructor(
         val post = posts[position]
 
         // Kullanıcı bilgilerini al ve gözlemle
-        userViewModel.getAllUsers() // Öncelikle kullanıcıyı çek
-
-
-
-        userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
-            val profileImageUrl =
-                result?.getOrNull() // Keskulla profil resmini al
-            holder.bind(post, profileImageUrl,onCommentClick,onLikeClick) // Post ve profil resmini bağla
-        }
-
+        holder.bind(post) // Post ve profil resmini bağla
 
         Glide.with(holder.itemView.context)
             .load(post.imageResId)

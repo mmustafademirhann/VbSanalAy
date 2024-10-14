@@ -14,11 +14,11 @@ class PostInteractor @Inject constructor(
     ) {
         postRepository.getPosts(followingList, onPostsUpdated) // Repository'den veri al ve geri döndür
     }
-    suspend fun uploadPhoto(imageUri: Uri,userId: String): Unit {
+    suspend fun uploadPhoto(imageUri: Uri,userId: String): Result<Boolean> {
         return postRepository.uploadPhoto(imageUri,userId)
     }
-    fun likePost(postId: String, userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit){
-        return postRepository.likePost(postId,userId,onSuccess,onFailure)
+    fun likeOrUnlikePost(postId: String, userId: String, isLike: Boolean, onSuccess: () -> Unit, onFailure: (Exception) -> Unit){
+        return postRepository.likeOrUnlikePost(postId,userId, isLike, onSuccess,onFailure)
     }
     suspend fun executePost(followingList: List<String>): List<Post> {
         // Repository'den takip edilen kullanıcıların postlarını getir
