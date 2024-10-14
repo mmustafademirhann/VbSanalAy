@@ -11,20 +11,25 @@ import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.CommentItemBinding
 
 import com.example.socialmediavbsanalay.domain.model.Comment
+import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import javax.inject.Inject
 
-class CommentAdapter@Inject constructor() : ListAdapter<Comment, CommentAdapter.CommentViewHolder>(CommentDiffCallback()) {
+class CommentAdapter@Inject constructor(
+    private val userViewModel: UserViewModel,
+) : ListAdapter<Comment, CommentAdapter.CommentViewHolder>(CommentDiffCallback()) {
 
 
     class CommentViewHolder(private val binding: CommentItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(comment: Comment) {
+        fun bind(comment: Comment,users: List<User>?) {
+            val matchingUser = users?.find { user -> user.id == comment.userId }
             binding.userNameTextView.text= comment.username
             binding.commentTextView.text = comment.comment
             //binding.commmentUsername.text = comment.username
 
             // Profil resmini yükle
             Glide.with(binding.root.context)
-                .load(comment.profileImageUrl)
+                .load(matchingUser?.profileImageUrl)
                 .error(R.drawable.addstory)
                 .circleCrop()
                 .into(binding.profileImageView)
@@ -38,7 +43,14 @@ class CommentAdapter@Inject constructor() : ListAdapter<Comment, CommentAdapter.
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = getItem(position)
-        holder.bind(comment)
+        userViewModel.getAllUsers() // Öncelikle kullanıcıyı çek
+
+        userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
+            val userList =
+                result?.getOrNull() // Keskulla profil resmini al
+            holder.bind(comment, userList) // Post ve profil resmini bağla
+        }
+        //holder.bind(comment)
     }
 
     class CommentDiffCallback : DiffUtil.ItemCallback<Comment>() {

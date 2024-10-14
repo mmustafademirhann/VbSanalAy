@@ -13,6 +13,7 @@ import com.example.socialmediavbsanalay.data.repository.ApiResponse
 import com.example.socialmediavbsanalay.databinding.FragmentNotificationBarBinding
 import com.example.socialmediavbsanalay.presentation.adapters.NotificationsAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ class NotificationBarFragment : Fragment() {
 
     private var _binding: FragmentNotificationBarBinding? = null
     private val binding get() = _binding!!
+    private val userViewModel: UserViewModel by viewModels()
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -40,7 +42,7 @@ class NotificationBarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        notificationsAdapter = NotificationsAdapter()
+        notificationsAdapter = NotificationsAdapter(userViewModel)
         binding.rvNotifications.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = notificationsAdapter

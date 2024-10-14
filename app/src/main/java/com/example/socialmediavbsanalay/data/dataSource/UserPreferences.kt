@@ -17,7 +17,7 @@ class UserPreferences @Inject constructor(
 
     private val gson = Gson()
 
-    // Save user object to SharedPreferences
+    // Save user object to SharedPreferences (Login işlemi)
     fun saveUser(user: User) {
         val userJson = gson.toJson(user)
         sharedPreferences.edit().putString("user", userJson).apply()
@@ -29,8 +29,18 @@ class UserPreferences @Inject constructor(
         return userJson?.let { gson.fromJson(it, User::class.java) }
     }
 
-    //TODO user informations will be deleted after logout
+    // Delete user information from SharedPreferences (Logout işlemi)
     fun deleteUser() {
         sharedPreferences.edit().clear().apply()
+    }
+
+    // Login: Save the user information after successful authentication
+    fun login(user: User) {
+        saveUser(user)  // User bilgilerini kaydeder
+    }
+
+    // Check if user is logged in (optional, useful for checking user's status)
+    fun isLoggedIn(): Boolean {
+        return getUser() != null
     }
 }

@@ -20,6 +20,7 @@ import com.example.socialmediavbsanalay.databinding.FragmentUserProfileBinding
 import com.example.socialmediavbsanalay.domain.model.Notification
 import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.domain.model.Post
+import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.presentation.OnItemClickListener
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserPostAdapter
@@ -211,7 +212,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                     .error(R.drawable.rainy_minecraft) // Hata durumunda gösterilecek resim
                     .into(binding.mainBackgroundImage)
                 userViewModel.loadFollowerCount(targetUserId)
-                userViewModel.loadFollowingCount(currentUserId)
+                userViewModel.loadFollowingCount(targetUserId)
                 userViewModel.checkIfUserIsFollowing(currentUserId, targetUserId)
 
                 // Takipçi sayısını gözlemle
@@ -232,18 +233,28 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
                 // Takip butonuna tıklama işlemi
                 binding.followButton.setOnClickListener {
-                    userViewModel.toggleFollowStatus(currentUserId, targetUserId) // Takip etme işlemi
-                    userViewModel.loadFollowerCount(targetUserId) // Takipçi sayısını güncelle
-                    userViewModel.loadFollowingCount(currentUserId) // Takip edilen sayısını güncelle
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        try {
+                            // Toggle follow işleminin tamamlanmasını bekleyelim
+                            userViewModel.toggleFollowStatus(currentUserId, targetUserId)
 
-                    // Takip etme işleminin başarılı olduğundan emin olduktan sonra postları yükle
-                    userViewModel.isFollowing.observe(viewLifecycleOwner) { isFollowing ->
-                        if (isFollowing != null) {
-                            if (isFollowing) {
-                                // Eğer takip ediyorsa, postları yükle
-                                galleryViewModel.refreshPostsAfterFollow()
-                                galleryViewModel.loadPosts()
+                            // Takipçi sayısını ve takip edilen sayısını güncelleyelim
+                            userViewModel.loadFollowerCount(targetUserId)
+                            userViewModel.loadFollowingCount(targetUserId)
+
+                            // Takip işlemi başarılı olduktan sonra postları yükleyelim
+                            // Burada `isFollowing`'i gözlemleyip doğru durumu elde edelim
+                            userViewModel.isFollowing.observe(viewLifecycleOwner) { isFollowing ->
+                                if (isFollowing != null && isFollowing) {
+                                    // Eğer kullanıcı takip ediyorsa, postları yükle
+                                    galleryViewModel.loadPosts()
+                                    galleryViewModel.refreshPostsAfterFollow()
+                                    galleryViewModel.loadPosts()
+                                }
                             }
+                        } catch (e: Exception) {
+                            // Hata durumunu ele alabiliriz
+                            Log.e("FollowError", "Takip işlemi sırasında bir hata oluştu", e)
                         }
                     }
                 }
@@ -315,7 +326,9 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
             }
             galleryViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+
                 user?.let {
+                    userPreferences.login(user)
                     // Kullanıcı bulundu, UI'yi güncelle
                     binding.usernameM.text = userPreferences.getUser()!!.id
                     binding.userHandle.text = "@${userPreferences.getUser()!!.name}"
