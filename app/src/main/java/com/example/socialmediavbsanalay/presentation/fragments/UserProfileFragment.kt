@@ -281,7 +281,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        galleryViewModel.loadPosts()
 
 
         val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false

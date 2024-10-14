@@ -134,6 +134,7 @@ class MainPageFragment : Fragment() {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
         postAdapter = PostAdapter(
             userPreferences.getUser()?.id ?: "",
+            userViewModel,
             onCommentClick = { postId, postOwner, postImage ->
                 showCommentBottomSheet(postId, postOwner, postImage) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
             },
