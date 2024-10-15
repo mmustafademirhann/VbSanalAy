@@ -21,6 +21,7 @@ import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.presentation.adapters.CommentAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -38,6 +39,8 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
     private val notificationViewModel: NotificationViewModel by viewModels()
     private var comment: Comment? = null
     private lateinit var commentAdapter: CommentAdapter
+    private val userViewModel: UserViewModel by viewModels()
+
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -131,7 +134,7 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupRecyclerView() {
-        commentAdapter = CommentAdapter() // Initialize adapter without arguments
+        commentAdapter = CommentAdapter(userViewModel) // Initialize adapter without arguments
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.commentsRecyclerView.adapter = commentAdapter
     }

@@ -10,8 +10,12 @@ import com.example.socialmediavbsanalay.databinding.FragmentNotificationBarBindi
 import com.example.socialmediavbsanalay.databinding.NotificationItemBinding
 import com.example.socialmediavbsanalay.domain.model.Notification
 import com.example.socialmediavbsanalay.domain.model.NotificationType
+import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 
-class NotificationsAdapter(): RecyclerView.Adapter<NotificationsAdapter.NotificationsViewHolder>() {
+class NotificationsAdapter(
+    private val userViewModel: UserViewModel,
+): RecyclerView.Adapter<NotificationsAdapter.NotificationsViewHolder>() {
 
     private var notifications: List<Notification> = emptyList()
 
@@ -21,9 +25,11 @@ class NotificationsAdapter(): RecyclerView.Adapter<NotificationsAdapter.Notifica
     }
 
     inner class NotificationsViewHolder(val binding: NotificationItemBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(notification: Notification) {
+
+        fun bind(notification: Notification,users: List<User>?) {
+            val matchingUser = users?.find { user -> user.id == notification.username }
             Glide.with(binding.root)
-                .load(notification.userImage)
+                .load(matchingUser?.profileImageUrl)
                 .error(R.drawable.shin)// URL of the user's profile image
                 .circleCrop() // This will transform the image into a circular shape// Optional error image
                 .into(binding.ivUserImage) // Ensure `storyImageView` is correctly referenced
@@ -62,6 +68,13 @@ class NotificationsAdapter(): RecyclerView.Adapter<NotificationsAdapter.Notifica
 
     override fun onBindViewHolder(holder: NotificationsViewHolder, position: Int) {
         val notification = notifications[position]
-        holder.bind(notification)
+        userViewModel.getAllUsers() // Öncelikle kullanıcıyı çek
+
+        userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
+            val userList =
+                result?.getOrNull() // Keskulla profil resmini al
+            holder.bind(notification, userList) // Post ve profil resmini bağla
+        }
+        //holder.bind(notification)
     }
 }

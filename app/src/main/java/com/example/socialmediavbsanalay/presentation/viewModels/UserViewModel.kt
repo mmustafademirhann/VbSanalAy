@@ -180,32 +180,33 @@ class UserViewModel @Inject constructor(
 
 
     // Takip durumunu değiştirme (takip etme/takipten çıkma)
-    fun toggleFollowStatus(currentUserId: String, targetUserId: String) {
-        viewModelScope.launch {
-            val isCurrentlyFollowing = isFollowing.value ?: false
-            if (isCurrentlyFollowing) {
-                // Takipten çıkma işlemi
-                val success = userInteractor.unfollow(currentUserId, targetUserId)
+    suspend fun toggleFollowStatus(currentUserId: String, targetUserId: String) {
+        val isCurrentlyFollowing = isFollowing.value ?: false
+        if (isCurrentlyFollowing) {
+            // Takipten çıkma işlemi
+            val success = userInteractor.unfollow(currentUserId, targetUserId)
 
-                if (success) {
-                    // Takipçi sayısını güncelleme
-                    userInteractor.updateFollowerCount(targetUserId, false)
-                    _isFollowing.value = false
-                }
-            } else {
-                // Takip etme işlemi
-                val success = userInteractor.follow(currentUserId, targetUserId)
-
-                if (success) {
-                    // Takipçi sayısını güncelleme
-                    userInteractor.updateFollowerCount(targetUserId, true)
-                    _isFollowing.value = true
-                }
+            if (success) {
+                // Takipçi sayısını güncelleme
+                userInteractor.updateFollowerCount(targetUserId, false)
+                _isFollowing.value = false
             }
-            // Takipçi sayısını tekrar yükle
-            loadFollowerCount(targetUserId)
+        } else {
+            // Takip etme işlemi
+            val success = userInteractor.follow(currentUserId, targetUserId)
+
+            if (success) {
+                // Takipçi sayısını güncelleme
+                userInteractor.updateFollowerCount(targetUserId, true)
+                _isFollowing.value = true
+            }
         }
+        // Takipçi sayısını tekrar yükle
+        loadFollowerCount(targetUserId)
+        //loadFollowerCount(currentUserId)
     }
+    // Logout işlemi simülasyonu
+
 
 
 

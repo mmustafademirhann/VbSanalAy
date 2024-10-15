@@ -11,8 +11,10 @@ import com.bumptech.glide.Glide
 import com.example.socialmediavbsanalay.R
 import com.example.socialmediavbsanalay.databinding.StoryTemplateBinding
 import com.example.socialmediavbsanalay.domain.model.Story
+import com.example.socialmediavbsanalay.domain.model.User
 import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 class StoryAdapter(
     private var userStories: ArrayList<UserStories>,
     private val currentUser: String, // Şu anki kullanıcının adı
+    private val userViewModel: UserViewModel,
     private val onStoryClick: (isUploadOperation: Boolean, userStories: UserStories?, adapterPosition: Int, storyPosition: Int?) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -39,15 +42,18 @@ class StoryAdapter(
 
     inner class CurrentUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(userStories: UserStories) {
+        fun bind(userStories: UserStories,users: List<User>?) {
+            val matchingUser = users?.find { user -> user.id == userStories.ownerUser }
             var isSeenAll = true
             CoroutineScope(Dispatchers.Main).launch {
                 binding.storyUsername.text =
                     userStories.ownerUser // Kullanıcı adı ekrana yansıtılır
-                Glide.with(binding.storyImageView.context)
-                    .load(userStories.ownerUserProfileImage)
-                    .circleCrop()
-                    .into(binding.storyImageView)
+                if (matchingUser != null) {
+                    Glide.with(binding.storyImageView.context)
+                        .load(matchingUser.profileImageUrl)
+                        .circleCrop()
+                        .into(binding.storyImageView)
+                }
                 binding.storyAdder.visibility = View.VISIBLE
                 if (userStories.stories.isEmpty()) {
                     binding.flStory.background = AppCompatResources.getDrawable(binding.root.context, R.drawable.elipseforstory)
@@ -89,12 +95,15 @@ class StoryAdapter(
 
     inner class OtherUserViewHolder(private val binding: StoryTemplateBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(userStories: UserStories) {
+        fun bind(userStories: UserStories,users: List<User>?) {
+            val matchingUser = users?.find { user -> user.id == userStories.ownerUser }
             binding.storyUsername.text = userStories.ownerUser // Hikayeyi paylaşan kullanıcı adı
-            Glide.with(binding.storyImageView.context)
-                .load(userStories.ownerUserProfileImage)
-                .circleCrop()
-                .into(binding.storyImageView)
+            if (matchingUser != null) {
+                Glide.with(binding.storyImageView.context)
+                    .load(matchingUser.profileImageUrl)
+                    .circleCrop()
+                    .into(binding.storyImageView)
+            }
 
             var isSeenAll = true
             userStories.stories.forEach {
@@ -147,10 +156,27 @@ class StoryAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val userStory = userStories[position] // stories, diğer kullanıcı hikayelerini içeren liste
+        userViewModel.getAllUsers()
         if (holder.itemViewType == VIEW_TYPE_CURRENT_USER) { // İlk pozisyon giriş yapan kullanıcının hikayesidir
-            (holder as CurrentUserViewHolder).bind(userStory)
+            // Öncelikle kullanıcıyı çek
+
+            userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
+                val userList =
+                    result?.getOrNull() // Keskulla profil resmini al
+                (holder as CurrentUserViewHolder).bind(userStory,userList)
+               // holder.bind(post, userList) // Post ve profil resmini bağla
+            }
+
+
         } else { // Diğer kullanıcıların hikayeleri
-            (holder as OtherUserViewHolder).bind(userStory)
+            userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
+                val userList =
+                    result?.getOrNull() // Keskulla profil resmini al
+                (holder as OtherUserViewHolder).bind(userStory,userList)
+                //(holder as CurrentUserViewHolder).bind(userStory,userList)
+                // holder.bind(post, userList) // Post ve profil resmini bağla
+            }
+
         }
     }
 

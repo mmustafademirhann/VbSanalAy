@@ -194,6 +194,7 @@ class MainPageFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 galleryViewModel.refreshPostsAfterFollow()
                 binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdurun
+                galleryViewModel.loadPosts()
             }
         }
 
@@ -337,6 +338,7 @@ class MainPageFragment : Fragment() {
                 storyAdapter = StoryAdapter(
                     userStories = userArrayList as ArrayList<UserStories>,
                     currentUser = currentUserId,
+                    userViewModel,
                     onStoryClick = { isUploadOperation, userStories, adapterPosition, storyPosition ->
                         onStoryClicked(
                             isUploadOperation,

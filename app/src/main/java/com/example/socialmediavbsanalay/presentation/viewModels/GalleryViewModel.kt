@@ -271,6 +271,7 @@ class GalleryViewModel @Inject constructor(
                     hasFetchedPosts = true
                 } catch (e: Exception) {
                     _posts.value = emptyList() // Hata durumunda boş liste döner
+                    loadPosts()
                 }
             }
 
