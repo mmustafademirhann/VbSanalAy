@@ -25,11 +25,12 @@ class PostDetailFragment : Fragment() {
 
     companion object {
         private const val ARG_USER_ID = "userId"
-
-        fun newInstance(userId: String): PostDetailFragment {
+        private const val ARG_POST_ID = "postId"
+        fun newInstance(userId: String,postId:String): PostDetailFragment {
             return PostDetailFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_USER_ID, userId)
+                    putString(ARG_POST_ID, postId)
                 }
             }
         }
@@ -45,15 +46,29 @@ class PostDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val userId = arguments?.getString(ARG_USER_ID) ?: ""
+        val postId = arguments?.getString(ARG_POST_ID) ?: ""
         // Adapter'ı başlat
-        /////////////////postAdapter = PostAdapter(userViewModel, onCommentClick = )
+        postAdapter = PostAdapter(
+            currentUserId = userId, // Assuming you get current userId from somewhere
+            userViewModel = userViewModel,
+            onCommentClick = { postId, commentId, userId ->
+                // Handle comment click: you now have postId, commentId, and userId
+            },
+            onLikeClick = { postId, userId, likeType ->
+                // Handle like click: postId, userId, and likeType
+            },
+            onUnLikeClick = { postId, userId ->
+                // Handle un-like click: postId and userId
+            }
+        )
 
         // RecyclerView ayarlarını yap
         binding.postsRecyclerViewForDetails.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = postAdapter
         }
+
 
         // ViewModel'deki postları gözlemle
         galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->

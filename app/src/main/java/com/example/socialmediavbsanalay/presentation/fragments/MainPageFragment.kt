@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.repository.ApiResponse
@@ -33,7 +35,6 @@ import com.example.socialmediavbsanalay.presentation.story.StoryActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
-import com.google.android.gms.common.data.DataHolder
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.protobuf.Api
@@ -58,6 +59,7 @@ class MainPageFragment : Fragment() {
     private var likedPostId = ""
     private var likedPostUserId = ""
     private var likedPostImage = ""
+    private lateinit var textNoPostsMessage: TextView
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -164,6 +166,7 @@ class MainPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         (activity as MainActivity).showBottomBar()
         binding.progressBar.visibility = View.VISIBLE
         galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
@@ -198,7 +201,19 @@ class MainPageFragment : Fragment() {
             }
         }
 
+        textNoPostsMessage = view.findViewById(R.id.textNoPostsMessage)
+
+        // Posts'u yükleyelim
         galleryViewModel.loadPosts()
+
+        // noPostsMessage LiveData'yı gözlemle
+        galleryViewModel.noPostsMessage.observe(viewLifecycleOwner, Observer { show ->
+            if (show) {
+                textNoPostsMessage.visibility = View.VISIBLE // Mesajı göster
+            } else {
+                textNoPostsMessage.visibility = View.GONE // Mesajı gizle
+            }
+        })
 
         requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {

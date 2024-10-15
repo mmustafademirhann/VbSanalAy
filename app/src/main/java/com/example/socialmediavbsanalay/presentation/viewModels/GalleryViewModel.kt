@@ -257,24 +257,29 @@ class GalleryViewModel @Inject constructor(
     }
 
 
-
+    private val _noPostsMessage = MutableLiveData<Boolean>()
+    val noPostsMessage: LiveData<Boolean> get() = _noPostsMessage
     fun loadPosts() {
+        viewModelScope.launch {
+            try {
+                val followingList = userPreferences.getUser()?.following ?: listOf()
 
-            viewModelScope.launch {
-                try {
-                    val followingList = userPreferences.getUser()?.following ?: listOf()
-
-                    // Interactor'dan gelen postları dinle
-                    postInteractor.getPosts(followingList) { posts ->
+                // Interactor'dan gelen postları dinle
+                postInteractor.getPosts(followingList) { posts ->
+                    if (posts.isEmpty()) {
+                        _noPostsMessage.value = true // Postlar boşsa mesajı göster
+                    } else {
                         _posts.value = posts
+                        _noPostsMessage.value = false // Postlar var, mesajı gizle
                     }
-                    hasFetchedPosts = true
-                } catch (e: Exception) {
-                    _posts.value = emptyList() // Hata durumunda boş liste döner
-                    loadPosts()
                 }
+                hasFetchedPosts = true
+            } catch (e: Exception) {
+                _posts.value = emptyList() // Hata durumunda boş liste döner
+                _noPostsMessage.value = true // Hata durumunda da mesajı göster
+                loadPosts()
             }
-
+        }
     }
     fun refreshPostsAfterFollow() {
         viewModelScope.launch {

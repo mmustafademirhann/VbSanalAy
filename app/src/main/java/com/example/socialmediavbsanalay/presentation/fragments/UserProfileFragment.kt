@@ -123,6 +123,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             val fragment = PostDetailFragment()
             val args = Bundle().apply {
                 putString(ARG_USER_ID, userId)
+
             }
             fragment.arguments = args
             return fragment
@@ -430,9 +431,10 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         } else {
             galleryViewModel.IDGET
         }
+        val postId = post.id
 
         // Create the PostDetailFragment with the post
-        postDetailFragment = PostDetailFragment.newInstance(userId)
+        postDetailFragment = PostDetailFragment.newInstance(userId,postId)
 
         // Start the fragment transaction
         parentFragmentManager.beginTransaction()
