@@ -1,5 +1,8 @@
 package com.example.socialmediavbsanalay.presentation.adapters
 
+import android.annotation.SuppressLint
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -23,12 +26,14 @@ class PostAdapter(
     private val userViewModel: UserViewModel,
     private val onCommentClick: (String, String, String) -> Unit,
     private val onLikeClick: (String, String, String) -> Unit,
-    private val onUnLikeClick: (String, String) -> Unit
+    private val onUnLikeClick: (String, String) -> Unit,
+    private val onUsernameClick: (String) -> Unit
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     private var posts: List<Post> = emptyList()
 
-    inner class PostViewHolder( val binding: PostForRecyclerBinding) :
+    @SuppressLint("ClickableViewAccessibility")
+    inner class PostViewHolder(val binding: PostForRecyclerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(post: Post, users: List<User>?) {
@@ -62,45 +67,114 @@ class PostAdapter(
                 binding.likeImage.visibility = View.VISIBLE
             }
             binding.likeImage.setOnClickListener {
-                post.likedBy.add(currentUserId)
-                post.likesCount++
-                binding.likeCount.text = (post.likesCount).toString()
-                binding.likeImage.visibility = View.GONE
-                binding.unlikeImage.visibility = View.VISIBLE
-                onLikeClick(
-                    post.id,
-                    post.username,
-                    post.imageResId
-                ) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
-            }
+                // Kullanıcı daha önce beğenmiş mi kontrol et
+                if (!post.likedBy.contains(currentUserId)) {
+                    // Kullanıcı daha önce beğenmemişse, işlemi gerçekleştirelim
+                    post.likedBy.add(currentUserId)
+                    post.likesCount++
 
+                    // Görünümde beğenme durumu güncelleniyor
+                    binding.likeCount.text = post.likesCount.toString()
+                    binding.likeImage.visibility = View.GONE
+                    binding.unlikeImage.visibility = View.VISIBLE
+
+                    // Veritabanına işlemi kaydedelim (Firestore'a da kaydedelim)
+                    userViewModel.likeOrUnLikePost(post.id, currentUserId, true)
+
+                    // Adapter'ı güncelle
+                    val position = getPositionForPost(post.id)
+                    if (position != -1) {
+                        notifyItemChanged(position)
+                    }
+                } else {
+                    // Eğer kullanıcı daha önce beğenmişse, beğenme işlemi yapılmasın
+                    //Toast.makeText(requireContext(), "Bu postu zaten beğendiniz!", Toast.LENGTH_SHORT).show()
+                }
+            }
             binding.unlikeImage.setOnClickListener {
+                // Kullanıcı beğeniyi kaldırmak istiyor
                 post.likedBy.remove(currentUserId)
                 post.likesCount--
-                binding.likeCount.text = (post.likesCount).toString()
+
+                // Görünümde beğenme durumu güncelleniyor
+                binding.likeCount.text = post.likesCount.toString()
                 binding.likeImage.visibility = View.VISIBLE
                 binding.unlikeImage.visibility = View.GONE
-                onUnLikeClick(
-                    post.id,
-                    post.username
-                ) // Burada post'un ID'sini ve kullanıcı adını geçiriyoruz
+
+                // Veritabanına işlemi kaydedelim (Firestore'dan da kaldıralım)
+                userViewModel.likeOrUnLikePost(post.id, currentUserId, false)
+
+                // Adapter'ı güncelle
+                val position = getPositionForPost(post.id)
+                if (position != -1) {
+                    notifyItemChanged(position)
+                }
+            }
+
+            binding.postUsername.setOnClickListener{
+                onUsernameClick(post.username)
             }
             // Load the post image using Glide
 
         }
+        init {
+            binding.root.setOnTouchListener { v, event ->
+                gestureDetector.onTouchEvent(event)
+                v.performClick() // Tıklama olayı için performClick çağır
+                true // Olayın doğru şekilde işlenmesi için true döndür
+            }
+        }
         private val gestureDetector = GestureDetector(binding.root.context, object : GestureDetector.SimpleOnGestureListener() {
+            private var lastTapTime = 0L // Son tıklama zamanını saklamak için bir değişken
+
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                Log.d("PostAdapter", "Double tap detected")
-                showHeartAnimation() // Kalp animasyonunu göster
+                val currentTime = System.currentTimeMillis()
+
+                // Eğer son tıklamadan 500 ms geçmemişse, işlemi iptal et
+                if (currentTime - lastTapTime < 500) {
+                    Log.d("PostAdapter", "Çok hızlı tıklama tespit edildi. İşlem iptal.")
+                    return false
+                }
+
+                lastTapTime = currentTime // Yeni tıklama zamanını güncelle
+
+                // Kalp animasyonunu başlat
+                showHeartAnimation()
+
+                // Animasyon bitene kadar bekle
+                Handler(Looper.getMainLooper()).postDelayed({
+                    // Geçerli adapterPosition'ı kontrol et
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val post = posts[position]
+
+                        // Eğer post daha önce beğenilmemişse beğenme işlemini başlat
+                        if (!post.likedBy.contains(currentUserId)) {
+                            // Kullanıcı beğenme işlemi yapmamışsa:
+                            post.likedBy.add(currentUserId) // Kullanıcıyı likedBy listesine ekle
+                            post.likesCount++ // Beğeni sayısını artır
+
+                            // Görünümde (UI) beğeniyi güncelle
+                            binding.likeCount.text = post.likesCount.toString()
+                            binding.likeImage.visibility = View.GONE
+                            binding.unlikeImage.visibility = View.VISIBLE
+
+                            // Beğenme işlemi veritabanına kaydedilsin (FireStore veya benzeri)
+                            userViewModel.likeOrUnLikePost(post.id, currentUserId, true)
+
+                            // Adapter'ı güncelleyerek doğru postu yeniden çiz
+                            notifyItemChanged(position)
+                        }
+                    }
+                }, 500) // Animasyon süresi (500ms)
+
                 return true
             }
         })
 
-        init {
-            binding.root.setOnTouchListener { _, event ->
-                gestureDetector.onTouchEvent(event)
-                true // Olayın tüketilmesi için true döndür
-            }
+
+        fun getPositionForPost(postId: String): Int {
+            return posts.indexOfFirst { it.id == postId }  // Post id'sine göre pozisyonu bulur
         }
 
 

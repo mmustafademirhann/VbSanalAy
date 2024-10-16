@@ -13,7 +13,7 @@ interface UserDataSource {
     suspend fun updateUserProfileImage(userId: String, imageUrl: String)
     suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String)
     suspend fun updateBacgroundByEmail(email: String, imageUrl: String)
-    suspend fun getUsersWithSharedStories(): List<User>
+    suspend fun getUsersWithSharedStories(followingList: List<String>): List<User>
     suspend fun followUser(currentUserId: String, targetUserId: String): Boolean
     suspend fun unfollowUser(currentUserId: String, targetUserId: String): Boolean
 

@@ -13,7 +13,7 @@ interface UserRepository {
     suspend fun updateUserProfileImage(userId: String, imageUrl: String): Result<Unit>
     suspend fun updateUserProfileImageByEmail(email: String, imageUrl: String)
     suspend fun updateBacgroundByEmail(email: String, imageUrl: String)
-    suspend fun fetchUsersWithSharedStories(): List<User>
+    suspend fun fetchUsersWithSharedStories(followingList: List<String>): List<User>
     suspend fun followUser(currentUserId: String, targetUserId: String): Boolean
     suspend fun unfollowUser(currentUserId: String, targetUserId: String): Boolean
     suspend fun isUserFollowing(currentUserId: String, targetUserId: String): Boolean

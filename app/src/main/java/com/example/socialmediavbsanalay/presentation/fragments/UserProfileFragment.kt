@@ -83,10 +83,21 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
         // Initialize UserAdapter with onItemClick lambda
         userAdapter = UserAdapter { userId ->
-            // Handle item click, e.g., show a Toast or navigate to user profile
-            Toast.makeText(context, "Clicked user: $userId", Toast.LENGTH_SHORT).show()
-            // Alternatively, navigate to user profile
-            // navigateToUserProfile(userId)
+            if (userId == userPreferences.getUser()!!.id) {
+                // Eğer userId eşitse, yeni fragment'a is_from_search parametresi ile false geç
+                val userDetailFragment = UserProfileFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_USER_ID, userId)  // userId'yi gönder
+                        putBoolean(ARG_IS_FROM_SEARCH, false)  // is_from_search'i false yap
+                    }
+                }
+
+                // Fragment'e geçiş yap
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainerView, userDetailFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
         // Initialize RecyclerView and Adapter
@@ -100,7 +111,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         lifecycleScope.launch {
             userViewModel.users.collect { userList ->
                 userAdapter.updateUsers(userList)
-                x= userPreferences.getUser()!!.id
+
             }
         }
 
@@ -311,7 +322,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         }
         else {
             // Fragment argümanlarından userId'yi al
-            userId = arguments?.getString("userId") ?: ""
+
+            userId=arguments?.getString("userId") ?: userPreferences.getUser()!!.id
 
             // ViewModel'den userId'yi çek
             ownerUser = x
@@ -429,7 +441,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             // Assuming userId is defined in your UserProfileFragment
             userId
         } else {
-            galleryViewModel.IDGET
+           userId
         }
         val postId = post.id
 

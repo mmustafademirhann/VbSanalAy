@@ -216,19 +216,40 @@ class UserViewModel @Inject constructor(
     private val _uploadStoryLiveData = MutableLiveData<ApiResponse<Boolean>>()
 
     val uploadStoryLiveData: LiveData<ApiResponse<Boolean>> get() = _uploadStoryLiveData
-
     fun loadUsersWithStories() {
         viewModelScope.launch {
-            val usersList = userInteractor.getUsersWithStories()
-            _usersWithStories.value = usersList
+            val followingList = userPreferences.getUser()?.following ?: listOf()
+
+            if (followingList.isEmpty()) {
+                Log.d("loadUsersWithStories", "Kullanıcı hiç kimseyi takip etmiyor.")
+                _usersWithStories.value = emptyList() // Boş liste döndür
+                return@launch
+            }
+
+            try {
+                val usersList = userInteractor.getUsersWithStories(followingList)
+                Log.d("UsersWithStories", "Kullanıcılar: $usersList")
+
+                if (usersList.isNotEmpty()) {
+                    _usersWithStories.value = usersList
+                } else {
+                    Log.d("UsersWithStories", "Takip edilen kullanıcıların hiçbiri hikaye paylaşmamış.")
+                    _usersWithStories.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("loadUsersWithStories", "Hata: ${e.message}")
+                _usersWithStories.value = emptyList()
+            }
         }
     }
+
 
     fun fetchUserStories() {
         viewModelScope.launch {
             _userStories.value = ApiResponse.Loading()
             try {
-                val stories = getUserStoriesUseCase()
+                val followingList = userPreferences.getUser()?.following ?: listOf()
+                val stories = getUserStoriesUseCase(followingList)
                 _userStories.value = ApiResponse.Success(stories)
             } catch (e: Exception) {
                 // Hata işleme

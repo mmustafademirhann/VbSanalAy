@@ -136,10 +136,16 @@ class UserDataSourceImpl @Inject constructor(
             user.id to user
         }
     }
-    override suspend fun getUsersWithSharedStories(): List<User> {
+    override suspend fun getUsersWithSharedStories(followingList: List<String>): List<User> {
+        // Takip edilen kullanıcılar boşsa boş liste döndür
+        if (followingList.isEmpty()) {
+            return emptyList()
+        }
+
         return try {
-            val snapshot = firestore.collection("users") // "users" koleksiyonu kullanılıyor
-                .whereArrayContains("stories", true) // Paylaşılan hikayeleri almak için filtre
+            // Sadece takip edilen kullanıcıların hikayelerini al
+            val snapshot = firestore.collection("stories")
+                .whereIn("userId", followingList) // Sadece takip edilen kullanıcıların verilerini çek
                 .get()
                 .await()
 
@@ -152,6 +158,7 @@ class UserDataSourceImpl @Inject constructor(
                 val profileImageUrl = document.getString("profileImageUrl") ?: return@mapNotNull null
                 val profileBackgroundImageUrl = document.getString("profileBacgroundImageUrl") ?: return@mapNotNull null
 
+                // Kullanıcının paylaştığı hikayeleri al
                 val stories = document.get("stories") as? List<Map<String, Any>> ?: listOf()
                 val storyList = stories.map { storyMap ->
                     Story(
@@ -160,6 +167,10 @@ class UserDataSourceImpl @Inject constructor(
                     )
                 }
 
+                // Eğer hikaye yoksa kullanıcıyı listeye ekleme
+                if (storyList.isEmpty()) return@mapNotNull null
+
+                // Kullanıcıyı oluştur ve hikayeleri ekle
                 User(
                     id = id,
                     name = name,
@@ -175,6 +186,7 @@ class UserDataSourceImpl @Inject constructor(
             emptyList() // Hata durumunda boş liste döndür
         }
     }
+
 
     private val usersCollection = firestore.collection("user")
     override suspend fun followUser(currentUserId: String, targetUserId: String): Boolean {

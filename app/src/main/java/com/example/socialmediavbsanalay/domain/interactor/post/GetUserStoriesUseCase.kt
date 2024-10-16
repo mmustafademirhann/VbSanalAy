@@ -5,7 +5,7 @@ import com.example.socialmediavbsanalay.domain.model.UserStories
 import javax.inject.Inject
 
 class GetUserStoriesUseCase@Inject constructor(private val storyRepository: StoryRepository) {
-    suspend operator fun invoke(): ArrayList<UserStories> {
-        return storyRepository.getUserStories()
+    suspend operator fun invoke(followingList: List<String>): ArrayList<UserStories> {
+        return storyRepository.getUserStories(followingList)
     }
 }

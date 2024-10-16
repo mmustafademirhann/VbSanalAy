@@ -62,20 +62,27 @@ class StoryDataSourceImpl @Inject constructor(
             Result.failure(e)
         }
     }
-    override suspend fun getAllStories(): ArrayList<UserStories> {
+    override suspend fun getAllStories(followingList: List<String>): ArrayList<UserStories> {
         return withContext(Dispatchers.IO) {
             val storiesList = mutableListOf<Story>()
             val storiesCollection = FirebaseFirestore.getInstance().collection("stories")
-                .whereGreaterThan("storyExpireTime", System.currentTimeMillis())
+                .whereGreaterThan("storyExpireTime", System.currentTimeMillis()) // Story süresi bitmeyenleri al
             val usersCollection = FirebaseFirestore.getInstance().collection("user")
+
+            // Hikayeleri sadece takip ettiğiniz kullanıcılar için çek
             val result = storiesCollection.get().await()
             val ownerUserIds = mutableSetOf<String>()
+
+            // Hikayeleri ve sahiplerini al
             for (document in result) {
                 val story = document.toObject(Story::class.java)
-                storiesList.add(story)
-                ownerUserIds.add(story.ownerUser)
+                if (followingList.contains(story.ownerUser)) {  // Yalnızca takip edilen kullanıcıların hikayelerini al
+                    storiesList.add(story)
+                    ownerUserIds.add(story.ownerUser)
+                }
             }
-            // Fetch only the users whose IDs are in ownerUserIds
+
+            // Takip edilen kullanıcılar için kullanıcı bilgilerini al
             val usersMap = mutableMapOf<String, User?>()
             ownerUserIds.forEach { userId ->
                 val userSnapshot = usersCollection.document(userId).get().await()
@@ -83,7 +90,7 @@ class StoryDataSourceImpl @Inject constructor(
                 usersMap[userId] = currentUser
             }
 
-            // Update each story with the corresponding user profile image
+            // Her bir hikayeyi kullanıcı profiliyle güncelle
             storiesList.forEach { story ->
                 val currentUser = usersMap[story.ownerUser]
                 story.ownerUserProfileImage = currentUser?.profileImageUrl.orEmpty()
@@ -91,26 +98,26 @@ class StoryDataSourceImpl @Inject constructor(
 
             val userStoriesList = arrayListOf<UserStories>()
 
+            // Hikayeleri gruplandır
             storiesList.forEach { story ->
-                // Check if there's already a UserStories for this ownerUser
                 val existingUserStories = userStoriesList.find { it.ownerUser == story.ownerUser }
 
                 if (existingUserStories != null) {
-                    // Add the story to the existing UserStories
+                    // Var olan UserStories'e hikaye ekle
                     val updatedStories = existingUserStories.stories.toMutableList()
                     updatedStories.add(story)
                     userStoriesList[userStoriesList.indexOf(existingUserStories)] = UserStories(
                         existingUserStories.ownerUser,
                         updatedStories,
-                        story.ownerUserProfileImage // Use the profile image from the story
+                        story.ownerUserProfileImage
                     )
                 } else {
-                    // Create a new UserStories for this ownerUser and add it to the list
+                    // Yeni bir UserStories oluştur
                     userStoriesList.add(
                         UserStories(
                             story.ownerUser,
                             listOf(story),
-                            story.ownerUserProfileImage // Use the profile image from the story
+                            story.ownerUserProfileImage
                         )
                     )
                 }

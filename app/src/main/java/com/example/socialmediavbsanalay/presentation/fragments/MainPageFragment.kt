@@ -31,6 +31,7 @@ import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.domain.model.Story
 import com.example.socialmediavbsanalay.domain.model.UserStories
 import com.example.socialmediavbsanalay.presentation.MainActivity
+import com.example.socialmediavbsanalay.presentation.fragments.PostDetailFragment.Companion.ARG_USER_ID
 import com.example.socialmediavbsanalay.presentation.story.StoryActivity
 import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
 import com.example.socialmediavbsanalay.presentation.viewModels.NotificationViewModel
@@ -134,26 +135,28 @@ class MainPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainPageBinding.inflate(inflater, container, false)
-        postAdapter = PostAdapter(
-            userPreferences.getUser()?.id ?: "",
-            userViewModel,
-            onCommentClick = { postId, postOwner, postImage ->
-                showCommentBottomSheet(postId, postOwner, postImage) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
-            },
-            onLikeClick = { postId, userId, postImage -> // Beğeni tıklama olayı
-                // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
-                likedPostId = postId
-                likedPostUserId = userId
-                likedPostImage = postImage
-                userViewModel.likeOrUnLikePost(postId, userId, true) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
-            },
-            onUnLikeClick = {postId, userId ->
-                userViewModel.likeOrUnLikePost(postId, userId, false)
-            }
-        )
+
 
 
         return binding.root
+    }
+    private fun navigateToUserProfile(username: String) {
+        // FragmentTransaction başlat
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+
+        var isFromSearch=true
+        if (username== userPreferences.getUser()!!.id){
+            isFromSearch=false
+        }
+        // Yeni UserProfileFragment'ı oluştur, kullanıcı adını parametre olarak geçir
+        val userProfileFragment = UserProfileFragment.newInstance(username,isFromSearch)
+
+        // Doğru fragment ile değiştir
+        transaction.replace(R.id.fragmentContainerView, userProfileFragment)
+
+        // İşlem tamamlandığında geriye dönülmemesini sağlamak için commit()
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK).apply {
@@ -165,6 +168,31 @@ class MainPageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        postAdapter = PostAdapter(
+            currentUserId = userPreferences.getUser()?.id ?: "",
+            userViewModel,
+            onCommentClick = { postId, postOwner, postImage ->
+                showCommentBottomSheet(postId, postOwner, postImage) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
+            },
+            onLikeClick = { postId, userId, postImage -> // Beğeni tıklama olayı
+                // Burada kullanıcının beğeni işlemine göre ilgili ViewModel fonksiyonunu çağır
+                likedPostId = postId
+                likedPostUserId = userId
+                likedPostImage = postImage
+                userViewModel.likeOrUnLikePost(postId, userId, true) // UserID'yi doğru bir şekilde sağladığınızdan emin olun
+
+            },
+            onUnLikeClick = {postId, userId ->
+                userViewModel.likeOrUnLikePost(postId, userId, false)
+            },
+            onUsernameClick = {username->
+                // Username'e tıklanınca yapılacak işlemler
+                navigateToUserProfile(username)
+            }
+        )
+
 
 
         (activity as MainActivity).showBottomBar()

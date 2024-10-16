@@ -92,14 +92,14 @@
 
 
     <LinearLayout
+        android:id="@+id/likeandcommentlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="230dp"
         android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
+        android:layout_marginRight="10dp"
+        android:gravity="end|center_vertical"
         android:orientation="horizontal">
 
-        <!-- Like count TextView -->
         <TextView
             android:id="@+id/likeCount"
             android:layout_width="wrap_content"
@@ -109,7 +109,6 @@
             tools:text="999"
             android:layout_marginStart="5dp" />
 
-        <!-- Like ImageView -->
         <ImageView
             android:id="@+id/likeImage"
             android:layout_width="30dp"
@@ -117,7 +116,6 @@
             android:layout_marginStart="8dp"
             app:srcCompat="@drawable/unlike_vector" />
 
-        <!-- Unlike ImageView (hidden by default) -->
         <ImageView
             android:id="@+id/unlikeImage"
             android:layout_width="30dp"
@@ -126,7 +124,6 @@
             app:srcCompat="@drawable/like_vector"
             android:visibility="gone" />
 
-        <!-- Comment count TextView -->
         <TextView
             android:id="@+id/commentCount"
             android:layout_width="wrap_content"
@@ -135,7 +132,6 @@
             tools:text="320"
             android:layout_marginStart="16dp" />
 
-        <!-- Comment ImageView -->
         <ImageView
             android:id="@+id/commentImage"
             android:layout_width="28dp"

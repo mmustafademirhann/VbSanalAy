@@ -1,5 +1,6 @@
 package com.example.socialmediavbsanalay.di
 
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.data.dataSource.post.StoryDataSource
 import com.example.socialmediavbsanalay.data.dataSourceImpl.post.StoryDataSourceImpl
 import com.example.socialmediavbsanalay.data.repository.post.StoryRepository
@@ -20,7 +21,7 @@ object AppModule {
     @Singleton
     fun provideStoryDataSource(
         firebaseFirestore: FirebaseFirestore,
-        firebaseStorage: FirebaseStorage
+        firebaseStorage: FirebaseStorage,
     ): StoryDataSource {
         return StoryDataSourceImpl(firebaseFirestore, firebaseStorage)
     }

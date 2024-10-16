@@ -17,10 +17,11 @@ import javax.inject.Inject
 
 class CommentAdapter@Inject constructor(
     private val userViewModel: UserViewModel,
+    private val onUsernameClick: (String) -> Unit
 ) : ListAdapter<Comment, CommentAdapter.CommentViewHolder>(CommentDiffCallback()) {
 
 
-    class CommentViewHolder(private val binding: CommentItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class CommentViewHolder(private val binding: CommentItemBinding,private val onUsernameClick: (String) -> Unit) : RecyclerView.ViewHolder(binding.root) {
         fun bind(comment: Comment,users: List<User>?) {
             val matchingUser = users?.find { user -> user.id == comment.userId }
             binding.userNameTextView.text= comment.username
@@ -33,12 +34,17 @@ class CommentAdapter@Inject constructor(
                 .error(R.drawable.addstory)
                 .circleCrop()
                 .into(binding.profileImageView)
+
+
+            binding.userNameTextView.setOnClickListener {
+                matchingUser?.id?.let { userId -> onUsernameClick(userId) }
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         val binding = CommentItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CommentViewHolder(binding)
+        return CommentViewHolder(binding,onUsernameClick)
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {

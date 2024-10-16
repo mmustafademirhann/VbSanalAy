@@ -19,4 +19,7 @@ class StoryInteractor @Inject constructor(
     suspend fun updateSeenStatusOfStory(story: Story?, currentUser: String): Result<Unit> {
         return repository.updateSeenStatusOfStory(story, currentUser)
     }
+    suspend fun getUserStories(followingList: List<String>): ArrayList<UserStories>{
+        return repository.getUserStories(followingList)
+    }
 }

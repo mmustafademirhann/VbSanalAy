@@ -1,6 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -134,10 +135,33 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupRecyclerView() {
-        commentAdapter = CommentAdapter(userViewModel) // Initialize adapter without arguments
+        commentAdapter = CommentAdapter(userViewModel,   onUsernameClick = {username->
+            // Username'e tıklanınca yapılacak işlemler
+            navigateToUserProfile(username)
+        }) // Initialize adapter without arguments
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.commentsRecyclerView.adapter = commentAdapter
     }
+    private fun navigateToUserProfile(username: String) {
+        // FragmentTransaction başlat
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+
+        var isFromSearch=true
+        if (username== userPreferences.getUser()!!.id){
+            isFromSearch=false
+        }
+        // Yeni UserProfileFragment'ı oluştur, kullanıcı adını parametre olarak geçir
+        val userProfileFragment = UserProfileFragment.newInstance(username,isFromSearch)
+
+        // Doğru fragment ile değiştir
+        transaction.replace(R.id.fragmentContainerView, userProfileFragment)
+
+        // İşlem tamamlandığında geriye dönülmemesini sağlamak için commit()
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+
 
     private fun loadComments(postId: String) {
         lifecycleScope.launch {

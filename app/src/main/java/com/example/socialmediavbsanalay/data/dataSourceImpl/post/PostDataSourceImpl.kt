@@ -124,27 +124,30 @@ class PostDataSourceImpl @Inject constructor(
         val postRef = firestore.collection("posts").document(postId)
 
         if (isLike) {
-            // If isLike is true, increment likes count and add userId to the 'likedBy' array
+            // Eğer like işlemi yapılacaksa
             postRef.update(
                 "likesCount", FieldValue.increment(1),
                 "likedBy", FieldValue.arrayUnion(userId)
             ).addOnSuccessListener {
-                onSuccess()  // Call onSuccess when the user is added to 'likedBy' and likes count is incremented
+                // Beğenme işlemi başarılı
+                onSuccess()
             }.addOnFailureListener { e ->
-                onFailure(e)  // Handle any errors
+                onFailure(e)
             }
         } else {
-            // If isLike is false, decrement likes count and remove userId from the 'likedBy' array
+            // Eğer unlike işlemi yapılacaksa
             postRef.update(
                 "likesCount", FieldValue.increment(-1),
                 "likedBy", FieldValue.arrayRemove(userId)
             ).addOnSuccessListener {
-                onSuccess()  // Call onSuccess when the user is removed from 'likedBy' and likes count is decremented
+                // Beğenme işlemi başarılı
+                onSuccess()
             }.addOnFailureListener { e ->
-                onFailure(e)  // Handle any errors
+                onFailure(e)
             }
         }
     }
+
     override suspend fun fetchFollowedUsersPosts(followingList: List<String>): List<Post> {
         return try {
             val querySnapshot = firestore.collection("posts")

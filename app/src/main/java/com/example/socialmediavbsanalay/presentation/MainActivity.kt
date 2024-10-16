@@ -172,8 +172,10 @@ class MainActivity : AppCompatActivity() {
 
         // Handle click event for the add button separately
         binding.addButton.setOnClickListener {
+
             applyAnimation(it) // Optionally animate the button
             checkPermission()
+
         }
     }
 
@@ -410,6 +412,10 @@ class MainActivity : AppCompatActivity() {
         // MediaStore veya Intent kullanarak galeriye erişebilirsiniz
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE)
+        setVisibilityForLine(binding.homeline)
+        switchFragment(MainPageFragment::class.java, true)
+
+
     }
 
 

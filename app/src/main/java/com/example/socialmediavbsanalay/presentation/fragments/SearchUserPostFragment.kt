@@ -13,17 +13,20 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.socialmediavbsanalay.R
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
 import com.example.socialmediavbsanalay.databinding.FragmentSearchUserPostBinding
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchUserPostFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchUserPostBinding
     private val userViewModel: UserViewModel by viewModels()
-
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,15 +77,23 @@ class SearchUserPostFragment : Fragment() {
     }
 
     private fun navigateToUserProfile(userId: String) {
-        val isFromSearch = true // Search'ten geldiğini belirtiyoruz
+        // Eğer current user kendi profilini görmek istiyorsa isFromSearch'i false yap
+        val isFromSearch = if (userId == userPreferences.getUser()!!.id) {
+            false  // Kendi profilini görmek
+        } else {
+            true  // Search'ten gelme
+        }
+
+        // Yeni UserProfileFragment'ı oluştur
         val userProfileFragment = UserProfileFragment.newInstance(userId, isFromSearch)
 
-        // Perform navigation
+        // Navigasyonu gerçekleştirme
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, userProfileFragment)
             .addToBackStack(null) // Geri gitmek istersen back stack'e ekle
             .commit()
     }
+
 
 
     private fun showEditTextWithKeyboard() {

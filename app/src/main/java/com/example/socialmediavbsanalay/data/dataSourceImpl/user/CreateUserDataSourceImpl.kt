@@ -15,8 +15,14 @@ class CreateUserDataSourceImpl @Inject constructor(
 ) : CreateUserDataSource {
 
     override suspend fun createUser(userId: String, user: User) = suspendCoroutine { continuation ->
+        // Kullanıcıyı oluştururken kendini takip etmesini sağla
+        val updatedUser = user.copy(
+            following = user.following + userId,  // Kendini takip et
+            followingCount = user.followingCount + 1  // Takipçi sayısını artır
+        )
+
         firestore.collection("user").document(userId)
-            .set(user)
+            .set(updatedUser)
             .addOnSuccessListener {
                 continuation.resume(Unit)
             }
@@ -24,6 +30,7 @@ class CreateUserDataSourceImpl @Inject constructor(
                 continuation.resumeWithException(exception)
             }
     }
+
 
     override suspend fun checkIfUserExists(id: String): Boolean = suspendCoroutine { continuation ->
         firestore.collection("user")
