@@ -1,5 +1,7 @@
 package com.example.socialmediavbsanalay.presentation.fragments
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -264,6 +267,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                                     galleryViewModel.loadPosts()
                                 }
                             }
+                            followUserAndGoToProfileSilently(user)
                         } catch (e: Exception) {
                             // Hata durumunu ele alabiliriz
                             Log.e("FollowError", "Takip işlemi sırasında bir hata oluştu", e)
@@ -302,6 +306,56 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             .addToBackStack(null) // Optional, if you want back navigation
             .commit()
     }
+    private fun followUserAndGoToProfileSilently(user: User) {
+        // Kullanıcıyı takip etme işlemini burada yapıyoruz
+        // Örneğin viewModel.followUser(user) şeklinde
+
+        // UserProfileFragment'i oluşturuyoruz ama sadece arka planda işlemi yapıyoruz
+        val userProfileFragment = UserProfileFragment.newInstance(user.id, false)
+
+        // FragmentManager'ı alıyoruz
+        val fragmentManager = requireActivity().supportFragmentManager
+
+        // FragmentTransaction başlatıyoruz
+        val transaction = fragmentManager.beginTransaction()
+
+        // UserProfileFragment'i ekliyoruz fakat gizli bir şekilde (görünmez yapıyoruz)
+        // UserProfileFragment'in görünürlüğü olmamalı
+        transaction.replace(R.id.fragmentContainerView, userProfileFragment)
+
+        // Görünürlük değişikliği olmadan ekliyoruz (UserProfileFragment görünmeyen bir fragment olacak)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+
+        // Fragment'i yığına ekliyoruz ki geri dönüş mümkün olsun
+        transaction.addToBackStack(null)
+
+        // Fragment'i commit ediyoruz
+        transaction.commit()
+
+        // 150ms sonra geri dönme işlemi gerçekleştiriliyor
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Eski fragment'e geri dönüyoruz
+            fragmentManager.popBackStack()
+
+            // Eski fragmenti tekrar aktif hale getiriyoruz
+            val currentFragment = fragmentManager.findFragmentById(R.id.fragmentContainerView)
+
+            // Görünürlüğü yavaşça tekrar eski haline getiriyoruz
+            currentFragment?.view?.animate()
+                ?.alpha(1f)  // Görünürlüğü artırıyoruz
+                ?.setDuration(1000)  // 150ms içinde
+                ?.start()
+
+        }, 0) // Geçişi daha hızlı yapmak için 150ms
+    }
+
+
+
+
+
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         galleryViewModel.loadPosts()
@@ -342,6 +396,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
                 user?.let {
                     userPreferences.login(user)
+
                     // Kullanıcı bulundu, UI'yi güncelle
                     binding.usernameM.text = userPreferences.getUser()!!.id
                     binding.userHandle.text = "@${userPreferences.getUser()!!.name}"
