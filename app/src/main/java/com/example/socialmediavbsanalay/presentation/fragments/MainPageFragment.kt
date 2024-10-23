@@ -21,6 +21,7 @@ import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.StoryAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
@@ -60,7 +61,9 @@ class MainPageFragment : Fragment() {
     private var likedPostId = ""
     private var likedPostUserId = ""
     private var likedPostImage = ""
+    private var postId=""
     private lateinit var textNoPostsMessage: TextView
+    //private val lifecycleOwner: LifecycleOwner = TODO()
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -168,10 +171,12 @@ class MainPageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val lifecycleOwner: LifecycleOwner = viewLifecycleOwner
 
 
         postAdapter = PostAdapter(
             currentUserId = userPreferences.getUser()?.id ?: "",
+            postId,
             userViewModel,
             onCommentClick = { postId, postOwner, postImage ->
                 showCommentBottomSheet(postId, postOwner, postImage) // Yorum ikonuna tıkladığında Bottom Sheet'i aç
@@ -190,7 +195,8 @@ class MainPageFragment : Fragment() {
             onUsernameClick = {username->
                 // Username'e tıklanınca yapılacak işlemler
                 navigateToUserProfile(username)
-            }
+            },
+            lifecycleOwner = lifecycleOwner
         )
 
 

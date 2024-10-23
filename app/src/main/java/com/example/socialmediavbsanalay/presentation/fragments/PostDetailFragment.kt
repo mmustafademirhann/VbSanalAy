@@ -35,19 +35,20 @@ class PostDetailFragment : Fragment() {
 
     @Inject
     lateinit var userPreferences: UserPreferences
-    private var likedPostId = ""
-    private var likedPostUserId = ""
-    private var likedPostImage = ""
-    private var lastClickedPostPosition = RecyclerView.NO_POSITION
+    private var lastScrollPosition = RecyclerView.NO_POSITION
+    private lateinit var postId: String
 
     companion object {
         const val ARG_USER_ID = "userId"
         private const val ARG_POST_ID = "postId"
-        fun newInstance(userId: String,postId:String): PostDetailFragment {
+        private const val ARG_POSITION = "position"
+
+        fun newInstance(userId: String, postId: String, position: Int): PostDetailFragment {
             return PostDetailFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_USER_ID, userId)
                     putString(ARG_POST_ID, postId)
+                    putInt(ARG_POSITION, position)
                 }
             }
         }
@@ -58,26 +59,104 @@ class PostDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPostDetailBinding.inflate(inflater, container, false)
+
+        val userId = arguments?.getString(ARG_USER_ID) ?: ""
+        postId = arguments?.getString(ARG_POST_ID) ?: ""
+        val position = arguments?.getInt(ARG_POSITION, RecyclerView.NO_POSITION) ?: RecyclerView.NO_POSITION
+
+        setupRecyclerView()
+        observePosts(userId)
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshGallery()
+        }
+
+        refreshGallery()
         return binding.root
     }
+
+    private fun setupRecyclerView() {
+        // ARG_USER_ID'den userId alıyoruz (currentUserId)
+        val currentUserId = arguments?.getString(ARG_USER_ID) ?: ""
+
+        // ARG_POST_ID'den postId alıyoruz
+        postId = arguments?.getString(ARG_POST_ID) ?: ""
+
+        // PostAdapter'ı oluşturuyoruz
+        postAdapter = PostAdapter(
+            currentUserId = currentUserId,  // currentUserId'yi buraya geçiriyoruz
+            postId = postId,                // postId'yi de geçiyoruz
+            userViewModel = userViewModel,  // userViewModel adaptöre iletiliyor
+            onCommentClick = { postId, postOwner, postImage ->
+                // Yorum tıklamasında yapılacak işlemler
+                showCommentBottomSheet(postId, postOwner, postImage)
+            },
+            onLikeClick = { postId, userId, postImage ->
+                // Beğeni tıklamasında yapılacak işlemler
+                userViewModel.likeOrUnLikePost(postId, userId, true)
+            },
+            onUnLikeClick = { postId, userId ->
+                // Beğeni geri alma tıklamasında yapılacak işlemler
+                userViewModel.likeOrUnLikePost(postId, userId, false)
+            },
+            onUsernameClick = { username ->
+                // Kullanıcı adına tıklanınca yapılacak işlemler
+                navigateToUserProfile(username)
+            },
+            lifecycleOwner = viewLifecycleOwner  // LifecycleOwner'ı geçiriyoruz
+        )
+
+        // RecyclerView ayarları
+        binding.postsRecyclerViewForDetails.apply {
+            layoutManager = LinearLayoutManager(context)  // LayoutManager ayarlanıyor
+            adapter = postAdapter                         // Adapter bağlanıyor
+        }
+    }
+
+
+    private var isInitialLoad = true // İlk yükleme durumu kontrolü için
+
+    private fun observePosts(userId: String) {
+        galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
+            val filteredPosts = posts.filter { it.username == userId }
+            postAdapter.setPosts(filteredPosts)
+
+            // Belirtilen postId'yi bul
+            val initialPosition = filteredPosts.indexOfFirst { it.id == postId }
+
+            // Sadece ilk yüklemede kaydırma yap
+            if (isInitialLoad && initialPosition != RecyclerView.NO_POSITION) {
+                (binding.postsRecyclerViewForDetails.layoutManager as LinearLayoutManager)
+                    .scrollToPositionWithOffset(initialPosition, 0)
+                isInitialLoad = false // İlk yükleme tamamlandı
+            }
+        }
+    }
+
+
+
+    private fun refreshGallery() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            galleryViewModel.refreshGallery()
+            binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdur
+        }
+    }
+
     private fun navigateToUserProfile(username: String) {
-        // FragmentTransaction başlat
         val transaction = requireActivity().supportFragmentManager.beginTransaction()
 
-        var isFromSearch=true
-        if (username== userPreferences.getUser()!!.id){
-            isFromSearch=false
+        var isFromSearch = true
+        if (username == userPreferences.getUser()?.id) {
+            isFromSearch = false
         }
-        // Yeni UserProfileFragment'ı oluştur, kullanıcı adını parametre olarak geçir
-        val userProfileFragment = UserProfileFragment.newInstance(username,isFromSearch)
 
-        // Doğru fragment ile değiştir
+        val userProfileFragment = UserProfileFragment.newInstance(username, isFromSearch)
+
         transaction.replace(R.id.fragmentContainerView, userProfileFragment)
-
-        // İşlem tamamlandığında geriye dönülmemesini sağlamak için commit()
         transaction.addToBackStack(null)
         transaction.commit()
     }
+
     private fun showCommentBottomSheet(postId: String, postOwner: String, postImage: String) {
         val commentBottomSheetFragment = CommentBottomSheetFragment().apply {
             arguments = Bundle().apply {
@@ -120,66 +199,5 @@ class PostDetailFragment : Fragment() {
 
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val userId = arguments?.getString(ARG_USER_ID) ?: ""
-
-        // Adapter'ı başlat
-        postAdapter = PostAdapter(
-            userId,
-            userViewModel,
-            onCommentClick = { postId, postOwner, postImage ->
-                showCommentBottomSheet(postId, postOwner, postImage)
-            },
-            onLikeClick = { postId, userId, postImage ->
-                lastClickedPostPosition = getCurrentVisibleItemPosition()  // Beğeni tıklanırken pozisyonu kaydet
-                userViewModel.likeOrUnLikePost(postId, userId, true)
-            },
-            onUnLikeClick = { postId, userId ->
-                lastClickedPostPosition = getCurrentVisibleItemPosition()  // Beğeni tıklanırken pozisyonu kaydet
-                userViewModel.likeOrUnLikePost(postId, userId, false)
-            },
-            onUsernameClick = { username ->
-                navigateToUserProfile(username)
-            }
-        )
-
-        // RecyclerView ayarlarını yap
-        binding.postsRecyclerViewForDetails.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = postAdapter
-        }
-
-        // ViewModel'deki postları gözlemle
-        galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
-            val filteredPosts = posts.filter { post -> post.username == userId }
-
-            // Adapter'ı güncelle
-            postAdapter.setPosts(filteredPosts)
-
-            // Eğer son tıklanan post varsa, o post'a scroll et
-            if (lastClickedPostPosition != RecyclerView.NO_POSITION) {
-                (binding.postsRecyclerViewForDetails.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(lastClickedPostPosition, 0)
-            }
-        }
-
-        // Swipe-to-refresh işlemini başlat
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            refreshGallery()
-        }
-        refreshGallery()
-    }
-
-    private fun getCurrentVisibleItemPosition(): Int {
-        val layoutManager = binding.postsRecyclerViewForDetails.layoutManager as LinearLayoutManager
-        return layoutManager.findFirstVisibleItemPosition()  // Görülen ilk post'un pozisyonunu al
-    }
-    private fun refreshGallery() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            galleryViewModel.refreshGallery()
-            binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdur
-        }
-    }
 }
+

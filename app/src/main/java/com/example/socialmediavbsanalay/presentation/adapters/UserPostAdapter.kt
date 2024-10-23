@@ -10,14 +10,12 @@ import com.example.socialmediavbsanalay.presentation.OnItemClickListener
 
 
 import javax.inject.Inject
-
 class UserPostAdapter @Inject constructor(private val listener: OnItemClickListener) : RecyclerView.Adapter<UserPostAdapter.UserPostViewHolder>() {
 
     private var posts: List<Post> = emptyList()
 
     // ViewHolder Sınıfı
     class UserPostViewHolder(private val binding: UserProfilePostBinding) : RecyclerView.ViewHolder(binding.root) {
-
         fun bind(post: Post) {
             // Glide ile resim yükleme
             Glide.with(binding.root)
@@ -46,7 +44,7 @@ class UserPostAdapter @Inject constructor(private val listener: OnItemClickListe
 
         // Tıklama olayını yönet
         holder.itemView.setOnClickListener {
-            listener.onItemClicked(post)  // Tıklanan post'u listener'a gönder
+            listener.onItemClicked(post, position)  // Tıklanan post'u ve pozisyonu listener'a gönder
         }
     }
 }

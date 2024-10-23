@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -23,11 +25,13 @@ import javax.inject.Inject
 
 class PostAdapter(
     private val currentUserId: String,
+    private val postId: String,
     private val userViewModel: UserViewModel,
     private val onCommentClick: (String, String, String) -> Unit,
     private val onLikeClick: (String, String, String) -> Unit,
     private val onUnLikeClick: (String, String) -> Unit,
-    private val onUsernameClick: (String) -> Unit
+    private val onUsernameClick: (String) -> Unit,
+    private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     private var posts: List<Post> = emptyList()
@@ -202,8 +206,14 @@ class PostAdapter(
     }
 
     fun setPosts(newPosts: List<Post>) {
-        posts = newPosts//+mockItem
-        notifyDataSetChanged()
+        val diffCallback = PostDiffCallback(this.posts, newPosts)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        // Eski listeyi yeni liste ile değiştir
+        this.posts = newPosts
+
+        // Yalnızca değişiklikleri güncelle
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -216,21 +226,42 @@ class PostAdapter(
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = posts[position]
 
-        // Kullanıcı bilgilerini al ve gözlemle
-        userViewModel.getAllUsers() // Öncelikle kullanıcıyı çek
-
-        userViewModel.usersListt.observeForever { result -> // LiveData'yı gözlemle
-            val userList =
-                result?.getOrNull() // Keskulla profil resmini al
-            holder.bind(post, userList) // Post ve profil resmini bağla
+        // Kullanıcıyı bir kez al
+        if (userViewModel.usersListt.value == null) {
+            userViewModel.getAllUsers() // Kullanıcıyı al
         }
 
+        // LiveData'yı gözlemle ve kullanıcı listesini güncelle
+        userViewModel.usersListt.observe(lifecycleOwner) { result ->
+            val userList = result?.getOrNull() // Kullanıcı listesini al
+            holder.bind(post, userList) // Post ve kullanıcı bilgilerini bağla
+        }
+
+        // Görüntüyü yükle
         Glide.with(holder.itemView.context)
             .load(post.imageResId)
-            .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache the image
-            .dontAnimate() // Optional: Skip the fade animation if it's causing issues
-            .placeholder(null) // No placeholder
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // Görüntüyü önbelleğe al
+            .dontAnimate() // Fade animasyonunu atla
+            .placeholder(null) // Placeholder yok
             .error(R.drawable.sayfabitti)
             .into(holder.binding.postImage)
+    }
+
+    class PostDiffCallback(
+        private val oldList: List<Post>,
+        private val newList: List<Post>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
     }
 }

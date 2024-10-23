@@ -1,149 +1,198 @@
-├── data
-│   ├── dataSource
-│   │   ├── authentication
-│   │   │   └── FirebaseAuthDataSource.kt
-│   │   ├── gallery
-│   │   │   └── GalleryDataSource.kt
-│   │   ├── message
-│   │   │   └── MessageDataSource.kt
-│   │   ├── notification
-│   │   │   └── NotificationDataSource.kt
-│   │   ├── post
-│   │   │   ├── CommentDataSource.kt
-│   │   │   ├── PostDataSource.kt
-│   │   │   └── StoryDataSource.kt
-│   │   ├── user
-│   │   │   ├── CreateUserDataSource.kt
-│   │   │   └── UserDataSource.kt
-│   │   └── UserPreferences.kt
-│   ├── dataSourceImpl
-│   │   ├── authentication
-│   │   │   └── FirebaseAuthDataSourceImpl.kt
-│   │   ├── gallery
-│   │   │   └── GalleryDataSourceImpl.kt
-│   │   ├── message
-│   │   │   └── MessageDataSourceImpl.kt
-│   │   ├── notification
-│   │   │   └── NotificationDataSourceImpl.kt
-│   │   ├── post
-│   │   │   ├── CommentDataSourceImpl.kt
-│   │   │   ├── PostDataSourceImpl.kt
-│   │   │   └── StoryDataSourceImpl.kt
-│   │   └── user
-│   │       ├── CreateUserDataSourceImpl.kt
-│   │       └── UserDataSourceImpl.kt
-│   ├── repository
-│   │   ├── ApiResponse.kt
-│   │   ├── authentication
-│   │   │   └── AuthRepository.kt
-│   │   ├── gallery
-│   │   │   └── GalleryRepository.kt
-│   │   ├── message
-│   │   │   └── MessageRepository.kt
-│   │   ├── notification
-│   │   │   └── NotificationRepository.kt
-│   │   ├── post
-│   │   │   ├── CommentRepository.kt
-│   │   │   ├── PostRepository.kt
-│   │   │   └── StoryRepository.kt
-│   │   └── user
-│   │       ├── CreateUserRepository.kt
-│   │       └── UserRepository.kt
-│   └── repositoryImpl
-│       ├── authentication
-│       │   └── AuthRepositoryImpl.kt
-│       ├── gallery
-│       │   └── GalleryRepositoryImpl.kt
-│       ├── message
-│       │   └── MessageItemRepositoryImpl.kt
-│       ├── notification
-│       │   └── NotificationRepositoryImpl.kt
-│       ├── post
-│       │   ├── CommentRepositoryImpl.kt
-│       │   ├── PostRepositoryImpl.kt
-│       │   └── StoryRepositoryImpl.kt
-│       └── user
-│           ├── CreateUserRepositoryImpl.kt
-│           └── UserRepositoryImpl.kt
-├── di
-│   ├── AppModule.kt
-│   ├── AuthModule.kt
-│   ├── FirebaseModule.kt
-│   ├── GalleryModule.kt
-│   ├── MyApplication.kt
-│   ├── NotificationModule.kt
-│   ├── PostModule.kt
-│   └── UserModule.kt
-├── domain
-│   ├── interactor
-│   │   ├── authentication
-│   │   │   └── AuthInteractor.kt
-│   │   ├── gallery
-│   │   │   ├── GalleryInteractorImpl.kt
-│   │   │   └── GalleryInteractor.kt
-│   │   ├── messageItem
-│   │   │   └── MessageItemInteractor.kt
-│   │   ├── notification
-│   │   │   └── NotificationInteractor.kt
-│   │   ├── post
-│   │   │   ├── CommentInteractor.kt
-│   │   │   ├── GetUserStoriesUseCase.kt
-│   │   │   ├── PostInteractor.kt
-│   │   │   └── StoryInteractor.kt
-│   │   └── user
-│   │       ├── CreateUserInteractor.kt
-│   │       └── UserInteractor.kt
-│   └── model
-│       ├── Comment.kt
-│       ├── Gallery.kt
-│       ├── MessageItem.kt
-│       ├── Notification.kt
-│       ├── NotificationType.kt
-│       ├── Option.kt
-│       ├── Post.kt
-│       ├── Story.kt
-│       ├── User.kt
-│       └── UserStories.kt
-└── presentation
-    ├── adapters
-    │   ├── CommentAdapter.kt
-    │   ├── GalleryAdapter.kt
-    │   ├── MessageItemAdaptor.kt
-    │   ├── NotificationsAdapter.kt
-    │   ├── OptionsAdapter.kt
-    │   ├── PostAdapter.kt
-    │   ├── PostDetailAdapter.kt
-    │   ├── StoryAdapter.kt
-    │   ├── StoryDetailAdapter.kt
-    │   ├── UserAdapter.kt
-    │   └── UserPostAdapter.kt
-    ├── fragments
-    │   ├── CommentBottomSheetFragment.kt
-    │   ├── FixedBackgroundBehavior.kt
-    │   ├── GalleryFragment.kt
-    │   ├── GridSpacingItemDecaration.kt
-    │   ├── MainPageFragment.kt
-    │   ├── MessageFragment.kt
-    │   ├── NotificationBarFragment.kt
-    │   ├── PostDetailFragment.kt
-    │   ├── SearchUserPostFragment.kt
-    │   ├── SettingsFragment.kt
-    │   ├── SignInFragment.kt
-    │   ├── SignUpFragment.kt
-    │   ├── StoryDetailFragment.kt
-    │   ├── TextFragment.kt
-    │   ├── UserFollowersFragment.kt
-    │   ├── UserProfileFragment.kt
-    │   └── WelcomeFragment.kt
-    ├── MainActivity.kt
-    ├── OnItemClickListener.kt
-    ├── story
-    │   └── StoryActivity.kt
-    └── viewModels
-        ├── AuthViewModel.kt
-        ├── GalleryViewModel.kt
-        ├── musvette.txt
-        ├── NotificationViewModel.kt
-        ├── UserViewModel.kt
-        └── utils
-            └── SingleLiveData.kt
+package com.example.socialmediavbsanalay.presentation.fragments
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.socialmediavbsanalay.R
+import com.example.socialmediavbsanalay.data.dataSource.UserPreferences
+import com.example.socialmediavbsanalay.databinding.FragmentPostDetailBinding
+import com.example.socialmediavbsanalay.domain.model.Comment
+import com.example.socialmediavbsanalay.presentation.adapters.PostAdapter
+import com.example.socialmediavbsanalay.presentation.viewModels.GalleryViewModel
+import com.example.socialmediavbsanalay.presentation.viewModels.UserViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class PostDetailFragment : Fragment() {
+
+    private lateinit var binding: FragmentPostDetailBinding
+    private val galleryViewModel: GalleryViewModel by viewModels()
+    private lateinit var postAdapter: PostAdapter
+    private val userViewModel: UserViewModel by viewModels()
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
+    private var lastScrollPosition = RecyclerView.NO_POSITION
+    private lateinit var postId: String
+
+    companion object {
+        const val ARG_USER_ID = "userId"
+        private const val ARG_POST_ID = "postId"
+        private const val ARG_POSITION = "position"
+
+        fun newInstance(userId: String, postId: String, position: Int): PostDetailFragment {
+            return PostDetailFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_USER_ID, userId)
+                    putString(ARG_POST_ID, postId)
+                    putInt(ARG_POSITION, position)
+                }
+            }
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPostDetailBinding.inflate(inflater, container, false)
+
+        val userId = arguments?.getString(ARG_USER_ID) ?: ""
+        postId = arguments?.getString(ARG_POST_ID) ?: ""
+        val position = arguments?.getInt(ARG_POSITION, RecyclerView.NO_POSITION) ?: RecyclerView.NO_POSITION
+
+        setupRecyclerView()
+        observePosts(userId)
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshGallery()
+        }
+
+        refreshGallery()
+        return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        // ARG_USER_ID'den userId alıyoruz (currentUserId)
+        val currentUserId = arguments?.getString(ARG_USER_ID) ?: ""
+
+        // ARG_POST_ID'den postId alıyoruz
+        postId = arguments?.getString(ARG_POST_ID) ?: ""
+
+        // PostAdapter'ı oluşturuyoruz
+        postAdapter = PostAdapter(
+            currentUserId = currentUserId,  // currentUserId'yi buraya geçiriyoruz
+            postId = postId,                // postId'yi de geçiyoruz
+            userViewModel = userViewModel,  // userViewModel adaptöre iletiliyor
+            onCommentClick = { postId, postOwner, postImage ->
+                // Yorum tıklamasında yapılacak işlemler
+                showCommentBottomSheet(postId, postOwner, postImage)
+            },
+            onLikeClick = { postId, userId, postImage ->
+                // Beğeni tıklamasında yapılacak işlemler
+                userViewModel.likeOrUnLikePost(postId, userId, true)
+            },
+            onUnLikeClick = { postId, userId ->
+                // Beğeni geri alma tıklamasında yapılacak işlemler
+                userViewModel.likeOrUnLikePost(postId, userId, false)
+            },
+            onUsernameClick = { username ->
+                // Kullanıcı adına tıklanınca yapılacak işlemler
+                navigateToUserProfile(username)
+            },
+            lifecycleOwner = viewLifecycleOwner  // LifecycleOwner'ı geçiriyoruz
+        )
+
+        // RecyclerView ayarları
+        binding.postsRecyclerViewForDetails.apply {
+            layoutManager = LinearLayoutManager(context)  // LayoutManager ayarlanıyor
+            adapter = postAdapter                         // Adapter bağlanıyor
+        }
+    }
+
+
+    private fun observePosts(userId: String) {
+        galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
+            val filteredPosts = posts.filter { post -> post.username == userId }
+
+            // Mevcut scroll pozisyonunu kaydet
+            val layoutManager = binding.postsRecyclerViewForDetails.layoutManager as LinearLayoutManager
+            lastScrollPosition = layoutManager.findFirstVisibleItemPosition()
+
+            // Adapter'ı güncelle
+            postAdapter.setPosts(filteredPosts)
+
+            // Eğer kaydedilmiş bir scroll pozisyonu varsa, oraya geri dön
+            if (lastScrollPosition != RecyclerView.NO_POSITION) {
+                binding.postsRecyclerViewForDetails.scrollToPosition(lastScrollPosition)
+            }
+        }
+    }
+
+    private fun refreshGallery() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            galleryViewModel.refreshGallery()
+            binding.swipeRefreshLayout.isRefreshing = false // Refresh tamamlandığında animasyonu durdur
+        }
+    }
+
+    private fun navigateToUserProfile(username: String) {
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+
+        var isFromSearch = true
+        if (username == userPreferences.getUser()?.id) {
+            isFromSearch = false
+        }
+
+        val userProfileFragment = UserProfileFragment.newInstance(username, isFromSearch)
+
+        transaction.replace(R.id.fragmentContainerView, userProfileFragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun showCommentBottomSheet(postId: String, postOwner: String, postImage: String) {
+        val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_comment, null)
+        val commentEditText = bottomSheetView.findViewById<EditText>(R.id.editTextComment)
+        val submitButton = bottomSheetView.findViewById<Button>(R.id.buttonSendComment)
+
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        submitButton.setOnClickListener {
+            val commentText = commentEditText.text.toString()
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            val userName = userPreferences.getUser()?.id.toString()
+            val profilePhoto = userPreferences.getUser()?.profileImageUrl
+
+            if (userId != null && commentText.isNotBlank()) {
+                val comment = Comment(
+                    userId = userId,
+                    postId = postId,
+                    comment = commentText,
+                    username = userName,
+                    profileImageUrl = profilePhoto.toString()
+                )
+
+                galleryViewModel.addComment(comment) // Yorum ekle
+                bottomSheetDialog.dismiss() // Dialog'u kapat
+            } else {
+                Toast.makeText(requireContext(), "Yorum boş olamaz!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        bottomSheetDialog.show()
+    }
+}
+
+
+
+private fun observePosts(userId: String) {
+        galleryViewModel.posts.observe(viewLifecycleOwner) { posts ->
+            val filteredPosts = posts.filter { it.username == userId }
+            postAdapter.setPosts(filteredPosts)
+        }
+    }

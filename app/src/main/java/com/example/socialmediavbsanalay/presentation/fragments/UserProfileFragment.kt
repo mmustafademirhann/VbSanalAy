@@ -487,23 +487,25 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
         }
     }
 
-    override fun onItemClicked(post: Post) {
+
+    override fun onItemClicked(post: Post, position: Int) {
+        // Gönderi sahibi olup olmadığını kontrol et
         val isOwner = arguments?.getBoolean(ARG_IS_FROM_SEARCH, false) ?: false
-        val postDetailFragment: PostDetailFragment
 
-        // You may not need to set the string variable if it's not used later
+        // Kullanıcı ID'sini al
         val userId = if (isOwner) {
-            // Assuming userId is defined in your UserProfileFragment
-            userId
+            // Kullanıcı ID'sini al
+            userId // Kullanıcı tercihlerini kullanarak ID'yi al
         } else {
-           userId
+            userId // Kullanıcı tercihlerini kullanarak ID'yi al
         }
-        val postId = post.id
 
-        // Create the PostDetailFragment with the post
-        postDetailFragment = PostDetailFragment.newInstance(userId,postId)
+        val postId = post.id // Tıklanan gönderinin ID'sini al
 
-        // Start the fragment transaction
+        // PostDetailFragment'ı oluştur
+        val postDetailFragment = PostDetailFragment.newInstance(userId, postId,position)
+
+        // Fragment geçişini başlat
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, postDetailFragment)
             .addToBackStack(null)
@@ -512,3 +514,4 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
 
 }
+
