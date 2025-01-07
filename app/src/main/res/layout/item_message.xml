@@ -1,0 +1,8 @@
+<TextView android:id="@+id/messageText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:text="Message"
+    android:background="@drawable/messagebacground"
+    android:textSize="16sp"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

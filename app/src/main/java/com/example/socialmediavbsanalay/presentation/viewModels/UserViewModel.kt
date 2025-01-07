@@ -179,6 +179,7 @@ class UserViewModel @Inject constructor(
     }
 
 
+
     // Takip durumunu değiştirme (takip etme/takipten çıkma)
     suspend fun toggleFollowStatus(currentUserId: String, targetUserId: String) {
         val isCurrentlyFollowing = isFollowing.value ?: false
@@ -201,6 +202,7 @@ class UserViewModel @Inject constructor(
                 _isFollowing.value = true
             }
         }
+        userPreferences.getUser()
         // Takipçi sayısını tekrar yükle
         loadFollowerCount(targetUserId)
         //loadFollowerCount(currentUserId)

@@ -24,6 +24,7 @@ import com.example.socialmediavbsanalay.domain.model.Notification
 import com.example.socialmediavbsanalay.domain.model.NotificationType
 import com.example.socialmediavbsanalay.domain.model.Post
 import com.example.socialmediavbsanalay.domain.model.User
+import com.example.socialmediavbsanalay.presentation.MainActivity
 import com.example.socialmediavbsanalay.presentation.OnItemClickListener
 import com.example.socialmediavbsanalay.presentation.adapters.UserAdapter
 import com.example.socialmediavbsanalay.presentation.adapters.UserPostAdapter
@@ -195,6 +196,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             .addToBackStack(null) // Geri butonuyla dönmek için ekle
             .commit()
     }
+
     // Filtreleme işlemi, userId kullanarak postları filtreliyoruz
     private fun observePosts(userId: String) {
 
@@ -262,12 +264,14 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
                             userViewModel.isFollowing.observe(viewLifecycleOwner) { isFollowing ->
                                 if (isFollowing != null && isFollowing) {
                                     // Eğer kullanıcı takip ediyorsa, postları yükle
-                                    galleryViewModel.loadPosts()
                                     galleryViewModel.refreshPostsAfterFollow()
                                     galleryViewModel.loadPosts()
                                 }
                             }
-                            followUserAndGoToProfileSilently(user)
+                            userPreferences.getUser()?.let { user ->
+                               galleryViewModel.loadPosts()
+                            }
+                            //followUserAndGoToProfileSilently(user)
                         } catch (e: Exception) {
                             // Hata durumunu ele alabiliriz
                             Log.e("FollowError", "Takip işlemi sırasında bir hata oluştu", e)
@@ -358,6 +362,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).showBottomBar()
         galleryViewModel.loadPosts()
 
 
@@ -472,6 +477,37 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile), OnItemClic
             layoutManager = GridLayoutManager(context, 3) // 3-column grid
             adapter = userPostAdapter
         }
+
+        binding.messageButton.setOnClickListener{
+            val currentUserId=userPreferences.getUser()?.id ?:return@setOnClickListener
+            val targetUserId=arguments?.getString("userId") ?:return@setOnClickListener
+            val chatRoomId =  generateChatRoomId(currentUserId, targetUserId)
+            navigateToChatFragment(currentUserId, targetUserId, chatRoomId)
+
+        }
+    }
+    private fun generateChatRoomId(currentUserId: String, targetUserId: String): String {
+        return if (currentUserId < targetUserId) {
+            "$currentUserId-$targetUserId"
+        } else {
+            "$targetUserId-$currentUserId"
+        }
+    }
+
+    // Function to navigate to ChatFragment and pass necessary data
+    private fun navigateToChatFragment(currentUserId: String, targetUserId: String, chatRoomId: String) {
+        val chatFragment = ChatFragment().apply {
+            arguments = Bundle().apply {
+                putString("currentUserId", currentUserId)
+                putString("targetUserId", targetUserId)
+                putString("chatRoomId", chatRoomId)
+            }
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, chatFragment)  // Replace with your fragment container ID
+            .addToBackStack(null)  // Optional: add to back stack to allow back navigation
+            .commit()
     }
 
     private fun updateUIBasedOnOwnership() {

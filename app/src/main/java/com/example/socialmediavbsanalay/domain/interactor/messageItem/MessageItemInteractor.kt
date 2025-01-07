@@ -8,7 +8,10 @@ class MessageItemInteractor @Inject constructor(
     private val messageItemRepository: MessageRepository
 ) {
 
-    suspend fun getMessageItems(): Result<List<MessageItem>> {
-        return messageItemRepository.getMessageItems()
+    suspend fun getMessageItems(chatRoomId: String): List<MessageItem> {
+        return messageItemRepository.getMessageItems(chatRoomId) // Firebase'den mesajları al
+    }
+    suspend fun sendMessage(chatRoomId: String, message: MessageItem) {
+        messageItemRepository.sendMessage(chatRoomId, message) // Send message using repository
     }
 }
